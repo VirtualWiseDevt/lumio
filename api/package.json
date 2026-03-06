@@ -1,0 +1,33 @@
+{
+  "name": "@lumio/api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx --watch src/server.ts",
+    "build": "tsc",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "express": "^5",
+    "cors": "^2.8.5",
+    "helmet": "^8.0.0",
+    "express-rate-limit": "^7.5.0",
+    "dotenv": "^16.4.7",
+    "zod": "^3.24",
+    "@prisma/client": "^6.5.0",
+    "@prisma/adapter-pg": "^6.5.0",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "prisma": "^6.5.0",
+    "@types/pg": "^8.11.11",
+    "@types/express": "^5",
+    "@types/cors": "^2.8.17",
+    "typescript": "^5.7.3",
+    "tsx": "^4.19.2",
+    "@types/node": "^22.12.0"
+  }
+}
