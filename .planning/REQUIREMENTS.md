@@ -127,71 +127,71 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | — | Pending |
-| AUTH-02 | — | Pending |
-| AUTH-03 | — | Pending |
-| AUTH-04 | — | Pending |
-| AUTH-05 | — | Pending |
-| AUTH-06 | — | Pending |
-| AUTH-07 | — | Pending |
-| BRWS-01 | — | Pending |
-| BRWS-02 | — | Pending |
-| BRWS-03 | — | Pending |
-| BRWS-04 | — | Pending |
-| BRWS-05 | — | Pending |
-| BRWS-06 | — | Pending |
-| BRWS-07 | — | Pending |
-| BRWS-08 | — | Pending |
-| BRWS-09 | — | Pending |
-| BRWS-10 | — | Pending |
-| BRWS-11 | — | Pending |
-| BRWS-12 | — | Pending |
-| PLAY-01 | — | Pending |
-| PLAY-02 | — | Pending |
-| PLAY-03 | — | Pending |
-| PLAY-04 | — | Pending |
-| USER-01 | — | Pending |
-| USER-02 | — | Pending |
-| USER-03 | — | Pending |
-| USER-04 | — | Pending |
-| USER-05 | — | Pending |
-| USER-06 | — | Pending |
-| PAY-01 | — | Pending |
-| PAY-02 | — | Pending |
-| PAY-03 | — | Pending |
-| PAY-04 | — | Pending |
-| PAY-05 | — | Pending |
-| PAY-06 | — | Pending |
-| PAY-07 | — | Pending |
-| REF-01 | — | Pending |
-| REF-02 | — | Pending |
-| REF-03 | — | Pending |
-| REF-04 | — | Pending |
-| REF-05 | — | Pending |
-| NOTF-01 | — | Pending |
-| NOTF-02 | — | Pending |
-| NOTF-03 | — | Pending |
-| NOTF-04 | — | Pending |
-| NOTF-05 | — | Pending |
-| NOTF-06 | — | Pending |
-| ADMN-01 | — | Pending |
-| ADMN-02 | — | Pending |
-| ADMN-03 | — | Pending |
-| ADMN-04 | — | Pending |
-| ADMN-05 | — | Pending |
-| ADMN-06 | — | Pending |
-| ADMN-07 | — | Pending |
-| ADMN-08 | — | Pending |
-| ADMN-09 | — | Pending |
-| ADMN-10 | — | Pending |
-| ADMN-11 | — | Pending |
-| ADMN-12 | — | Pending |
+| AUTH-01 | Phase 2 | Pending |
+| AUTH-02 | Phase 2 | Pending |
+| AUTH-03 | Phase 2 | Pending |
+| AUTH-04 | Phase 2 | Pending |
+| AUTH-05 | Phase 2 | Pending |
+| AUTH-06 | Phase 2 | Pending |
+| AUTH-07 | Phase 2 | Pending |
+| BRWS-01 | Phase 4 | Pending |
+| BRWS-02 | Phase 4 | Pending |
+| BRWS-03 | Phase 4 | Pending |
+| BRWS-04 | Phase 4 | Pending |
+| BRWS-05 | Phase 4 | Pending |
+| BRWS-06 | Phase 4 | Pending |
+| BRWS-07 | Phase 4 | Pending |
+| BRWS-08 | Phase 4 | Pending |
+| BRWS-09 | Phase 4 | Pending |
+| BRWS-10 | Phase 4 | Pending |
+| BRWS-11 | Phase 4 | Pending |
+| BRWS-12 | Phase 4 | Pending |
+| PLAY-01 | Phase 5 | Pending |
+| PLAY-02 | Phase 5 | Pending |
+| PLAY-03 | Phase 5 | Pending |
+| PLAY-04 | Phase 5 | Pending |
+| USER-01 | Phase 5 | Pending |
+| USER-02 | Phase 5 | Pending |
+| USER-03 | Phase 5 | Pending |
+| USER-04 | Phase 5 | Pending |
+| USER-05 | Phase 5 | Pending |
+| USER-06 | Phase 8 | Pending |
+| PAY-01 | Phase 7 | Pending |
+| PAY-02 | Phase 7 | Pending |
+| PAY-03 | Phase 7 | Pending |
+| PAY-04 | Phase 7 | Pending |
+| PAY-05 | Phase 7 | Pending |
+| PAY-06 | Phase 7 | Pending |
+| PAY-07 | Phase 7 | Pending |
+| REF-01 | Phase 8 | Pending |
+| REF-02 | Phase 8 | Pending |
+| REF-03 | Phase 8 | Pending |
+| REF-04 | Phase 8 | Pending |
+| REF-05 | Phase 8 | Pending |
+| NOTF-01 | Phase 9 | Pending |
+| NOTF-02 | Phase 9 | Pending |
+| NOTF-03 | Phase 9 | Pending |
+| NOTF-04 | Phase 9 | Pending |
+| NOTF-05 | Phase 9 | Pending |
+| NOTF-06 | Phase 9 | Pending |
+| ADMN-01 | Phase 3 | Pending |
+| ADMN-02 | Phase 10 | Pending |
+| ADMN-03 | Phase 10 | Pending |
+| ADMN-04 | Phase 10 | Pending |
+| ADMN-05 | Phase 3 | Pending |
+| ADMN-06 | Phase 3 | Pending |
+| ADMN-07 | Phase 3 | Pending |
+| ADMN-08 | Phase 3 | Pending |
+| ADMN-09 | Phase 10 | Pending |
+| ADMN-10 | Phase 10 | Pending |
+| ADMN-11 | Phase 10 | Pending |
+| ADMN-12 | Phase 10 | Pending |
 
 **Coverage:**
 - v1 requirements: 59 total
-- Mapped to phases: 0
-- Unmapped: 59 ⚠️
+- Mapped to phases: 59
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-07*
-*Last updated: 2026-03-07 after initial definition*
+*Last updated: 2026-03-07 after roadmap creation*
