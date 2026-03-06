@@ -34,11 +34,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. The Prisma 7 schema contains all entities (User, Session, Content, Season, Episode, Channel, Plan, Payment, Subscription, Referral, WatchProgress, Watchlist, Favorite, Coupon, ActivityLog) and `prisma migrate deploy` succeeds
   3. The Express API responds on port 5000 with health check, CORS, rate limiting, and error handling middleware active
   4. The monorepo contains three application directories (client, api, admin) with shared TypeScript configuration
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md -- Monorepo scaffolding with npm workspaces, Docker Compose, TypeScript base config, workspace skeletons
+- [ ] 01-02-PLAN.md -- Express 5 API skeleton with Prisma 7 config, middleware, health check, and graceful shutdown
+- [ ] 01-03-PLAN.md -- Complete Prisma 7 schema with all 14 models, initial migration, and end-to-end API verification
 
 ### Phase 2: Authentication and Sessions
 **Goal**: Users can securely create accounts, log in, manage their sessions, and are limited to 2 concurrent devices
@@ -196,7 +197,7 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Project Foundation and Database | 0/TBD | Not started | - |
+| 1. Project Foundation and Database | 0/3 | Planning complete | - |
 | 2. Authentication and Sessions | 0/TBD | Not started | - |
 | 3. Content API and Admin Content Management | 0/TBD | Not started | - |
 | 4. Client Browsing Experience | 0/TBD | Not started | - |
