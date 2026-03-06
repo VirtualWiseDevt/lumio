@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: lumio-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: lumio
+      POSTGRES_USER: lumio
+      POSTGRES_PASSWORD: lumio_dev_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lumio -d lumio"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    container_name: lumio-api
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      DATABASE_URL: postgresql://lumio:lumio_dev_password@postgres:5432/lumio?schema=public
+      CORS_ORIGINS: http://localhost:3000,http://localhost:3001
+    volumes:
+      - ./api/src:/app/src
+      - ./api/prisma:/app/prisma
+      - ./api/prisma.config.ts:/app/prisma.config.ts
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && npx tsx --watch src/server.ts"
+
+volumes:
+  postgres_data:
