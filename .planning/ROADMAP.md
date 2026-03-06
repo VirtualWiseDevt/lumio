@@ -37,8 +37,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md -- Monorepo scaffolding with npm workspaces, Docker Compose, TypeScript base config, workspace skeletons
-- [ ] 01-02-PLAN.md -- Express 5 API skeleton with Prisma 7 config, middleware, health check, and graceful shutdown
+- [x] 01-01-PLAN.md -- Monorepo scaffolding with npm workspaces, Docker Compose, TypeScript base config, workspace skeletons
+- [x] 01-02-PLAN.md -- Express 5 API skeleton with Prisma 7 config, middleware, health check, and graceful shutdown
 - [ ] 01-03-PLAN.md -- Complete Prisma 7 schema with all 14 models, initial migration, and end-to-end API verification
 
 ### Phase 2: Authentication and Sessions

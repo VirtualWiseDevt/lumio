@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 1 of 10 (Project Foundation and Database)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-03-07 -- Completed 01-01-PLAN.md (Project Foundation)
+Last activity: 2026-03-07 -- Completed 01-02-PLAN.md (Express API Skeleton)
 
-Progress: [███░░░░░░░] 1/3 Phase 1
+Progress: [██████░░░░] 2/3 Phase 1
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
+- Total plans completed: 2
 - Average duration: 4 min
-- Total execution time: 4 min
+- Total execution time: 8 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01 - Foundation | 1/3 | 4 min | 4 min |
+| 01 - Foundation | 2/3 | 8 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (4 min)
-- Trend: N/A (first plan)
+- Last 5 plans: 01-01 (4 min), 01-02 (4 min)
+- Trend: Consistent 4 min/plan
 
 *Updated after each plan completion*
 
@@ -45,6 +45,9 @@ Recent decisions affecting current work:
 - [01-01]: Express 5.2.1, Prisma 6.19.2, Zod 3.25.76, TypeScript 5.9.3 installed as foundation
 - [01-01]: api/package.json uses type: module for ESM support (required by Prisma and modern Node.js)
 - [01-01]: verbatimModuleSyntax enabled in base tsconfig (enforces explicit type imports)
+- [01-02]: DATABASE_URL validated with z.string().min(1) not z.string().url() (Zod URL rejects postgresql://)
+- [01-02]: PrismaClient imported from generated path ../generated/prisma/client.js (not @prisma/client)
+- [01-02]: Express middleware order: helmet > cors > json > urlencoded > rateLimit > routes > 404 > error
 - [Roadmap]: Stack corrected to Next.js 15.5.x (not 14 EOL), Express 5, Prisma 7, argon2, jose
 - [Roadmap]: Admin content management placed before client (client needs seeded content)
 - [Roadmap]: Video infrastructure isolated into own phase (keyframe errors require full re-transcode)
@@ -64,5 +67,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 01-01-PLAN.md (Project Foundation)
-Resume file: .planning/phases/01-project-foundation-and-database/01-02-PLAN.md
+Stopped at: Completed 01-02-PLAN.md (Express API Skeleton)
+Resume file: .planning/phases/01-project-foundation-and-database/01-03-PLAN.md
