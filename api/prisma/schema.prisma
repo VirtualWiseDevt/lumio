@@ -1,0 +1,321 @@
+// Lumio Platform - Complete Database Schema
+// Prisma 6.x with PostgreSQL 16
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ContentType {
+  MOVIE
+  SERIES
+  DOCUMENTARY
+  CHANNEL
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  EXPIRED
+}
+
+enum CouponType {
+  PERCENTAGE
+  FIXED_AMOUNT
+  FREE_DAYS
+}
+
+// ─── Models ─────────────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  phone        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(USER)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  sessions      Session[]
+  payments      Payment[]
+  subscriptions Subscription[]
+  watchProgress WatchProgress[]
+  watchlist     Watchlist[]
+  favorites     Favorite[]
+  referralsMade Referral[]     @relation("ReferrerRelation")
+  referredBy    Referral?      @relation("RefereeRelation")
+  activityLogs  ActivityLog[]
+
+  @@index([email])
+  @@index([phone])
+  @@index([role])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  deviceName   String
+  deviceType   String
+  ipAddress    String
+  token        String   @unique
+  expiresAt    DateTime
+  lastActiveAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([token])
+}
+
+model Content {
+  id              String      @id @default(uuid())
+  type            ContentType
+  title           String
+  description     String?
+  releaseYear     Int?
+  duration        Int?
+  ageRating       String?
+  quality         String?
+  categories      String[]
+  posterPortrait  String?
+  posterLandscape String?
+  trailerUrl      String?
+  videoUrl        String?
+  streamUrl       String?
+  matchScore      Int?
+  isPublished     Boolean     @default(false)
+  isFeatured      Boolean     @default(false)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  seasons       Season[]
+  watchProgress WatchProgress[]
+  watchlist     Watchlist[]
+  favorites     Favorite[]
+
+  @@index([type])
+  @@index([isPublished])
+  @@index([isFeatured])
+  @@index([title])
+  @@index([type, isPublished])
+}
+
+model Season {
+  id        String   @id @default(uuid())
+  contentId String
+  number    Int
+  title     String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  content  Content   @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  episodes Episode[]
+
+  @@unique([contentId, number])
+  @@index([contentId])
+}
+
+model Episode {
+  id          String   @id @default(uuid())
+  seasonId    String
+  number      Int
+  title       String
+  description String?
+  duration    Int?
+  videoUrl    String?
+  thumbnail   String?
+  createdAt   DateTime @default(now())
+
+  // Relations
+  season Season @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([seasonId, number])
+  @@index([seasonId])
+}
+
+model Plan {
+  id           String   @id @default(uuid())
+  name         String   @unique
+  price        Int
+  durationDays Int
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  payments      Payment[]
+  subscriptions Subscription[]
+}
+
+model Payment {
+  id                 String        @id @default(uuid())
+  userId             String
+  planId             String
+  amount             Int
+  discount           Int           @default(0)
+  status             PaymentStatus @default(PENDING)
+  method             String        @default("MPESA")
+  checkoutRequestId  String?       @unique
+  mpesaReceiptNumber String?
+  phoneNumber        String?
+  resultCode         String?
+  resultDesc         String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan Plan @relation(fields: [planId], references: [id])
+
+  @@index([userId])
+  @@index([planId])
+  @@index([status])
+  @@index([checkoutRequestId])
+  @@index([createdAt])
+}
+
+model Subscription {
+  id        String             @id @default(uuid())
+  userId    String
+  planId    String
+  status    SubscriptionStatus @default(ACTIVE)
+  startsAt  DateTime
+  expiresAt DateTime
+  autoRenew Boolean            @default(false)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan Plan @relation(fields: [planId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([expiresAt])
+  @@index([userId, status])
+}
+
+model WatchProgress {
+  id        String   @id @default(uuid())
+  userId    String
+  contentId String
+  episodeId String?
+  timestamp Int
+  duration  Int
+  completed Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentId, episodeId])
+  @@index([userId])
+  @@index([contentId])
+  @@index([updatedAt])
+}
+
+model Watchlist {
+  id        String   @id @default(uuid())
+  userId    String
+  contentId String
+  createdAt DateTime @default(now())
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentId])
+  @@index([userId])
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  contentId String
+  createdAt DateTime @default(now())
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentId])
+  @@index([userId])
+}
+
+model Referral {
+  id           String  @id @default(uuid())
+  referrerId   String
+  refereeId    String  @unique
+  creditAmount Int     @default(0)
+  isRedeemed   Boolean @default(false)
+  createdAt    DateTime @default(now())
+
+  // Relations
+  referrer User @relation("ReferrerRelation", fields: [referrerId], references: [id], onDelete: Cascade)
+  referee  User @relation("RefereeRelation", fields: [refereeId], references: [id], onDelete: Cascade)
+
+  @@index([referrerId])
+  @@index([refereeId])
+}
+
+model Coupon {
+  id          String     @id @default(uuid())
+  code        String     @unique
+  type        CouponType
+  value       Int
+  maxUses     Int?
+  currentUses Int        @default(0)
+  expiresAt   DateTime?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+
+  @@index([code])
+  @@index([isActive])
+}
+
+model ActivityLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  action     String
+  entityType String
+  entityId   String?
+  details    Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([entityType])
+  @@index([createdAt])
+}
