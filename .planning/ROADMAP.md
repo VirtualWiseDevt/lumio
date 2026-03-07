@@ -132,15 +132,20 @@ Plans:
 **Depends on**: Phase 3 (admin upload UI), Phase 5 (player ready to consume HLS)
 **Requirements**: None (infrastructure — enables PLAY-01 with real content instead of test files)
 **Success Criteria** (what must be TRUE):
-  1. Admin can upload an MP4 file through the admin panel and it is transcoded into HLS segments at multiple quality levels (240p, 360p, 480p, 720p, 1080p) with a master playlist
+  1. Admin can upload an MP4 file through the admin panel and it is transcoded into HLS segments at multiple quality levels (360p, 480p, 720p, 1080p) with a master playlist
   2. All quality variants have aligned keyframes verified by ffprobe, ensuring smooth adaptive bitrate switching without visual glitches
   3. HLS segments and playlists are stored in a private Cloudflare R2 bucket and accessed only via presigned URLs with short TTL
   4. The video player successfully plays transcoded content with adaptive bitrate switching, and the CDN serves segments from African edge PoPs with correct cache headers (.ts immutable, .m3u8 short TTL)
-**Plans**: TBD
+**Plans**: 7 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
+- [ ] 06-01-PLAN.md -- Docker infrastructure (Redis + FFmpeg), R2/Redis clients, schema migration (transcoding fields), type definitions
+- [ ] 06-02-PLAN.md -- R2 storage service (presign, upload, delete) and video upload API endpoints (presign + confirm)
+- [ ] 06-03-PLAN.md -- FFmpeg transcode service (HLS generation, keyframe alignment) and BullMQ job queue (worker + processor)
+- [ ] 06-04-PLAN.md -- Stream service (playlist proxy with presigned URLs), publish-triggers-transcode, worker startup
+- [ ] 06-05-PLAN.md -- Admin video upload UI (VideoUploader component, TranscodingBadge) integrated into content forms
+- [ ] 06-06-PLAN.md -- Client player integration (stream endpoint, auth headers on HLS requests, fallback for non-transcoded)
+- [ ] 06-07-PLAN.md -- Build verification and end-to-end human verification of video infrastructure pipeline
 
 ### Phase 7: Payments and Subscriptions
 **Goal**: Users can subscribe to Lumio via M-Pesa, and expired users are blocked from content until they pay
@@ -220,7 +225,7 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10
 | 3. Content API and Admin Content Management | 9/9 | Complete | 2026-03-07 |
 | 4. Client Browsing Experience | 8/8 | Complete | 2026-03-07 |
 | 5. Video Player and User Features | 9/9 | Complete | 2026-03-07 |
-| 6. Video Infrastructure and HLS Delivery | 0/TBD | Not started | - |
+| 6. Video Infrastructure and HLS Delivery | 0/7 | Not started | - |
 | 7. Payments and Subscriptions | 0/TBD | Not started | - |
 | 8. Referral System and Invite Model | 0/TBD | Not started | - |
 | 9. Notifications and Scheduled Jobs | 0/TBD | Not started | - |
