@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 7 of 10 (Payments and Subscriptions)
-Plan: 1 of 6 in Phase 7
+Plan: 3 of 6 in Phase 7
 Status: In progress
-Last activity: 2026-03-07 -- Completed 07-01-PLAN.md
+Last activity: 2026-03-07 -- Completed 07-03-PLAN.md
 
-Progress: [███████████████████████████████████░░░░░░░░░] 40/~45 total plans
+Progress: [█████████████████████████████████████░░░░░░░] 41/~45 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 40
+- Total plans completed: 41
 - Average duration: ~5 min
 - Total execution time: ~183 min (including Docker setup + reboot)
 
@@ -35,8 +35,8 @@ Progress: [███████████████████████
 | 06 - Video Infrastructure | 7/7 | ~29 min | ~4.1 min |
 
 **Recent Trend:**
-- Last 5 plans: 07-01 (~4 min), 06-07 (~9 min), 06-06 (~1 min), 06-05 (~4 min), 06-04 (~4 min)
-- Trend: Verification plans take longer (multi-workspace builds + Docker); implementation plans fast
+- Last 5 plans: 07-03 (~2 min), 07-01 (~4 min), 06-07 (~9 min), 06-06 (~1 min), 06-05 (~4 min)
+- Trend: Client data layer plans very fast; verification plans take longer
 
 *Updated after each plan completion*
 
@@ -167,7 +167,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 07-01-PLAN.md
+Stopped at: Completed 07-03-PLAN.md
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -310,3 +310,9 @@ IMPORTANT CONTEXT:
 - Subscription plans seeded: Weekly (500/7d), Monthly (1250/30d), Quarterly (3000/90d) via api/prisma/seed-plans.ts
 - Payment model has idempotencyKey (String? @unique), rawCallback (Json?), reconciliationAttempts (Int @default(0))
 - M-Pesa env vars: MPESA_ENVIRONMENT (mock/sandbox/production), MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET, MPESA_SHORTCODE, MPESA_PASSKEY, MPESA_CALLBACK_URL
+- [07-03]: SubscriptionInfo type separate from UserSubscription (more fields: id, autoRenew)
+- [07-03]: pollPaymentStatus uses 3s interval / 20 max attempts (60s total timeout)
+- [07-03]: useSubscription urgency thresholds: green (7+), yellow (3-7), red (<3 days)
+- Client billing types: Plan, Payment, PaymentStatus, SubscriptionInfo, InitiatePaymentResponse, PaymentStatusResponse, PaymentHistoryResponse (client/src/types/billing.ts)
+- Client billing API: getPlans, initiatePayment, getPaymentStatus, pollPaymentStatus, getPaymentHistory, getSubscription (client/src/api/billing.ts)
+- useSubscription hook: TanStack Query with isActive, daysRemaining, urgency color, refetch (client/src/hooks/use-subscription.ts)
