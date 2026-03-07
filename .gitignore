@@ -6,3 +6,4 @@ dist/
 .next/
 .claude/
 api/uploads/
+*.tsbuildinfo
