@@ -25,6 +25,9 @@
     "ua-parser-js": "^1.0.41",
     "zod": "^3.24"
   },
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
+  },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5",

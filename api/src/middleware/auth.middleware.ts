@@ -57,3 +57,17 @@ export async function requireAuth(
     next(error);
   }
 }
+
+export async function requireAdmin(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  if (req.user?.role !== "ADMIN") {
+    res.status(403).json({
+      error: { message: "Admin access required", code: "FORBIDDEN" },
+    });
+    return;
+  }
+  next();
+}
