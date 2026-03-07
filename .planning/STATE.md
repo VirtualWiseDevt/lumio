@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 3 of 10 (Content API and Admin Content Management)
-Plan: 2 of 9 in Phase 3
+Plan: 3 of 9 in Phase 3
 Status: In progress
-Last activity: 2026-03-07 -- Completed 03-02-PLAN.md (admin panel shell with auth, sidebar, API client)
+Last activity: 2026-03-07 -- Completed 03-03-PLAN.md (content and category CRUD APIs)
 
-Progress: [████████░░] 8/~30 total plans
+Progress: [█████████░] 9/~30 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
+- Total plans completed: 9
 - Average duration: ~5 min
-- Total execution time: ~75 min (including Docker setup + reboot)
+- Total execution time: ~77 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [████████░░] 8/~30 total plans
 |-------|-------|-------|----------|
 | 01 - Foundation | 3/3 | ~48 min | ~16 min |
 | 02 - Auth & Sessions | 3/3 | 12 min | 4 min |
-| 03 - Content API & Admin | 2/9 | 17 min | 8.5 min |
+| 03 - Content API & Admin | 3/9 | 19 min | 6.3 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (5 min), 02-02 (2 min), 02-03 (5 min), 03-01 (7 min), 03-02 (10 min)
+- Last 5 plans: 02-02 (2 min), 02-03 (5 min), 03-01 (7 min), 03-02 (10 min), 03-03 (2 min)
 - Trend: Stabilizing at ~5-10 min per plan
 
 *Updated after each plan completion*
@@ -74,6 +74,10 @@ Recent decisions affecting current work:
 - [03-02]: Manual route tree instead of TanStack Router codegen plugin
 - [03-02]: Sidebar uses anchor tags for future routes (will convert to Link when routes are registered)
 - [03-02]: shadcn v4 sonner component replaces deprecated toast component
+- [03-03]: Content routes use router.use(requireAuth, requireAdmin) for all routes in router
+- [03-03]: Content type immutable after creation (omitted from updateContentSchema)
+- [03-03]: Prisma P2025 -> 404, P2002 -> 409 Conflict for inline error handling
+- [03-03]: Category slug auto-generated from name via slugify helper
 
 ### Pending Todos
 
@@ -89,7 +93,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 03-02-PLAN.md (admin panel shell with auth, sidebar, API client)
+Stopped at: Completed 03-03-PLAN.md (content and category CRUD APIs)
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -104,7 +108,11 @@ IMPORTANT CONTEXT:
 - Session service exports: createSession, enforceDeviceLimit, getUserSessions, deleteSession, deleteOtherSessions, cleanupStaleSessions
 - Auth middleware exports: requireAuth, requireAdmin
 - Admin service exports: adminLogin (rejects non-admin users with generic error)
-- Routes registered: /api/auth (7 endpoints), /api/sessions (2 endpoints), /api/admin (1 endpoint)
+- Routes registered: /api/auth (7 endpoints), /api/sessions (2 endpoints), /api/admin (1 endpoint), /api/admin/content (7 endpoints), /api/admin/categories (4 endpoints)
+- Content service exports: listContent, getContent, createContent, updateContent, deleteContent, publishContent, unpublishContent
+- Category service exports: listCategories, createCategory, updateCategory, deleteCategory
+- Content validators exports: contentQuerySchema, createContentSchema, updateContentSchema
+- Category validators exports: createCategorySchema, updateCategorySchema
 - Admin seed account: admin@lumio.tv / AdminPass123! (phone: +254700000001)
 - Session cleanup job starts on server boot with hourly cron schedule
 - Admin panel: React 19 + Vite 6 + Tailwind 4 + shadcn/ui (dark theme) at localhost:3001
