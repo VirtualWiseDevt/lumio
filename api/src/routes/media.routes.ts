@@ -19,10 +19,9 @@ const MIME_TYPES: Record<string, string> = {
  * Serve uploaded media files from the uploads directory.
  * Public route -- no authentication required (images must be visible in UI).
  */
-mediaRouter.get("/*", async (req, res) => {
-  // Express 5 wildcard params are string arrays
-  const params = req.params as Record<string, string | string[]>;
-  const rawPath = params[0];
+mediaRouter.get("/{*filepath}", async (req, res) => {
+  // Express 5 named wildcard params
+  const rawPath = req.params.filepath;
   const requestedPath = Array.isArray(rawPath)
     ? rawPath.join("/")
     : rawPath || "";
