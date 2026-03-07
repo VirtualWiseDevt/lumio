@@ -18,6 +18,10 @@ export interface Content {
   trailerUrl: string | null;
   videoUrl: string | null;
   streamUrl: string | null;
+  sourceVideoKey: string | null;
+  transcodingStatus: string | null;
+  transcodingError: string | null;
+  hlsKey: string | null;
   matchScore: number | null;
   isPublished: boolean;
   isFeatured: boolean;

@@ -38,6 +38,7 @@ import {
   EpisodeForm,
   type EpisodeFormData,
 } from "@/components/forms/EpisodeForm";
+import { TranscodingBadge } from "@/components/content/TranscodingBadge";
 import { getContent } from "@/api/content";
 import {
   listSeasons,
@@ -283,7 +284,12 @@ function SeasonDetailPage() {
                       {episode.duration ? `${episode.duration} min` : "-"}
                     </TableCell>
                     <TableCell>
-                      {episode.videoUrl ? (
+                      {episode.sourceVideoKey || episode.transcodingStatus ? (
+                        <TranscodingBadge
+                          status={episode.transcodingStatus ?? "pending"}
+                          error={episode.transcodingError}
+                        />
+                      ) : episode.videoUrl ? (
                         <Badge
                           variant="secondary"
                           className="gap-1 text-green-400"
@@ -343,6 +349,8 @@ function SeasonDetailPage() {
       <EpisodeForm
         open={editingEpisode !== null}
         mode="edit"
+        contentId={seriesId}
+        episodeId={editingEpisode?.id}
         defaultValues={
           editingEpisode
             ? {
@@ -352,6 +360,9 @@ function SeasonDetailPage() {
                 duration: editingEpisode.duration,
                 videoUrl: editingEpisode.videoUrl,
                 thumbnailUrl: editingEpisode.thumbnailUrl,
+                sourceVideoKey: editingEpisode.sourceVideoKey,
+                transcodingStatus: editingEpisode.transcodingStatus,
+                transcodingError: editingEpisode.transcodingError,
               }
             : undefined
         }

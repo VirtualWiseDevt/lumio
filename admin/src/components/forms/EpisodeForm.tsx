@@ -3,10 +3,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { VideoUploader } from "@/components/content/VideoUploader";
+import { TranscodingBadge } from "@/components/content/TranscodingBadge";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +41,8 @@ export interface EpisodeFormData {
 interface EpisodeFormProps {
   open: boolean;
   mode: "create" | "edit";
+  contentId?: string;
+  episodeId?: string;
   defaultValues?: {
     number?: number;
     title?: string;
@@ -45,6 +50,9 @@ interface EpisodeFormProps {
     duration?: number | null;
     videoUrl?: string | null;
     thumbnailUrl?: string | null;
+    sourceVideoKey?: string | null;
+    transcodingStatus?: string | null;
+    transcodingError?: string | null;
   };
   onSubmit: (data: EpisodeFormData) => void;
   onCancel: () => void;
@@ -54,11 +62,14 @@ interface EpisodeFormProps {
 export function EpisodeForm({
   open,
   mode,
+  contentId,
+  episodeId,
   defaultValues,
   onSubmit,
   onCancel,
   isPending,
 }: EpisodeFormProps) {
+  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
@@ -105,8 +116,14 @@ export function EpisodeForm({
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
             {mode === "create" ? "Add Episode" : "Edit Episode"}
+            {mode === "edit" && defaultValues?.transcodingStatus && (
+              <TranscodingBadge
+                status={defaultValues.transcodingStatus}
+                error={defaultValues.transcodingError}
+              />
+            )}
           </DialogTitle>
         </DialogHeader>
 
@@ -203,6 +220,22 @@ export function EpisodeForm({
               </p>
             )}
           </div>
+
+          {/* Video Upload (edit mode only) */}
+          {mode === "edit" && contentId && episodeId && (
+            <VideoUploader
+              contentId={contentId}
+              episodeId={episodeId}
+              currentKey={defaultValues?.sourceVideoKey}
+              transcodingStatus={defaultValues?.transcodingStatus}
+              transcodingError={defaultValues?.transcodingError}
+              onUploadComplete={() => {
+                void queryClient.invalidateQueries({
+                  queryKey: ["episodes"],
+                });
+              }}
+            />
+          )}
 
           <DialogFooter>
             <Button

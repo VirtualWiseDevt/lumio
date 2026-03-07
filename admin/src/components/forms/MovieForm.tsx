@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ImageUploader } from "@/components/shared/ImageUploader";
+import { VideoUploader } from "@/components/content/VideoUploader";
+import { TranscodingBadge } from "@/components/content/TranscodingBadge";
 import { listCategories } from "@/api/categories";
 import { createContent, updateContent } from "@/api/content";
 import type { Content } from "@/api/content";
@@ -53,6 +55,8 @@ export function MovieForm({
   contentType,
   onSuccess,
 }: MovieFormProps) {
+  const queryClient = useQueryClient();
+
   const [categories, setCategories] = useState<string[]>(
     defaultValues?.categories ?? [],
   );
@@ -202,7 +206,15 @@ export function MovieForm({
         <div className="space-y-6">
           {/* Title */}
           <div className="space-y-2">
-            <Label htmlFor="title">Title *</Label>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="title">Title *</Label>
+              {mode === "edit" && defaultValues?.transcodingStatus && (
+                <TranscodingBadge
+                  status={defaultValues.transcodingStatus}
+                  error={defaultValues.transcodingError}
+                />
+              )}
+            </div>
             <Input
               id="title"
               placeholder="Enter title"
@@ -388,18 +400,27 @@ export function MovieForm({
             )}
           </div>
 
-          {/* Video URL */}
-          <div className="space-y-2">
-            <Label htmlFor="videoUrl">Video File Reference</Label>
-            <Input
-              id="videoUrl"
-              placeholder="Set in Phase 6 (video pipeline)"
-              {...register("videoUrl")}
+          {/* Video Upload */}
+          {mode === "edit" && defaultValues?.id ? (
+            <VideoUploader
+              contentId={defaultValues.id}
+              currentKey={defaultValues.sourceVideoKey}
+              transcodingStatus={defaultValues.transcodingStatus}
+              transcodingError={defaultValues.transcodingError}
+              onUploadComplete={() => {
+                void queryClient.invalidateQueries({
+                  queryKey: ["content", defaultValues.id],
+                });
+              }}
             />
-            <p className="text-xs text-muted-foreground">
-              Video file path will be configured after video processing setup.
-            </p>
-          </div>
+          ) : (
+            <div className="space-y-2">
+              <Label>Video File</Label>
+              <p className="text-sm text-muted-foreground rounded-lg border border-dashed border-border p-4">
+                Save content first, then upload video on the edit page.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Right column: Images + Publish */}

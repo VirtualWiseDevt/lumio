@@ -20,6 +20,10 @@ export interface Episode {
   duration: number | null;
   videoUrl: string | null;
   thumbnailUrl: string | null;
+  sourceVideoKey: string | null;
+  transcodingStatus: string | null;
+  transcodingError: string | null;
+  hlsKey: string | null;
   createdAt: string;
   updatedAt: string;
 }
