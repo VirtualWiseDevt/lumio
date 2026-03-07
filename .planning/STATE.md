@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 7 of 10 (Payments and Subscriptions)
-Plan: 0 of TBD in Phase 7
-Status: Not started
-Last activity: 2026-03-07 -- Completed Phase 6 (Video Infrastructure and HLS Delivery)
+Plan: 1 of 6 in Phase 7
+Status: In progress
+Last activity: 2026-03-07 -- Completed 07-01-PLAN.md
 
-Progress: [██████████████████████████████████] 39/~39 total plans (6 phases complete)
+Progress: [███████████████████████████████████░░░░░░░░░] 40/~45 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 39
+- Total plans completed: 40
 - Average duration: ~5 min
-- Total execution time: ~179 min (including Docker setup + reboot)
+- Total execution time: ~183 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -35,7 +35,7 @@ Progress: [███████████████████████
 | 06 - Video Infrastructure | 7/7 | ~29 min | ~4.1 min |
 
 **Recent Trend:**
-- Last 5 plans: 06-07 (~9 min), 06-06 (~1 min), 06-05 (~4 min), 06-04 (~4 min), 06-03 (~3 min)
+- Last 5 plans: 07-01 (~4 min), 06-07 (~9 min), 06-06 (~1 min), 06-05 (~4 min), 06-04 (~4 min)
 - Trend: Verification plans take longer (multi-workspace builds + Docker); implementation plans fast
 
 *Updated after each plan completion*
@@ -167,7 +167,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 06-07-PLAN.md -- Phase 6 complete
+Stopped at: Completed 07-01-PLAN.md
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -293,9 +293,20 @@ IMPORTANT CONTEXT:
 - Content and Episode admin types include sourceVideoKey, transcodingStatus, transcodingError, hlsKey fields
 - [06-07]: Cloudflare Referer check WAF rule deferred to pre-production (user will configure when CDN domain ready)
 - [06-07]: Admin UI verification deferred (user confirmed pipeline ready, will test with real R2 credentials)
+- [07-01]: getMpesaClient is async factory using dynamic imports (avoids loading unused implementation)
+- [07-01]: MockMpesaClient uses string variable for dynamic import to avoid TS2307 on not-yet-created payment.service.ts
+- [07-01]: Mock callback success/failure by amount % 100: ending in 01 fails, others succeed
+- [07-01]: DarajaMpesaClient generates EAT timestamps via UTC+3 offset (no timezone library)
 - [06-06]: Auth header only on /api/ URLs in hls.js xhrSetup (presigned R2 segment URLs reject extra headers)
 - [06-06]: hlsKey check determines stream endpoint vs direct URL (set only after successful transcoding)
 - Client API: content.ts also exports getStreamUrl(contentId, episodeId?) for HLS stream endpoint URLs
 - Client types: ContentDetail and Episode now include transcodingStatus, hlsKey, sourceVideoKey fields
 - Watch page prefers /api/stream/:contentId for transcoded content, falls back to direct videoUrl/streamUrl
 - useHls hook xhrSetup sends Bearer token on API playlist requests only (not on presigned R2 segment URLs)
+- MpesaClient interface at api/src/config/mpesa.ts exports: STKPushParams, STKPushResponse, STKQueryResponse, MpesaClient, getMpesaClient, mpesaConfig, DARAJA_BASE_URL
+- DarajaMpesaClient at api/src/services/mpesa.service.ts: OAuth token caching (5min buffer), STK Push, STK Query
+- MockMpesaClient at api/src/services/mpesa-mock.service.ts: simulated callbacks, amounts ending in 01 fail
+- normalizePhoneForDaraja at api/src/utils/phone.ts: converts +254/254/07/01 to 254XXXXXXXXX
+- Subscription plans seeded: Weekly (500/7d), Monthly (1250/30d), Quarterly (3000/90d) via api/prisma/seed-plans.ts
+- Payment model has idempotencyKey (String? @unique), rawCallback (Json?), reconciliationAttempts (Int @default(0))
+- M-Pesa env vars: MPESA_ENVIRONMENT (mock/sandbox/production), MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET, MPESA_SHORTCODE, MPESA_PASSKEY, MPESA_CALLBACK_URL
