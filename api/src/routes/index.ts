@@ -7,6 +7,7 @@ import { contentRouter } from "./content.routes.js";
 import { categoryRouter } from "./category.routes.js";
 import { uploadRouter } from "./upload.routes.js";
 import { mediaRouter } from "./media.routes.js";
+import { seasonRouter } from "./season.routes.js";
 
 export {
   healthRouter,
@@ -17,6 +18,7 @@ export {
   categoryRouter,
   uploadRouter,
   mediaRouter,
+  seasonRouter,
 };
 
 /**
@@ -31,4 +33,5 @@ export function registerRoutes(app: Express): void {
   app.use("/api/admin/categories", categoryRouter);
   app.use("/api/admin/upload", uploadRouter);
   app.use("/api/media", mediaRouter);
+  app.use("/api/admin/content/:contentId/seasons", seasonRouter);
 }
