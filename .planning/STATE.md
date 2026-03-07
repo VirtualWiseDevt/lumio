@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 6 of 10 in progress (Video Infrastructure and HLS Delivery)
-Plan: 1 of 7 in Phase 6
+Plan: 3 of 7 in Phase 6
 Status: In progress
-Last activity: 2026-03-07 -- Completed 06-01-PLAN.md
+Last activity: 2026-03-07 -- Completed 06-03-PLAN.md
 
-Progress: [█████████████████████████████░] 33/~39 total plans
+Progress: [██████████████████████████████░] 35/~39 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 33
+- Total plans completed: 35
 - Average duration: ~5 min
-- Total execution time: ~164 min (including Docker setup + reboot)
+- Total execution time: ~170 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -32,11 +32,11 @@ Progress: [███████████████████████
 | 03 - Content API & Admin | 9/9 | 47 min | 5.2 min |
 | 04 - Client Browsing | 8/8 | ~23 min | ~2.9 min |
 | 05 - Video Player & User | 9/9 | ~20 min | ~2.2 min |
-| 06 - Video Infrastructure | 1/7 | ~9 min | ~9 min |
+| 06 - Video Infrastructure | 3/7 | ~15 min | ~5 min |
 
 **Recent Trend:**
-- Last 5 plans: 06-01 (~9 min), 05-08 (~2 min), 05-07 (~2 min), 05-06 (~2 min), 05-05 (~3 min)
-- Trend: Infrastructure plan with Docker rebuild takes longer than UI-only plans
+- Last 5 plans: 06-03 (~3 min), 06-02 (~3 min), 06-01 (~9 min), 05-08 (~2 min), 05-07 (~2 min)
+- Trend: Service/route plans faster than infrastructure setup plans
 
 *Updated after each plan completion*
 
@@ -145,6 +145,13 @@ Recent decisions affecting current work:
 - [06-01]: R2 env vars use 'placeholder' values in docker-compose (min(1) validation requires non-empty)
 - [06-01]: Transcoding status stored as String? (not Prisma enum) to avoid migration complexity
 - [06-01]: FFmpeg 8.0.1 available in Alpine (exceeds 6.x+ requirement)
+- [06-03]: ioredis connection cast to `never` for BullMQ Queue/Worker (dual ioredis version type mismatch)
+- [06-03]: Sequential quality encoding per preset (not parallel) for single-server CPU management
+- [06-03]: Segment duration 4 seconds for balanced seek granularity vs segment count
+- [06-02]: R2 service accepts Buffer | Readable for uploadToR2 (supports both transcoded buffers and streams)
+- [06-02]: headR2Object catches NotFound and NoSuchKey errors, returns null (S3-compatible)
+- [06-02]: Presign key pattern: videos/{contentId}[/episodes/{episodeId}]/raw/source.{ext}
+- [06-02]: ffprobe allowed codecs: h264, hevc, vp9, mpeg4, prores, dnxhd, vp8, av1
 
 ### Pending Todos
 
@@ -160,7 +167,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 06-01-PLAN.md
+Stopped at: Completed 06-03-PLAN.md
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -266,3 +273,6 @@ IMPORTANT CONTEXT:
 - Content and Episode models have transcodingStatus, transcodingError, sourceVideoKey, hlsKey fields
 - Transcode types at api/src/types/transcode.types.ts: TranscodingStatus, QualityPreset, TranscodeJobData, TranscodeResult, QUALITY_PRESETS
 - bullmq@5.70.4, ioredis@5.10.0, @aws-sdk/client-s3@3.1004.0, @aws-sdk/s3-request-presigner@3.1004.0 installed in api
+- R2 service exports: generatePresignedUploadUrl, generatePresignedDownloadUrl, uploadToR2, deleteFromR2, deleteR2Prefix, listR2Objects, headR2Object, streamR2ToFile
+- Video upload routes: POST /api/admin/video-upload/presign (presigned PUT URL), POST /api/admin/video-upload/confirm (ffprobe validate + store sourceVideoKey)
+- Routes registered: /api/admin/video-upload (2 endpoints) added to existing route list
