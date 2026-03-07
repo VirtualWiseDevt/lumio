@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-06)
 
 **Core value:** Users can stream high-quality movies, series, documentaries, and live TV with seamless M-Pesa subscription payments -- affordable, accessible, and built for East Africa.
-**Current focus:** Phase 2 Complete - Authentication and Sessions
+**Current focus:** Phase 3 - Content API and Admin Content Management
 
 ## Current Position
 
-Phase: 2 of 10 (Authentication and Sessions)
-Plan: 3 of 3 in Phase 2
-Status: Phase complete
-Last activity: 2026-03-07 -- Completed 02-03-PLAN.md (auth routes, session routes, cleanup job)
+Phase: 3 of 10 (Content API and Admin Content Management)
+Plan: 1 of 9 in Phase 3
+Status: In progress
+Last activity: 2026-03-07 -- Completed 03-01-PLAN.md (schema migration + admin auth foundation)
 
-Progress: [██████░░░░] 6/~30 total plans
+Progress: [███████░░░] 7/~30 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
+- Total plans completed: 7
 - Average duration: ~5 min
-- Total execution time: ~58 min (including Docker setup + reboot)
+- Total execution time: ~65 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -29,10 +29,11 @@ Progress: [██████░░░░] 6/~30 total plans
 |-------|-------|-------|----------|
 | 01 - Foundation | 3/3 | ~48 min | ~16 min |
 | 02 - Auth & Sessions | 3/3 | 12 min | 4 min |
+| 03 - Content API & Admin | 1/9 | 7 min | 7 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (4 min), 01-03 (~40 min, Docker setup), 02-01 (5 min), 02-02 (2 min), 02-03 (5 min)
-- Trend: Stabilizing at ~3-5 min per plan without infrastructure setup
+- Last 5 plans: 01-03 (~40 min, Docker setup), 02-01 (5 min), 02-02 (2 min), 02-03 (5 min), 03-01 (7 min)
+- Trend: Stabilizing at ~3-7 min per plan without infrastructure setup
 
 *Updated after each plan completion*
 
@@ -65,6 +66,10 @@ Recent decisions affecting current work:
 - [Roadmap]: Video infrastructure isolated into own phase (keyframe errors require full re-transcode)
 - [Roadmap]: Payments placed after video pipeline (test payments against real streaming experience)
 - [Roadmap]: M-Pesa reconciliation cron required from day one (fire-once callbacks)
+- [03-01]: Category model is standalone (no join table); Content.categories stays String[] populated from Category dropdown
+- [03-01]: Admin login at dedicated /api/admin/login endpoint (separate from user login)
+- [03-01]: requireAdmin middleware always used after requireAuth in chain
+- [03-01]: No device limit check for admin sessions
 
 ### Pending Todos
 
@@ -80,7 +85,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 02-03-PLAN.md (auth routes, session routes, cleanup job) -- Phase 2 complete
+Stopped at: Completed 03-01-PLAN.md (schema migration + admin auth foundation)
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -93,6 +98,8 @@ IMPORTANT CONTEXT:
 - Login returns discriminated union: { deviceLimitReached: true, devices } | { deviceLimitReached: false, user, token }
 - Auth service exports: register, login, logout, changePassword, forgotPassword, resetPassword, AuthError
 - Session service exports: createSession, enforceDeviceLimit, getUserSessions, deleteSession, deleteOtherSessions, cleanupStaleSessions
-- Auth middleware exports: requireAuth
-- Routes registered: /api/auth (7 endpoints), /api/sessions (2 endpoints)
+- Auth middleware exports: requireAuth, requireAdmin
+- Admin service exports: adminLogin (rejects non-admin users with generic error)
+- Routes registered: /api/auth (7 endpoints), /api/sessions (2 endpoints), /api/admin (1 endpoint)
+- Admin seed account: admin@lumio.tv / AdminPass123! (phone: +254700000001)
 - Session cleanup job starts on server boot with hourly cron schedule
