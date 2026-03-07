@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 3 of 10 (Content API and Admin Content Management)
-Plan: 5 of 9 in Phase 3
+Plan: 6 of 9 in Phase 3
 Status: In progress
-Last activity: 2026-03-07 -- Completed 03-05-PLAN.md (Season and Episode CRUD API)
+Last activity: 2026-03-07 -- Completed 03-06-PLAN.md (Admin Content Listing Pages)
 
-Progress: [███████████░] 11/~30 total plans
+Progress: [████████████░] 12/~30 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
+- Total plans completed: 12
 - Average duration: ~5 min
-- Total execution time: ~85 min (including Docker setup + reboot)
+- Total execution time: ~91 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [███████████░] 11/~30 total plans
 |-------|-------|-------|----------|
 | 01 - Foundation | 3/3 | ~48 min | ~16 min |
 | 02 - Auth & Sessions | 3/3 | 12 min | 4 min |
-| 03 - Content API & Admin | 5/9 | 27 min | 5.4 min |
+| 03 - Content API & Admin | 6/9 | 33 min | 5.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (7 min), 03-02 (10 min), 03-03 (2 min), 03-04 (4 min), 03-05 (4 min)
-- Trend: Stabilizing at ~4-5 min per plan
+- Last 5 plans: 03-02 (10 min), 03-03 (2 min), 03-04 (4 min), 03-05 (4 min), 03-06 (6 min)
+- Trend: Stabilizing at ~5 min per plan
 
 *Updated after each plan completion*
 
@@ -85,6 +85,10 @@ Recent decisions affecting current work:
 - [03-05]: ServiceError class for typed HTTP errors in services (avoids unsafe Error casting)
 - [03-05]: getParam helper for Express 5 mergeParams typed access
 - [03-05]: isPrismaError helper for clean Prisma error code checking
+- [03-06]: TanStack Table with manualSorting for server-side sort via API params
+- [03-06]: Edit navigation uses string cast for routes not yet registered (Plan 07 will add detail routes)
+- [03-06]: useContentFilters hook uses local state with debounce, not URL search params
+- [03-06]: Content list page pattern: PageContainer > FilterBar > Grid/Table > Pagination
 
 ### Pending Todos
 
@@ -100,7 +104,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 03-05-PLAN.md (Season and Episode CRUD API)
+Stopped at: Completed 03-06-PLAN.md (Admin Content Listing Pages)
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -135,4 +139,11 @@ IMPORTANT CONTEXT:
 - Upload middleware exports: imageUpload (multer instance), handleMulterError
 - Media route serves files from api/uploads/ directory (public, no auth)
 - Image paths are relative (e.g., "posters/large/uuid-large.webp") -- media route resolves against UPLOAD_DIR
-- shadcn components installed: button, input, label, card, badge, separator, dropdown-menu, dialog, sheet, sonner
+- shadcn components installed: button, input, label, card, badge, separator, dropdown-menu, dialog, sheet, sonner, table, select, skeleton, alert-dialog
+- @tanstack/react-table installed for data table views
+- Admin content API client (admin/src/api/content.ts) exports: listContent, getContent, createContent, updateContent, deleteContent, publishContent, unpublishContent
+- Admin categories API client (admin/src/api/categories.ts) exports: listCategories, createCategory, updateCategory, deleteCategory
+- Content list page routes registered: /movies, /documentaries, /channels
+- Shared components: FilterBar, StatusBadge, Pagination, ContentCard, ContentGrid, ContentTable
+- Content column defs: getMovieColumns, getDocumentaryColumns, getChannelColumns
+- useContentFilters hook manages: status, category, search (debounced 300ms), page, sortBy, sortOrder, viewMode
