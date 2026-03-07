@@ -276,3 +276,9 @@ IMPORTANT CONTEXT:
 - R2 service exports: generatePresignedUploadUrl, generatePresignedDownloadUrl, uploadToR2, deleteFromR2, deleteR2Prefix, listR2Objects, headR2Object, streamR2ToFile
 - Video upload routes: POST /api/admin/video-upload/presign (presigned PUT URL), POST /api/admin/video-upload/confirm (ffprobe validate + store sourceVideoKey)
 - Routes registered: /api/admin/video-upload (2 endpoints) added to existing route list
+- Transcode service exports: probeSource, transcodeToHls, generateMasterPlaylist (api/src/services/transcode.service.ts)
+- Transcode job exports: transcodeQueue, startTranscodeWorker, enqueueTranscode (api/src/jobs/transcode.job.ts)
+- BullMQ queue "transcode" with 2 attempts, 30s fixed backoff, concurrency 1
+- Worker NOT started yet -- Plan 06-04 wires startTranscodeWorker() into server.ts
+- Cache-Control on R2 uploads: .ts segments immutable (1yr), .m3u8 playlists 60s TTL
+- Episode HLS prefix: videos/{contentId}/episodes/{episodeId}/hls/, Content: videos/{contentId}/hls/
