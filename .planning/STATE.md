@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 
 ## Current Position
 
-Phase: 6 of 10 in progress (Video Infrastructure and HLS Delivery)
-Plan: 6 of 7 in Phase 6
-Status: In progress
-Last activity: 2026-03-07 -- Completed 06-06-PLAN.md
+Phase: 6 of 10 complete (Video Infrastructure and HLS Delivery)
+Plan: 7 of 7 in Phase 6
+Status: Phase 6 complete
+Last activity: 2026-03-07 -- Completed 06-07-PLAN.md
 
-Progress: [█████████████████████████████████░] 38/~39 total plans
+Progress: [██████████████████████████████████] 39/~39 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 38
+- Total plans completed: 39
 - Average duration: ~5 min
-- Total execution time: ~170 min (including Docker setup + reboot)
+- Total execution time: ~179 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -32,11 +32,11 @@ Progress: [███████████████████████
 | 03 - Content API & Admin | 9/9 | 47 min | 5.2 min |
 | 04 - Client Browsing | 8/8 | ~23 min | ~2.9 min |
 | 05 - Video Player & User | 9/9 | ~20 min | ~2.2 min |
-| 06 - Video Infrastructure | 5/7 | ~20 min | ~4 min |
+| 06 - Video Infrastructure | 7/7 | ~29 min | ~4.1 min |
 
 **Recent Trend:**
-- Last 5 plans: 06-06 (~1 min), 06-05 (~4 min), 06-04 (~4 min), 06-03 (~3 min), 06-02 (~3 min)
-- Trend: Client wiring plans fastest; service/route plans faster than infrastructure setup
+- Last 5 plans: 06-07 (~9 min), 06-06 (~1 min), 06-05 (~4 min), 06-04 (~4 min), 06-03 (~3 min)
+- Trend: Verification plans take longer (multi-workspace builds + Docker); implementation plans fast
 
 *Updated after each plan completion*
 
@@ -167,7 +167,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 06-06-PLAN.md
+Stopped at: Completed 06-07-PLAN.md -- Phase 6 complete
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -291,6 +291,8 @@ IMPORTANT CONTEXT:
 - TranscodingBadge component: status-colored badges pending/processing/completed/failed (admin/src/components/content/TranscodingBadge.tsx)
 - VideoUploader integrated into MovieForm (edit mode only) and EpisodeForm (edit mode with contentId + episodeId)
 - Content and Episode admin types include sourceVideoKey, transcodingStatus, transcodingError, hlsKey fields
+- [06-07]: Cloudflare Referer check WAF rule deferred to pre-production (user will configure when CDN domain ready)
+- [06-07]: Admin UI verification deferred (user confirmed pipeline ready, will test with real R2 credentials)
 - [06-06]: Auth header only on /api/ URLs in hls.js xhrSetup (presigned R2 segment URLs reject extra headers)
 - [06-06]: hlsKey check determines stream endpoint vs direct URL (set only after successful transcoding)
 - Client API: content.ts also exports getStreamUrl(contentId, episodeId?) for HLS stream endpoint URLs
