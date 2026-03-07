@@ -92,12 +92,17 @@ Plans:
   4. Clicking a content card opens a detail modal with video header, match percentage, year, duration, quality badge, age rating, description, cast, genres, and "More Like This" grid; series detail modal includes episode list with season dropdown
   5. Search overlay opens via Ctrl+K or search icon, displaying real-time results grouped by content type
   6. Live TV page displays channel cards organized by category headers, each card showing thumbnail, channel logo, name, current program, and pulsing LIVE badge
-**Plans**: TBD
+**Plans**: 8 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
-- [ ] 04-03: TBD
+- [ ] 04-01-PLAN.md -- BrowseRow DB model, public browse service, and 8 browse API endpoints at /api/browse/*
+- [ ] 04-02-PLAN.md -- Next.js 15 scaffold with Tailwind 4, TanStack Query, Zustand, Navbar, API proxy, TypeScript types
+- [ ] 04-03-PLAN.md -- Hero banner with auto-rotation, video crossfade, dot indicators, IntersectionObserver
+- [ ] 04-04-PLAN.md -- Content rows with CSS scroll-snap, responsive cards, arrow navigation, hover popover
+- [ ] 04-05-PLAN.md -- Detail modal with intercepting routes, episode list, More Like This, API client functions
+- [ ] 04-06-PLAN.md -- Search overlay (Ctrl+K) with real-time grouped results, Live TV page with channel grid
+- [ ] 04-07-PLAN.md -- Home, Movies, Series, Documentaries pages wiring hero + rows + data fetching
+- [ ] 04-08-PLAN.md -- Seed test content and end-to-end human verification of all BRWS requirements
 
 ### Phase 5: Video Player and User Features
 **Goal**: Users can watch content with a full-featured video player and manage their personal library (watchlist, favorites, continue watching)
@@ -207,7 +212,7 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10
 | 1. Project Foundation and Database | 3/3 | Complete | 2026-03-07 |
 | 2. Authentication and Sessions | 3/3 | Complete | 2026-03-07 |
 | 3. Content API and Admin Content Management | 9/9 | Complete | 2026-03-07 |
-| 4. Client Browsing Experience | 0/TBD | Not started | - |
+| 4. Client Browsing Experience | 0/8 | Not started | - |
 | 5. Video Player and User Features | 0/TBD | Not started | - |
 | 6. Video Infrastructure and HLS Delivery | 0/TBD | Not started | - |
 | 7. Payments and Subscriptions | 0/TBD | Not started | - |
