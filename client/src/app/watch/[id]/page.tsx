@@ -1,11 +1,60 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, useMemo, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchTitleDetail } from "@/api/content";
 import { getProgress } from "@/api/progress";
 import { VideoPlayer } from "@/components/player/VideoPlayer";
+import type { NextEpisodeInfo } from "@/components/player/NextEpisodeOverlay";
 import type { ContentDetail } from "@/types/content";
+
+function resolveNextEpisode(
+  content: ContentDetail,
+  episodeId: string | null
+): { info: NextEpisodeInfo; episodeId: string } | null {
+  if (!content.seasons || !episodeId) return null;
+
+  // Find current episode position
+  for (let si = 0; si < content.seasons.length; si++) {
+    const season = content.seasons[si];
+    for (let ei = 0; ei < season.episodes.length; ei++) {
+      if (season.episodes[ei].id === episodeId) {
+        // Check next episode in same season
+        if (ei + 1 < season.episodes.length) {
+          const next = season.episodes[ei + 1];
+          return {
+            info: {
+              title: next.title,
+              thumbnail: next.thumbnail,
+              seasonNumber: season.number,
+              episodeNumber: next.number,
+            },
+            episodeId: next.id,
+          };
+        }
+        // Check first episode of next season
+        if (si + 1 < content.seasons.length) {
+          const nextSeason = content.seasons[si + 1];
+          if (nextSeason.episodes.length > 0) {
+            const next = nextSeason.episodes[0];
+            return {
+              info: {
+                title: next.title,
+                thumbnail: next.thumbnail,
+                seasonNumber: nextSeason.number,
+                episodeNumber: next.number,
+              },
+              episodeId: next.id,
+            };
+          }
+        }
+        // No next episode
+        return null;
+      }
+    }
+  }
+  return null;
+}
 
 interface WatchPageProps {
   params: Promise<{ id: string }>;
@@ -85,19 +134,42 @@ export default function WatchPage({ params }: WatchPageProps) {
     };
   }, [contentId, episodeId]);
 
-  // Set initial time on video once loaded
+  // Resolve next episode from content detail
+  const nextEpisodeData = useMemo(
+    () => (content ? resolveNextEpisode(content, episodeId) : null),
+    [content, episodeId]
+  );
+
+  // Set initial time on video via loadedmetadata for reliability
   useEffect(() => {
     if (initialTime <= 0) return;
 
-    // Small delay to let video element mount
-    const timer = setTimeout(() => {
+    const handleLoadedMetadata = () => {
       const video = document.querySelector("video");
       if (video && initialTime > 0) {
         video.currentTime = initialTime;
       }
-    }, 500);
+    };
 
-    return () => clearTimeout(timer);
+    // Small delay to let video element mount
+    const timer = setTimeout(() => {
+      const video = document.querySelector("video");
+      if (video) {
+        if (video.readyState >= 1) {
+          video.currentTime = initialTime;
+        } else {
+          video.addEventListener("loadedmetadata", handleLoadedMetadata, {
+            once: true,
+          });
+        }
+      }
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      const video = document.querySelector("video");
+      video?.removeEventListener("loadedmetadata", handleLoadedMetadata);
+    };
   }, [initialTime, videoSrc]);
 
   if (loading) {
@@ -131,6 +203,15 @@ export default function WatchPage({ params }: WatchPageProps) {
       contentId={contentId}
       episodeId={episodeId}
       onClose={() => router.back()}
+      nextEpisode={nextEpisodeData?.info ?? null}
+      onNextEpisode={
+        nextEpisodeData
+          ? () =>
+              router.replace(
+                `/watch/${contentId}?episode=${nextEpisodeData.episodeId}`
+              )
+          : undefined
+      }
     />
   );
 }

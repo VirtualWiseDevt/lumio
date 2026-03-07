@@ -1,11 +1,13 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useState } from "react";
 import { useHls } from "@/hooks/use-hls";
 import { useVideoPlayer } from "@/hooks/use-video-player";
+import { useProgressTracking } from "@/hooks/use-progress-tracking";
 import { usePlayerStore } from "@/stores/player";
 import { PlayerControls } from "./PlayerControls";
 import { BufferingIndicator } from "./BufferingIndicator";
+import { NextEpisodeOverlay, type NextEpisodeInfo } from "./NextEpisodeOverlay";
 
 interface VideoPlayerProps {
   src: string;
@@ -13,6 +15,7 @@ interface VideoPlayerProps {
   contentId: string;
   episodeId: string | null;
   onClose: () => void;
+  nextEpisode?: NextEpisodeInfo | null;
   onNextEpisode?: () => void;
 }
 
@@ -22,16 +25,27 @@ export function VideoPlayer({
   contentId,
   episodeId,
   onClose,
+  nextEpisode,
   onNextEpisode,
 }: VideoPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [showNextOverlay, setShowNextOverlay] = useState(false);
 
   const isBuffering = usePlayerStore((s) => s.isBuffering);
   const showControls = usePlayerStore((s) => s.showControls);
 
   useHls(videoRef, src);
   useVideoPlayer(videoRef);
+
+  useProgressTracking({
+    videoRef,
+    contentId,
+    episodeId,
+    onComplete: nextEpisode
+      ? () => setShowNextOverlay(true)
+      : undefined,
+  });
 
   const handleTapLeft = useCallback(() => {
     const video = videoRef.current;
@@ -86,6 +100,14 @@ export function VideoPlayer({
       )}
 
       {isBuffering && <BufferingIndicator />}
+
+      {showNextOverlay && nextEpisode && onNextEpisode && (
+        <NextEpisodeOverlay
+          nextEpisode={nextEpisode}
+          onPlay={onNextEpisode}
+          onCancel={() => setShowNextOverlay(false)}
+        />
+      )}
 
       <PlayerControls
         videoRef={videoRef}
