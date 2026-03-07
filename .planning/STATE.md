@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 5 of 10 (Video Player and User Features)
-Plan: 6 of 9 in Phase 5 (05-01, 05-02, 05-03, 05-04, 05-05, 05-06 complete)
+Plan: 7 of 9 in Phase 5 (05-01, 05-02, 05-03, 05-04, 05-05, 05-06, 05-07 complete)
 Status: In progress
-Last activity: 2026-03-07 -- Completed 05-06-PLAN.md
+Last activity: 2026-03-07 -- Completed 05-07-PLAN.md
 
-Progress: [█████████████████████████░] 29/~32 total plans
+Progress: [██████████████████████████░] 30/~32 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 29
+- Total plans completed: 30
 - Average duration: ~5 min
-- Total execution time: ~150 min (including Docker setup + reboot)
+- Total execution time: ~152 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -33,7 +33,7 @@ Progress: [███████████████████████
 | 04 - Client Browsing | 8/8 | ~23 min | ~2.9 min |
 
 **Recent Trend:**
-- Last 5 plans: 05-06 (~2 min), 05-05 (~3 min), 05-04 (~3 min), 05-03 (~3 min), 05-02 (~4 min)
+- Last 5 plans: 05-07 (~2 min), 05-06 (~2 min), 05-05 (~3 min), 05-04 (~3 min), 05-03 (~3 min)
 - Trend: Consistent ~2-3 min for client-only UI plans
 
 *Updated after each plan completion*
@@ -131,6 +131,10 @@ Recent decisions affecting current work:
 - [05-06]: Auto-renew toggle disabled with Phase 7 dependency note (no PATCH endpoint yet)
 - [05-06]: Device removal uses inline confirm/cancel pattern instead of modal dialog
 - [05-06]: Newsletter value read via unknown cast since UserProfile type lacks newsletter field
+- [05-07]: sendBeacon uses Blob with application/json type (Express ignores text/plain)
+- [05-07]: 90% completion triggers next-episode overlay (matches server threshold)
+- [05-07]: loadedmetadata event for reliable initial time seek instead of setTimeout
+- [05-07]: isAdvancing ref prevents race conditions in next-episode auto-advance
 
 ### Pending Todos
 
@@ -146,7 +150,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 05-06-PLAN.md
+Stopped at: Completed 05-07-PLAN.md
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -233,3 +237,8 @@ IMPORTANT CONTEXT:
 - useMyList hook: optimistic toggle with TanStack Query (client/src/hooks/use-my-list.ts)
 - MyListButton component: circular Plus/Check toggle with sm/md/lg sizes (client/src/components/my-list/MyListButton.tsx)
 - /my-list page: responsive grid with skeleton loading and empty state (client/src/app/my-list/page.tsx)
+- useProgressTracking hook: 10s interval saves + pause event + sendBeacon on unload (client/src/hooks/use-progress-tracking.ts)
+- NextEpisodeOverlay: 10s countdown with thumbnail, episode label, play now / cancel (client/src/components/player/NextEpisodeOverlay.tsx)
+- ContinueWatchingRow: TanStack Query with time filter, red progress bars, click navigates to /watch (client/src/components/content/ContinueWatchingRow.tsx)
+- VideoPlayer now integrates progress tracking and next episode overlay
+- Watch page resolves next episode across seasons and uses loadedmetadata for initial seek
