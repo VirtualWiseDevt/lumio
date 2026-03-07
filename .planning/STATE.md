@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 4 of 10 (Client Browsing Experience)
-Plan: 3 of ~6 in Phase 4
+Plan: 4 of ~8 in Phase 4
 Status: In progress
-Last activity: 2026-03-07 -- Completed 04-03-PLAN.md (Hero Banner)
+Last activity: 2026-03-07 -- Completed 04-04-PLAN.md (Content Rows and Hover Popover)
 
-Progress: [██████████████████░░] 18/~30 total plans
+Progress: [███████████████████░] 19/~30 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 18
+- Total plans completed: 19
 - Average duration: ~5 min
-- Total execution time: ~108 min (including Docker setup + reboot)
+- Total execution time: ~111 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -32,7 +32,7 @@ Progress: [██████████████████░░] 18/~30 
 | 03 - Content API & Admin | 9/9 | 47 min | 5.2 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-08 (6 min), 03-09 (3 min), 04-01 (~5 min), 04-02 (~5 min), 04-03 (3 min)
+- Last 5 plans: 03-09 (3 min), 04-01 (~5 min), 04-02 (~5 min), 04-03 (3 min), 04-04 (3 min)
 - Trend: Stabilizing at ~4 min per plan
 
 *Updated after each plan completion*
@@ -101,6 +101,9 @@ Recent decisions affecting current work:
 - [04-03]: HeroSlide uses three-state media machine (image/buffering/video) for predictable fallback
 - [04-03]: 1.5s delay before video load to let backdrop establish visual
 - [04-03]: IntersectionObserver threshold 0.3 on hero banner to pause video early
+- [04-04]: CSS media queries for responsive card sizing (avoids hydration mismatches vs JS approach)
+- [04-04]: 100ms close grace period on hover popover (prevents flicker when moving mouse to popover)
+- [04-04]: Fixed positioning for popover with viewport-aware edge clamping
 
 ### Pending Todos
 
@@ -116,7 +119,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 04-03-PLAN.md (Hero Banner)
+Stopped at: Completed 04-04-PLAN.md (Content Rows and Hover Popover)
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -176,3 +179,6 @@ IMPORTANT CONTEXT:
 - Client store: useUIStore with isSearchOpen state (client/src/stores/ui.ts)
 - Hero hooks: useHeroBanner (auto-rotation, pause/resume), useIntersection (IntersectionObserver wrapper)
 - Hero components: HeroBanner (full-width auto-rotating), HeroSlide (image-to-video crossfade), HeroControls (dot indicators)
+- Content row components: ContentRow (horizontal scroll with arrows), ContentCard (poster + title), HoverPopover (enlarged card with metadata)
+- Content row hooks: useContentRow (scroll tracking, arrow visibility), useHoverPopover (500ms delay, shared hover zone)
+- .content-card CSS class provides responsive sizing: 2/3/4/5/6 cards at breakpoints <500/500/800/1100/1400px
