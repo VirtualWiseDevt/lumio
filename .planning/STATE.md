@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 3 of 10 (Content API and Admin Content Management)
-Plan: 4 of 9 in Phase 3
+Plan: 5 of 9 in Phase 3
 Status: In progress
-Last activity: 2026-03-07 -- Completed 03-04-PLAN.md (image upload pipeline)
+Last activity: 2026-03-07 -- Completed 03-05-PLAN.md (Season and Episode CRUD API)
 
-Progress: [██████████░] 10/~30 total plans
+Progress: [███████████░] 11/~30 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
+- Total plans completed: 11
 - Average duration: ~5 min
-- Total execution time: ~81 min (including Docker setup + reboot)
+- Total execution time: ~85 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [██████████░] 10/~30 total plans
 |-------|-------|-------|----------|
 | 01 - Foundation | 3/3 | ~48 min | ~16 min |
 | 02 - Auth & Sessions | 3/3 | 12 min | 4 min |
-| 03 - Content API & Admin | 4/9 | 23 min | 5.75 min |
+| 03 - Content API & Admin | 5/9 | 27 min | 5.4 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-03 (5 min), 03-01 (7 min), 03-02 (10 min), 03-03 (2 min), 03-04 (4 min)
-- Trend: Stabilizing at ~5-10 min per plan
+- Last 5 plans: 03-01 (7 min), 03-02 (10 min), 03-03 (2 min), 03-04 (4 min), 03-05 (4 min)
+- Trend: Stabilizing at ~4-5 min per plan
 
 *Updated after each plan completion*
 
@@ -82,6 +82,9 @@ Recent decisions affecting current work:
 - [03-04]: Image paths stored as relative (no uploads/ prefix); media route resolves them
 - [03-04]: Media route is public (no auth) for admin panel and future client display
 - [03-04]: Express 5 wildcard params are string arrays -- joined with "/" for path resolution
+- [03-05]: ServiceError class for typed HTTP errors in services (avoids unsafe Error casting)
+- [03-05]: getParam helper for Express 5 mergeParams typed access
+- [03-05]: isPrismaError helper for clean Prisma error code checking
 
 ### Pending Todos
 
@@ -97,7 +100,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 03-04-PLAN.md (image upload pipeline)
+Stopped at: Completed 03-05-PLAN.md (Season and Episode CRUD API)
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -112,7 +115,9 @@ IMPORTANT CONTEXT:
 - Session service exports: createSession, enforceDeviceLimit, getUserSessions, deleteSession, deleteOtherSessions, cleanupStaleSessions
 - Auth middleware exports: requireAuth, requireAdmin
 - Admin service exports: adminLogin (rejects non-admin users with generic error)
-- Routes registered: /api/auth (7 endpoints), /api/sessions (2 endpoints), /api/admin (1 endpoint), /api/admin/content (7 endpoints), /api/admin/categories (4 endpoints), /api/admin/upload (2 endpoints), /api/media (1 endpoint)
+- Routes registered: /api/auth (7 endpoints), /api/sessions (2 endpoints), /api/admin (1 endpoint), /api/admin/content (7 endpoints), /api/admin/categories (4 endpoints), /api/admin/upload (2 endpoints), /api/media (1 endpoint), /api/admin/content/:contentId/seasons (8 endpoints)
+- Season service exports: listSeasons, createSeason, updateSeason, deleteSeason, listEpisodes, createEpisode, updateEpisode, deleteEpisode, ServiceError
+- Season validators exports: createSeasonSchema, updateSeasonSchema, createEpisodeSchema, updateEpisodeSchema
 - Content service exports: listContent, getContent, createContent, updateContent, deleteContent, publishContent, unpublishContent
 - Category service exports: listCategories, createCategory, updateCategory, deleteCategory
 - Content validators exports: contentQuerySchema, createContentSchema, updateContentSchema
