@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Project Foundation and Database** - Monorepo, Docker, PostgreSQL, Prisma 7 schema, Express 5 skeleton
 - [x] **Phase 2: Authentication and Sessions** - Registration, login, JWT + sessions hybrid, 2-device limit, session management
 - [x] **Phase 3: Content API and Admin Content Management** - Content CRUD API, admin panel with content forms, admin auth, image upload with local storage
-- [ ] **Phase 4: Client Browsing Experience** - Next.js 15 client app, browse pages, hero banners, content rows, detail modal, search
+- [x] **Phase 4: Client Browsing Experience** - Next.js 15 client app, browse pages, hero banners, content rows, detail modal, search
 - [ ] **Phase 5: Video Player and User Features** - hls.js player, controls, keyboard shortcuts, progress tracking, watchlist, favorites
 - [ ] **Phase 6: Video Infrastructure and HLS Delivery** - FFmpeg pipeline, keyframe alignment, R2 upload, presigned URLs, CDN cache rules
 - [ ] **Phase 7: Payments and Subscriptions** - M-Pesa STK Push via Daraja, billing UI, subscription guard, callback webhook, reconciliation
@@ -95,14 +95,14 @@ Plans:
 **Plans**: 8 plans
 
 Plans:
-- [ ] 04-01-PLAN.md -- BrowseRow DB model, public browse service, and 8 browse API endpoints at /api/browse/*
-- [ ] 04-02-PLAN.md -- Next.js 15 scaffold with Tailwind 4, TanStack Query, Zustand, Navbar, API proxy, TypeScript types
-- [ ] 04-03-PLAN.md -- Hero banner with auto-rotation, video crossfade, dot indicators, IntersectionObserver
-- [ ] 04-04-PLAN.md -- Content rows with CSS scroll-snap, responsive cards, arrow navigation, hover popover
-- [ ] 04-05-PLAN.md -- Detail modal with intercepting routes, episode list, More Like This, API client functions
-- [ ] 04-06-PLAN.md -- Search overlay (Ctrl+K) with real-time grouped results, Live TV page with channel grid
-- [ ] 04-07-PLAN.md -- Home, Movies, Series, Documentaries pages wiring hero + rows + data fetching
-- [ ] 04-08-PLAN.md -- Seed test content and end-to-end human verification of all BRWS requirements
+- [x] 04-01-PLAN.md -- BrowseRow DB model, public browse service, and 8 browse API endpoints at /api/browse/*
+- [x] 04-02-PLAN.md -- Next.js 15 scaffold with Tailwind 4, TanStack Query, Zustand, Navbar, API proxy, TypeScript types
+- [x] 04-03-PLAN.md -- Hero banner with auto-rotation, video crossfade, dot indicators, IntersectionObserver
+- [x] 04-04-PLAN.md -- Content rows with CSS scroll-snap, responsive cards, arrow navigation, hover popover
+- [x] 04-05-PLAN.md -- Detail modal with intercepting routes, episode list, More Like This, API client functions
+- [x] 04-06-PLAN.md -- Search overlay (Ctrl+K) with real-time grouped results, Live TV page with channel grid
+- [x] 04-07-PLAN.md -- Home, Movies, Series, Documentaries pages wiring hero + rows + data fetching
+- [x] 04-08-PLAN.md -- Seed test content and end-to-end human verification of all BRWS requirements
 
 ### Phase 5: Video Player and User Features
 **Goal**: Users can watch content with a full-featured video player and manage their personal library (watchlist, favorites, continue watching)
@@ -212,7 +212,7 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10
 | 1. Project Foundation and Database | 3/3 | Complete | 2026-03-07 |
 | 2. Authentication and Sessions | 3/3 | Complete | 2026-03-07 |
 | 3. Content API and Admin Content Management | 9/9 | Complete | 2026-03-07 |
-| 4. Client Browsing Experience | 0/8 | Not started | - |
+| 4. Client Browsing Experience | 8/8 | Complete | 2026-03-07 |
 | 5. Video Player and User Features | 0/TBD | Not started | - |
 | 6. Video Infrastructure and HLS Delivery | 0/TBD | Not started | - |
 | 7. Payments and Subscriptions | 0/TBD | Not started | - |
