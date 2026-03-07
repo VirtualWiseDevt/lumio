@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 
 ## Current Position
 
-Phase: 3 of 10 complete (Content API and Admin Content Management)
-Plan: 9 of 9 in Phase 3
-Status: Complete
-Last activity: 2026-03-07 -- Completed Phase 3 (all 9 plans)
+Phase: 4 of 10 (Client Browsing Experience)
+Plan: 3 of ~6 in Phase 4
+Status: In progress
+Last activity: 2026-03-07 -- Completed 04-03-PLAN.md (Hero Banner)
 
-Progress: [███████████████░] 15/~30 total plans
+Progress: [██████████████████░░] 18/~30 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
+- Total plans completed: 18
 - Average duration: ~5 min
-- Total execution time: ~105 min (including Docker setup + reboot)
+- Total execution time: ~108 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -32,8 +32,8 @@ Progress: [███████████████░] 15/~30 total plans
 | 03 - Content API & Admin | 9/9 | 47 min | 5.2 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-05 (4 min), 03-06 (6 min), 03-07 (5 min), 03-08 (6 min), 03-09 (3 min)
-- Trend: Stabilizing at ~5 min per plan
+- Last 5 plans: 03-08 (6 min), 03-09 (3 min), 04-01 (~5 min), 04-02 (~5 min), 04-03 (3 min)
+- Trend: Stabilizing at ~4 min per plan
 
 *Updated after each plan completion*
 
@@ -97,6 +97,10 @@ Recent decisions affecting current work:
 - [03-08]: Zod transforms removed from form schemas; convert strings to numbers in submit handlers (react-hook-form resolver incompatibility)
 - [03-08]: Season CRUD uses simple Dialog with controlled inputs (only 2 fields)
 - [03-08]: EpisodeForm auto-suggests next episode number based on existing episodes
+- [04-03]: Motion AnimatePresence with mode="popLayout" for hero slide crossfade
+- [04-03]: HeroSlide uses three-state media machine (image/buffering/video) for predictable fallback
+- [04-03]: 1.5s delay before video load to let backdrop establish visual
+- [04-03]: IntersectionObserver threshold 0.3 on hero banner to pause video early
 
 ### Pending Todos
 
@@ -112,7 +116,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed Phase 3 (all 9 plans verified)
+Stopped at: Completed 04-03-PLAN.md (Hero Banner)
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -164,3 +168,11 @@ IMPORTANT CONTEXT:
 - SeriesForm component: like MovieForm but for SERIES (no duration/videoUrl), with ImageUploader
 - EpisodeForm component: Dialog-based form for episode CRUD (number, title, description, duration, videoUrl, thumbnailUrl)
 - react-hook-form, @hookform/resolvers, react-dropzone installed in admin workspace
+- Client: Next.js 15.5.9 at client/, Tailwind CSS 4, Motion v12 (import from "motion/react"), Zustand 5
+- Client uses bundler moduleResolution (no .js extensions on imports)
+- Client path alias: @/* maps to ./src/*
+- Client types: Content, Season, Episode, ContentDetail, BrowseRow, BrowsePageData, LiveTvData, SearchResults (client/src/types/content.ts)
+- Client utils: cn, formatDuration, mediaUrl (client/src/lib/utils.ts)
+- Client store: useUIStore with isSearchOpen state (client/src/stores/ui.ts)
+- Hero hooks: useHeroBanner (auto-rotation, pause/resume), useIntersection (IntersectionObserver wrapper)
+- Hero components: HeroBanner (full-width auto-rotating), HeroSlide (image-to-video crossfade), HeroControls (dot indicators)
