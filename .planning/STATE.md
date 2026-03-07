@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 
 ## Current Position
 
-Phase: 5 of 10 complete (Video Player and User Features)
-Plan: 9 of 9 in Phase 5 (all complete)
-Status: Phase 5 complete, Phase 6 not started
-Last activity: 2026-03-07 -- Phase 5 verified and complete
+Phase: 6 of 10 in progress (Video Infrastructure and HLS Delivery)
+Plan: 1 of 7 in Phase 6
+Status: In progress
+Last activity: 2026-03-07 -- Completed 06-01-PLAN.md
 
-Progress: [████████████████████████████░] 32/~32 total plans (through Phase 5)
+Progress: [█████████████████████████████░] 33/~39 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 32
+- Total plans completed: 33
 - Average duration: ~5 min
-- Total execution time: ~155 min (including Docker setup + reboot)
+- Total execution time: ~164 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -32,10 +32,11 @@ Progress: [███████████████████████
 | 03 - Content API & Admin | 9/9 | 47 min | 5.2 min |
 | 04 - Client Browsing | 8/8 | ~23 min | ~2.9 min |
 | 05 - Video Player & User | 9/9 | ~20 min | ~2.2 min |
+| 06 - Video Infrastructure | 1/7 | ~9 min | ~9 min |
 
 **Recent Trend:**
-- Last 5 plans: 05-08 (~2 min), 05-07 (~2 min), 05-06 (~2 min), 05-05 (~3 min), 05-04 (~3 min)
-- Trend: Consistent ~2-3 min for client-only UI plans
+- Last 5 plans: 06-01 (~9 min), 05-08 (~2 min), 05-07 (~2 min), 05-06 (~2 min), 05-05 (~3 min)
+- Trend: Infrastructure plan with Docker rebuild takes longer than UI-only plans
 
 *Updated after each plan completion*
 
@@ -140,6 +141,10 @@ Recent decisions affecting current work:
 - [05-08]: Auth interceptor reads token from localStorage key "token" and sets Bearer header
 - [05-08]: MyListRow uses retry: false to silently fail when user is not authenticated
 - [05-08]: ContentCard progress bar is 3px with bg-red-600 overlay at bottom of image area
+- [06-01]: IORedis imported as named export { Redis } for ESM/verbatimModuleSyntax compatibility
+- [06-01]: R2 env vars use 'placeholder' values in docker-compose (min(1) validation requires non-empty)
+- [06-01]: Transcoding status stored as String? (not Prisma enum) to avoid migration complexity
+- [06-01]: FFmpeg 8.0.1 available in Alpine (exceeds 6.x+ requirement)
 
 ### Pending Todos
 
@@ -155,7 +160,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Phase 5 complete, ready for Phase 6
+Stopped at: Completed 06-01-PLAN.md
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -254,3 +259,10 @@ IMPORTANT CONTEXT:
 - API client (client/src/api/client.ts) has axios request interceptor for Bearer token from localStorage
 - ContentCard accepts optional progressPercent prop for red progress bar overlay
 - Navbar includes My List (/my-list) and Account (/account) links
+- Redis 7 running in Docker (lumio-redis container) alongside PostgreSQL
+- FFmpeg 8.0.1 and ffprobe available inside API container (apk add ffmpeg)
+- R2 S3Client configured at api/src/config/r2.ts, exports r2Client and R2_BUCKET_NAME
+- IORedis client at api/src/config/redis.ts with maxRetriesPerRequest: null (BullMQ requirement)
+- Content and Episode models have transcodingStatus, transcodingError, sourceVideoKey, hlsKey fields
+- Transcode types at api/src/types/transcode.types.ts: TranscodingStatus, QualityPreset, TranscodeJobData, TranscodeResult, QUALITY_PRESETS
+- bullmq@5.70.4, ioredis@5.10.0, @aws-sdk/client-s3@3.1004.0, @aws-sdk/s3-request-presigner@3.1004.0 installed in api
