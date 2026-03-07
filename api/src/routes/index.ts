@@ -12,6 +12,7 @@ import { browseRouter } from "./browse.routes.js";
 import { progressRouter } from "./progress.routes.js";
 import { myListRouter } from "./mylist.routes.js";
 import { userRouter } from "./user.routes.js";
+import { videoUploadRouter } from "./video-upload.routes.js";
 
 export {
   healthRouter,
@@ -27,6 +28,7 @@ export {
   progressRouter,
   myListRouter,
   userRouter,
+  videoUploadRouter,
 };
 
 /**
@@ -46,4 +48,5 @@ export function registerRoutes(app: Express): void {
   app.use("/api/admin/content/:contentId/seasons", seasonRouter);
   app.use("/api/my-list", myListRouter);
   app.use("/api/user", userRouter);
+  app.use("/api/admin/video-upload", videoUploadRouter);
 }
