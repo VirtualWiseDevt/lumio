@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
-import { X, Play, Plus } from "lucide-react";
+import { X, Play } from "lucide-react";
 import { cn, formatDuration, mediaUrl } from "@/lib/utils";
 import { fetchTitleDetail } from "@/api/content";
+import { MyListButton } from "@/components/my-list/MyListButton";
 import { EpisodeList } from "./EpisodeList";
 import { MoreLikeThis } from "./MoreLikeThis";
 
@@ -117,8 +118,19 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
               <h1 className="mb-4 text-3xl font-bold text-white md:text-4xl">
                 {content.title}
               </h1>
-              <div className="flex gap-3">
+              <div className="flex items-center gap-3">
                 <button
+                  onClick={() => {
+                    const watchUrl =
+                      content.type === "SERIES" &&
+                      content.seasons &&
+                      content.seasons.length > 0 &&
+                      content.seasons[0].episodes &&
+                      content.seasons[0].episodes.length > 0
+                        ? `/watch/${content.id}?episode=${content.seasons[0].episodes[0].id}`
+                        : `/watch/${content.id}`;
+                    router.push(watchUrl);
+                  }}
                   className={cn(
                     "flex items-center gap-2 rounded-md px-6 py-2 text-sm font-semibold transition-colors",
                     "bg-white text-black hover:bg-white/80"
@@ -127,15 +139,7 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
                   <Play className="h-5 w-5 fill-current" />
                   Play
                 </button>
-                <button
-                  className={cn(
-                    "flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-colors",
-                    "border border-border bg-card/60 text-foreground hover:bg-card-hover"
-                  )}
-                >
-                  <Plus className="h-5 w-5" />
-                  My List
-                </button>
+                <MyListButton contentId={content.id} size="md" />
               </div>
             </div>
           </div>

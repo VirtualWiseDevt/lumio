@@ -12,6 +12,8 @@ const navLinks = [
   { href: "/series", label: "Series" },
   { href: "/documentaries", label: "Documentaries" },
   { href: "/live-tv", label: "Live TV" },
+  { href: "/my-list", label: "My List" },
+  { href: "/account", label: "Account" },
 ];
 
 export function Navbar() {

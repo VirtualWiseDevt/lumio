@@ -113,6 +113,7 @@ export function VideoPlayer({
         videoRef={videoRef}
         containerRef={containerRef}
         title={title}
+        contentId={contentId}
         onClose={onClose}
       />
     </div>

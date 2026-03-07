@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { usePlayerStore } from "@/stores/player";
 import { usePlayerControls } from "@/hooks/use-player-controls";
+import { MyListButton } from "@/components/my-list/MyListButton";
 import { ProgressBar } from "./ProgressBar";
 import { VolumeControl } from "./VolumeControl";
 
@@ -20,6 +21,7 @@ interface PlayerControlsProps {
   videoRef: RefObject<HTMLVideoElement | null>;
   containerRef: RefObject<HTMLDivElement | null>;
   title: string;
+  contentId: string;
   onClose: () => void;
 }
 
@@ -27,6 +29,7 @@ export function PlayerControls({
   videoRef,
   containerRef,
   title,
+  contentId,
   onClose,
 }: PlayerControlsProps) {
   const { showControls } = usePlayerControls(videoRef, containerRef, onClose);
@@ -76,13 +79,16 @@ export function PlayerControls({
           <h2 className="text-lg font-medium text-white drop-shadow-md">
             {title}
           </h2>
-          <button
-            onClick={onClose}
-            className="rounded-full p-2 text-white transition-colors hover:bg-white/10"
-            aria-label="Close player"
-          >
-            <X className="h-6 w-6" />
-          </button>
+          <div className="flex items-center gap-2">
+            <MyListButton contentId={contentId} size="sm" />
+            <button
+              onClick={onClose}
+              className="rounded-full p-2 text-white transition-colors hover:bg-white/10"
+              aria-label="Close player"
+            >
+              <X className="h-6 w-6" />
+            </button>
+          </div>
         </div>
       </div>
 

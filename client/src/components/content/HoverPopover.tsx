@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { Play, Plus, ThumbsUp, ChevronDown } from "lucide-react";
+import { Play, ThumbsUp, ChevronDown } from "lucide-react";
 import { motion } from "motion/react";
 import { cn, mediaUrl, formatDuration } from "@/lib/utils";
+import { MyListButton } from "@/components/my-list/MyListButton";
 import type { Content } from "@/types/content";
 
 interface HoverPopoverProps {
@@ -99,15 +100,7 @@ export function HoverPopover({
           >
             <Play className="h-4 w-4 fill-current" />
           </button>
-          <button
-            className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-full",
-              "border border-border text-foreground hover:border-foreground transition-colors"
-            )}
-            aria-label="Add to My List"
-          >
-            <Plus className="h-4 w-4" />
-          </button>
+          <MyListButton contentId={content.id} size="sm" />
           <button
             className={cn(
               "flex h-8 w-8 items-center justify-center rounded-full",
