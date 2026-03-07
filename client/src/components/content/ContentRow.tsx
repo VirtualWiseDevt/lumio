@@ -1,9 +1,12 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import { useContentRow } from "@/hooks/use-content-row";
+import { useHoverPopover } from "@/hooks/use-hover-popover";
 import { ContentCard } from "./ContentCard";
+import { HoverPopover } from "./HoverPopover";
 import type { Content } from "@/types/content";
 
 interface ContentRowProps {
@@ -15,8 +18,20 @@ interface ContentRowProps {
 export function ContentRow({ title, items, onCardClick }: ContentRowProps) {
   const { scrollRef, canScrollLeft, canScrollRight, scrollLeft, scrollRight } =
     useContentRow();
+  const {
+    activeId,
+    cardRect,
+    onCardMouseEnter,
+    onCardMouseLeave,
+    onPopoverMouseEnter,
+    onPopoverMouseLeave,
+  } = useHoverPopover();
 
   if (items.length === 0) return null;
+
+  const activeContent = activeId
+    ? items.find((item) => item.id === activeId) ?? null
+    : null;
 
   return (
     <section className="group/row relative mb-8">
@@ -54,6 +69,8 @@ export function ContentRow({ title, items, onCardClick }: ContentRowProps) {
             >
               <ContentCard
                 content={item}
+                onMouseEnter={onCardMouseEnter}
+                onMouseLeave={onCardMouseLeave}
                 onClick={() => onCardClick?.(item)}
               />
             </div>
@@ -75,6 +92,20 @@ export function ContentRow({ title, items, onCardClick }: ContentRowProps) {
           </button>
         )}
       </div>
+
+      {/* Hover popover */}
+      <AnimatePresence>
+        {activeContent && cardRect && (
+          <HoverPopover
+            key={activeContent.id}
+            content={activeContent}
+            cardRect={cardRect}
+            onMouseEnter={onPopoverMouseEnter}
+            onMouseLeave={onPopoverMouseLeave}
+            onExpand={() => onCardClick?.(activeContent)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 }
