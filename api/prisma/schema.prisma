@@ -341,3 +341,17 @@ model Category {
 
   @@index([name])
 }
+
+model BrowseRow {
+  id         String   @id @default(uuid())
+  title      String
+  slug       String   @unique
+  position   Int      @default(0)
+  contentIds String[]
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([position])
+  @@index([isActive])
+}
