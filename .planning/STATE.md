@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 6 of 10 in progress (Video Infrastructure and HLS Delivery)
-Plan: 5 of 7 in Phase 6
+Plan: 6 of 7 in Phase 6
 Status: In progress
-Last activity: 2026-03-07 -- Completed 06-05-PLAN.md
+Last activity: 2026-03-07 -- Completed 06-06-PLAN.md
 
-Progress: [████████████████████████████████░] 37/~39 total plans
+Progress: [█████████████████████████████████░] 38/~39 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 37
+- Total plans completed: 38
 - Average duration: ~5 min
 - Total execution time: ~170 min (including Docker setup + reboot)
 
@@ -32,11 +32,11 @@ Progress: [███████████████████████
 | 03 - Content API & Admin | 9/9 | 47 min | 5.2 min |
 | 04 - Client Browsing | 8/8 | ~23 min | ~2.9 min |
 | 05 - Video Player & User | 9/9 | ~20 min | ~2.2 min |
-| 06 - Video Infrastructure | 4/7 | ~19 min | ~4.75 min |
+| 06 - Video Infrastructure | 5/7 | ~20 min | ~4 min |
 
 **Recent Trend:**
-- Last 5 plans: 06-05 (~4 min), 06-04 (~4 min), 06-03 (~3 min), 06-02 (~3 min), 06-01 (~9 min)
-- Trend: Service/route plans faster than infrastructure setup plans
+- Last 5 plans: 06-06 (~1 min), 06-05 (~4 min), 06-04 (~4 min), 06-03 (~3 min), 06-02 (~3 min)
+- Trend: Client wiring plans fastest; service/route plans faster than infrastructure setup
 
 *Updated after each plan completion*
 
@@ -167,7 +167,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 06-05-PLAN.md
+Stopped at: Completed 06-06-PLAN.md
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -291,3 +291,9 @@ IMPORTANT CONTEXT:
 - TranscodingBadge component: status-colored badges pending/processing/completed/failed (admin/src/components/content/TranscodingBadge.tsx)
 - VideoUploader integrated into MovieForm (edit mode only) and EpisodeForm (edit mode with contentId + episodeId)
 - Content and Episode admin types include sourceVideoKey, transcodingStatus, transcodingError, hlsKey fields
+- [06-06]: Auth header only on /api/ URLs in hls.js xhrSetup (presigned R2 segment URLs reject extra headers)
+- [06-06]: hlsKey check determines stream endpoint vs direct URL (set only after successful transcoding)
+- Client API: content.ts also exports getStreamUrl(contentId, episodeId?) for HLS stream endpoint URLs
+- Client types: ContentDetail and Episode now include transcodingStatus, hlsKey, sourceVideoKey fields
+- Watch page prefers /api/stream/:contentId for transcoded content, falls back to direct videoUrl/streamUrl
+- useHls hook xhrSetup sends Bearer token on API playlist requests only (not on presigned R2 segment URLs)
