@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 3 of 10 (Content API and Admin Content Management)
-Plan: 7 of 9 in Phase 3
+Plan: 8 of 9 in Phase 3
 Status: In progress
-Last activity: 2026-03-07 -- Completed 03-07-PLAN.md (Content Create/Edit Forms)
+Last activity: 2026-03-07 -- Completed 03-08-PLAN.md (Series Management Pages)
 
-Progress: [█████████████░] 13/~30 total plans
+Progress: [██████████████░] 14/~30 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
+- Total plans completed: 14
 - Average duration: ~5 min
-- Total execution time: ~96 min (including Docker setup + reboot)
+- Total execution time: ~102 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [█████████████░] 13/~30 total plans
 |-------|-------|-------|----------|
 | 01 - Foundation | 3/3 | ~48 min | ~16 min |
 | 02 - Auth & Sessions | 3/3 | 12 min | 4 min |
-| 03 - Content API & Admin | 7/9 | 38 min | 5.4 min |
+| 03 - Content API & Admin | 8/9 | 44 min | 5.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-03 (2 min), 03-04 (4 min), 03-05 (4 min), 03-06 (6 min), 03-07 (5 min)
+- Last 5 plans: 03-04 (4 min), 03-05 (4 min), 03-06 (6 min), 03-07 (5 min), 03-08 (6 min)
 - Trend: Stabilizing at ~5 min per plan
 
 *Updated after each plan completion*
@@ -94,6 +94,9 @@ Recent decisions affecting current work:
 - [03-07]: Cast uses tag input pattern (Enter to add, X to remove)
 - [03-07]: Form stores releaseYear/duration as strings, converts to numbers at submit (Zod transform + react-hook-form incompatibility)
 - [03-07]: useParams({ strict: false }) with type assertion for route params
+- [03-08]: Zod transforms removed from form schemas; convert strings to numbers in submit handlers (react-hook-form resolver incompatibility)
+- [03-08]: Season CRUD uses simple Dialog with controlled inputs (only 2 fields)
+- [03-08]: EpisodeForm auto-suggests next episode number based on existing episodes
 
 ### Pending Todos
 
@@ -109,7 +112,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 03-07-PLAN.md (Content Create/Edit Forms)
+Stopped at: Completed 03-08-PLAN.md (Series Management Pages)
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -150,11 +153,14 @@ IMPORTANT CONTEXT:
 - Admin categories API client (admin/src/api/categories.ts) exports: listCategories, createCategory, updateCategory, deleteCategory
 - Content list page routes registered: /movies, /documentaries, /channels
 - Shared components: FilterBar, StatusBadge, Pagination, ContentCard, ContentGrid, ContentTable
-- Content column defs: getMovieColumns, getDocumentaryColumns, getChannelColumns
+- Content column defs: getMovieColumns, getDocumentaryColumns, getChannelColumns, getSeriesColumns
 - useContentFilters hook manages: status, category, search (debounced 300ms), page, sortBy, sortOrder, viewMode
 - Admin upload API client (admin/src/api/upload.ts) exports: uploadPoster, uploadBackdrop
 - ImageUploader component: drag-and-drop with react-dropzone, poster (2:3) and backdrop (16:9) types
 - MovieForm component: shared for MOVIE and DOCUMENTARY, React Hook Form + Zod, all content fields
 - ChannelForm component: simplified for CHANNEL with streamUrl field
-- Content create/edit routes registered: /movies/new, /movies/$movieId, /documentaries/new, /documentaries/$docId, /channels/new, /channels/$channelId
+- Content create/edit routes registered: /movies/new, /movies/$movieId, /documentaries/new, /documentaries/$docId, /channels/new, /channels/$channelId, /series, /series/new, /series/$seriesId, /series/$seriesId/seasons/$seasonId
+- Admin seasons API client (admin/src/api/seasons.ts) exports: listSeasons, createSeason, updateSeason, deleteSeason, listEpisodes, createEpisode, updateEpisode, deleteEpisode
+- SeriesForm component: like MovieForm but for SERIES (no duration/videoUrl), with ImageUploader
+- EpisodeForm component: Dialog-based form for episode CRUD (number, title, description, duration, videoUrl, thumbnailUrl)
 - react-hook-form, @hookform/resolvers, react-dropzone installed in admin workspace
