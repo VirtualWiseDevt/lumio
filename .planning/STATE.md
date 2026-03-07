@@ -121,6 +121,11 @@ Recent decisions affecting current work:
 - [05-01]: Prisma compound unique with nullable episodeId requires type assertion (null works at runtime)
 - [05-01]: Continue-watching route registered BEFORE /:contentId to prevent Express param matching
 - [05-01]: Hybrid threshold: max(120s, 5% duration), exclude completed (90%+), exclude <2min content
+- [05-04]: useHls dynamically imports hls.js inside useEffect to avoid SSR "self is not defined"
+- [05-04]: Touch zones gated on !showControls so taps interact with control buttons when visible
+- [05-04]: screenfull imported dynamically in keyboard handler and fullscreen button
+- [05-04]: ProgressBar uses group-hover pattern for scrubber dot and bar height expansion
+- [05-04]: formatTime helper local to ProgressBar (different from formatDuration which formats minutes)
 - [05-05]: Broad invalidation of ["my-list"] on settle ensures /my-list page cache stays in sync with individual toggles
 - [05-05]: MyListButton uses stopPropagation + preventDefault to work inside clickable card containers
 - [05-06]: Auto-renew toggle disabled with Phase 7 dependency note (no PATCH endpoint yet)
@@ -220,6 +225,9 @@ IMPORTANT CONTEXT:
 - User validators exports: updateProfileSchema, updatePreferencesSchema
 - Progress service exports: saveProgress, getProgress, getContinueWatching
 - Progress validators exports: saveProgressSchema, continueWatchingQuerySchema
+- Player hooks: useHls (HLS/MP4 source), useVideoPlayer (event wiring to store), usePlayerControls (auto-hide, keyboard shortcuts)
+- Player components: VideoPlayer (container), PlayerControls (overlay chrome), ProgressBar (scrubber), VolumeControl (slider), BufferingIndicator (spinner + slow hint)
+- Watch page: /watch/[id]?episode=[episodeId] renders full-viewport player with progress resume
 - Account components: ProfileSection, SubscriptionSection, DeviceSection, PreferencesSection (client/src/components/account/)
 - Account page at /account renders all 4 sections with TanStack Query for data fetching/mutations
 - useMyList hook: optimistic toggle with TanStack Query (client/src/hooks/use-my-list.ts)
