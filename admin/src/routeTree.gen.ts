@@ -12,6 +12,10 @@ import { documentaryEditRoute } from "./routes/_authenticated/documentaries/$doc
 import { channelsRoute } from "./routes/_authenticated/channels/index";
 import { channelNewRoute } from "./routes/_authenticated/channels/new";
 import { channelEditRoute } from "./routes/_authenticated/channels/$channelId";
+import { seriesRoute } from "./routes/_authenticated/series/index";
+import { seriesNewRoute } from "./routes/_authenticated/series/new";
+import { seriesDetailRoute } from "./routes/_authenticated/series/$seriesId";
+import { seasonDetailRoute } from "./routes/_authenticated/series/$seriesId.seasons.$seasonId";
 
 export const routeTree = rootRoute.addChildren([
   loginRoute,
@@ -27,5 +31,9 @@ export const routeTree = rootRoute.addChildren([
     channelsRoute,
     channelNewRoute,
     channelEditRoute,
+    seriesRoute,
+    seriesNewRoute,
+    seriesDetailRoute,
+    seasonDetailRoute,
   ]),
 ]);

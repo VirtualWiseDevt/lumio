@@ -180,6 +180,31 @@ export function getDocumentaryColumns(
   ];
 }
 
+export function getSeriesColumns(
+  actions: ColumnActions,
+): ColumnDef<Content>[] {
+  return [
+    ...createBaseColumns(actions),
+    {
+      id: "seasons",
+      header: "Seasons",
+      enableSorting: false,
+      cell: ({ row }) => {
+        const count = row.original._count?.seasons ?? 0;
+        return (
+          <span className="text-sm">
+            {count} season{count !== 1 ? "s" : ""}
+          </span>
+        );
+      },
+    },
+    createStatusColumn(),
+    createCategoriesColumn(),
+    createDateColumn(),
+    createActionsColumn(actions),
+  ];
+}
+
 export function getChannelColumns(
   actions: ColumnActions,
 ): ColumnDef<Content>[] {
