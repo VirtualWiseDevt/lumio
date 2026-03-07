@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Content API and Admin Content Management** - Content CRUD API, admin panel with content forms, admin auth, image upload with local storage
 - [x] **Phase 4: Client Browsing Experience** - Next.js 15 client app, browse pages, hero banners, content rows, detail modal, search
 - [x] **Phase 5: Video Player and User Features** - hls.js player, controls, keyboard shortcuts, progress tracking, watchlist, favorites
-- [ ] **Phase 6: Video Infrastructure and HLS Delivery** - FFmpeg pipeline, keyframe alignment, R2 upload, presigned URLs, CDN cache rules
+- [x] **Phase 6: Video Infrastructure and HLS Delivery** - FFmpeg pipeline, keyframe alignment, R2 upload, presigned URLs, CDN cache rules
 - [ ] **Phase 7: Payments and Subscriptions** - M-Pesa STK Push via Daraja, billing UI, subscription guard, callback webhook, reconciliation
 - [ ] **Phase 8: Referral System and Invite Model** - Referral codes, invite-only registration, stacking discounts, coupons
 - [ ] **Phase 9: Notifications and Scheduled Jobs** - Transactional emails, expiry warnings, payment confirmations, cron jobs
@@ -139,13 +139,13 @@ Plans:
 **Plans**: 7 plans
 
 Plans:
-- [ ] 06-01-PLAN.md -- Docker infrastructure (Redis + FFmpeg), R2/Redis clients, schema migration (transcoding fields), type definitions
-- [ ] 06-02-PLAN.md -- R2 storage service (presign, upload, delete) and video upload API endpoints (presign + confirm)
-- [ ] 06-03-PLAN.md -- FFmpeg transcode service (HLS generation, keyframe alignment) and BullMQ job queue (worker + processor)
-- [ ] 06-04-PLAN.md -- Stream service (playlist proxy with presigned URLs), publish-triggers-transcode, worker startup
-- [ ] 06-05-PLAN.md -- Admin video upload UI (VideoUploader component, TranscodingBadge) integrated into content forms
-- [ ] 06-06-PLAN.md -- Client player integration (stream endpoint, auth headers on HLS requests, fallback for non-transcoded)
-- [ ] 06-07-PLAN.md -- Build verification and end-to-end human verification of video infrastructure pipeline
+- [x] 06-01-PLAN.md -- Docker infrastructure (Redis + FFmpeg), R2/Redis clients, schema migration (transcoding fields), type definitions
+- [x] 06-02-PLAN.md -- R2 storage service (presign, upload, delete) and video upload API endpoints (presign + confirm)
+- [x] 06-03-PLAN.md -- FFmpeg transcode service (HLS generation, keyframe alignment) and BullMQ job queue (worker + processor)
+- [x] 06-04-PLAN.md -- Stream service (playlist proxy with presigned URLs), publish-triggers-transcode, worker startup
+- [x] 06-05-PLAN.md -- Admin video upload UI (VideoUploader component, TranscodingBadge) integrated into content forms
+- [x] 06-06-PLAN.md -- Client player integration (stream endpoint, auth headers on HLS requests, fallback for non-transcoded)
+- [x] 06-07-PLAN.md -- Build verification and end-to-end human verification of video infrastructure pipeline
 
 ### Phase 7: Payments and Subscriptions
 **Goal**: Users can subscribe to Lumio via M-Pesa, and expired users are blocked from content until they pay
@@ -225,7 +225,7 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10
 | 3. Content API and Admin Content Management | 9/9 | Complete | 2026-03-07 |
 | 4. Client Browsing Experience | 8/8 | Complete | 2026-03-07 |
 | 5. Video Player and User Features | 9/9 | Complete | 2026-03-07 |
-| 6. Video Infrastructure and HLS Delivery | 0/7 | Not started | - |
+| 6. Video Infrastructure and HLS Delivery | 7/7 | Complete | 2026-03-07 |
 | 7. Payments and Subscriptions | 0/TBD | Not started | - |
 | 8. Referral System and Invite Model | 0/TBD | Not started | - |
 | 9. Notifications and Scheduled Jobs | 0/TBD | Not started | - |
