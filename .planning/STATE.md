@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 7 of 10 (Payments and Subscriptions)
-Plan: 2 of 6 in Phase 7
+Plan: 4 of 6 in Phase 7
 Status: In progress
-Last activity: 2026-03-07 -- Completed 07-02-PLAN.md
+Last activity: 2026-03-07 -- Completed 07-04-PLAN.md
 
-Progress: [████████████████████████████████████░░░░░░░░] 41/~45 total plans
+Progress: [██████████████████████████████████████░░░░░░] 43/~45 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 41
-- Average duration: ~5 min
-- Total execution time: ~183 min (including Docker setup + reboot)
+- Total plans completed: 43
+- Average duration: ~4 min
+- Total execution time: ~189 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -35,8 +35,8 @@ Progress: [███████████████████████
 | 06 - Video Infrastructure | 7/7 | ~29 min | ~4.1 min |
 
 **Recent Trend:**
-- Last 5 plans: 07-03 (~2 min), 07-01 (~4 min), 06-07 (~9 min), 06-06 (~1 min), 06-05 (~4 min)
-- Trend: Client data layer plans very fast; verification plans take longer
+- Last 5 plans: 07-04 (~3 min), 07-03 (~2 min), 07-01 (~4 min), 06-07 (~9 min), 06-06 (~1 min)
+- Trend: Payment route plans fast (~3 min); service layer plans similar
 
 *Updated after each plan completion*
 
@@ -167,7 +167,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 07-02-PLAN.md
+Stopped at: Completed 07-04-PLAN.md
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -324,3 +324,12 @@ IMPORTANT CONTEXT:
 - Client billing types: Plan, Payment, PaymentStatus, SubscriptionInfo, InitiatePaymentResponse, PaymentStatusResponse, PaymentHistoryResponse (client/src/types/billing.ts)
 - Client billing API: getPlans, initiatePayment, getPaymentStatus, pollPaymentStatus, getPaymentHistory, getSubscription (client/src/api/billing.ts)
 - useSubscription hook: TanStack Query with isActive, daysRemaining, urgency color, refetch (client/src/hooks/use-subscription.ts)
+- [07-04]: Plans endpoint public (no auth) for SEO and billing page pre-auth loading
+- [07-04]: M-Pesa callback always returns 200 with ResultCode 0 regardless of processing outcome
+- [07-04]: Reconciliation success path uses console.log placeholder for Phase 9 notification (grep: RECONCILIATION_NOTIFICATION_PLACEHOLDER)
+- Plan routes: GET /api/plans (public, no auth)
+- Payment routes: POST /api/payments/initiate, GET /api/payments/history, GET /api/payments/:id/status (all auth required)
+- M-Pesa callback route: POST /api/mpesa/callback (no auth, always returns 200)
+- Stream routes now require requireAuth + requireSubscription middleware chain
+- Reconciliation job: startReconciliationJob() runs every 2 minutes, max 5 attempts, resolves lost M-Pesa callbacks
+- Server.ts starts reconciliation job on boot alongside session cleanup and transcode worker
