@@ -9,6 +9,8 @@ import { uploadRouter } from "./upload.routes.js";
 import { mediaRouter } from "./media.routes.js";
 import { seasonRouter } from "./season.routes.js";
 import { browseRouter } from "./browse.routes.js";
+import { myListRouter } from "./mylist.routes.js";
+import { userRouter } from "./user.routes.js";
 
 export {
   healthRouter,
@@ -21,6 +23,8 @@ export {
   mediaRouter,
   seasonRouter,
   browseRouter,
+  myListRouter,
+  userRouter,
 };
 
 /**
@@ -37,4 +41,6 @@ export function registerRoutes(app: Express): void {
   app.use("/api/admin/upload", uploadRouter);
   app.use("/api/media", mediaRouter);
   app.use("/api/admin/content/:contentId/seasons", seasonRouter);
+  app.use("/api/my-list", myListRouter);
+  app.use("/api/user", userRouter);
 }
