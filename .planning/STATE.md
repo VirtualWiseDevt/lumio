@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 7 of 10 (Payments and Subscriptions)
-Plan: 5 of 6 in Phase 7
-Status: In progress
-Last activity: 2026-03-07 -- Completed 07-05-PLAN.md
+Plan: 6 of 6 in Phase 7
+Status: Phase complete
+Last activity: 2026-03-07 -- Completed 07-06-PLAN.md
 
-Progress: [████████████████████████████████████████░░░░] 44/~45 total plans
+Progress: [█████████████████████████████████████████░░░] 45/~45 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 44
+- Total plans completed: 45
 - Average duration: ~4 min
-- Total execution time: ~193 min (including Docker setup + reboot)
+- Total execution time: ~197 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -35,8 +35,8 @@ Progress: [███████████████████████
 | 06 - Video Infrastructure | 7/7 | ~29 min | ~4.1 min |
 
 **Recent Trend:**
-- Last 5 plans: 07-05 (~4 min), 07-04 (~3 min), 07-03 (~2 min), 07-01 (~4 min), 06-07 (~9 min)
-- Trend: Client billing UI plan ~4 min including build verification
+- Last 5 plans: 07-06 (~4 min), 07-05 (~4 min), 07-04 (~3 min), 07-03 (~2 min), 07-01 (~4 min)
+- Trend: Subscription enforcement plan ~4 min including build verification
 
 *Updated after each plan completion*
 
@@ -167,7 +167,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 07-05-PLAN.md
+Stopped at: Completed 07-06-PLAN.md (Phase 7 complete)
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -328,8 +328,13 @@ IMPORTANT CONTEXT:
 - [07-05]: PaymentHistory self-fetching component with TanStack Query pagination
 - [07-05]: PlanCard "Best Value" badge on Monthly plan, "Current Plan" badge on active plan
 - [07-05]: Billing page conditionally renders SubscriptionStatus (isActive) or value pitch (first-time)
+- [07-06]: SubscribeGate modal blocks playback with AnimatePresence overlay and /billing link
+- [07-06]: Watch page checks subscription before content loading (early block, not post-load overlay)
+- [07-06]: HoverPopover Play button navigates to /watch/[id] and gates on subscription (was previously no-op)
 - Billing components: PlanCard, PlanGrid, SubscriptionStatus, PaymentModal, PaymentHistory (client/src/components/billing/)
 - Billing page at /billing assembles all billing components with plan selection and payment flow
+- SubscribeGate component: modal overlay for expired users, props isOpen/onClose, link to /billing (client/src/components/billing/SubscribeGate.tsx)
+- Watch page, HoverPopover, and DetailModal all gate playback via useSubscription().isActive + SubscribeGate
 - [07-04]: Plans endpoint public (no auth) for SEO and billing page pre-auth loading
 - [07-04]: M-Pesa callback always returns 200 with ResultCode 0 regardless of processing outcome
 - [07-04]: Reconciliation success path uses console.log placeholder for Phase 9 notification (grep: RECONCILIATION_NOTIFICATION_PLACEHOLDER)
