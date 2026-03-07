@@ -1,3 +1,10 @@
-// Express Request type augmentation
-// Will be extended in Phase 2 to add user property to Request
-export {};
+import type { User } from "../../generated/prisma/client.js";
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: User;
+      sessionId?: string;
+    }
+  }
+}
