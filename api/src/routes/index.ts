@@ -17,6 +17,7 @@ import { streamRouter } from "./stream.routes.js";
 import { planRouter } from "./plan.routes.js";
 import { paymentRouter } from "./payment.routes.js";
 import { mpesaCallbackRouter } from "./mpesa-callback.routes.js";
+import { adminInviteRouter } from "./admin-invite.routes.js";
 
 export {
   healthRouter,
@@ -37,6 +38,7 @@ export {
   planRouter,
   paymentRouter,
   mpesaCallbackRouter,
+  adminInviteRouter,
 };
 
 /**
@@ -61,4 +63,5 @@ export function registerRoutes(app: Express): void {
   app.use("/api/plans", planRouter);
   app.use("/api/payments", paymentRouter);
   app.use("/api/mpesa/callback", mpesaCallbackRouter);
+  app.use("/api/admin/invite-codes", adminInviteRouter);
 }
