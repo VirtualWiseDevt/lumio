@@ -3,12 +3,15 @@ import { buildApp } from "./app.js";
 import { env } from "./config/env.js";
 import { prisma } from "./config/database.js";
 import { startSessionCleanupJob } from "./jobs/sessionCleanup.job.js";
+import { startTranscodeWorker } from "./jobs/transcode.job.js";
 
 const app = buildApp();
 
 const server = app.listen(env.PORT, () => {
   console.log(`API server running on port ${env.PORT}`);
   startSessionCleanupJob();
+  startTranscodeWorker();
+  console.log("Transcode worker started");
 });
 
 /**

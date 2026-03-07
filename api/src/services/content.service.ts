@@ -4,6 +4,7 @@ import type {
   CreateContentInput,
   UpdateContentInput,
 } from "../validators/content.validators.js";
+import { enqueueTranscode } from "../jobs/transcode.job.js";
 
 export async function listContent(query: ContentQuery) {
   const { type, status, category, search, page, limit, sortBy, sortOrder } =
@@ -69,10 +70,48 @@ export async function deleteContent(id: string) {
 }
 
 export async function publishContent(id: string) {
-  return prisma.content.update({
+  const content = await prisma.content.update({
     where: { id },
     data: { isPublished: true },
+    include: {
+      seasons: {
+        include: {
+          episodes: true,
+        },
+      },
+    },
   });
+
+  // Enqueue transcode for the content itself if it has a source video
+  if (
+    content.sourceVideoKey &&
+    content.transcodingStatus !== "completed"
+  ) {
+    await enqueueTranscode({
+      contentId: id,
+      sourceKey: content.sourceVideoKey,
+      outputPrefix: `videos/${id}/hls/`,
+    });
+  }
+
+  // For series: enqueue transcode for any episodes with source video
+  for (const season of content.seasons) {
+    for (const episode of season.episodes) {
+      if (
+        episode.sourceVideoKey &&
+        episode.transcodingStatus !== "completed"
+      ) {
+        await enqueueTranscode({
+          contentId: id,
+          episodeId: episode.id,
+          sourceKey: episode.sourceVideoKey,
+          outputPrefix: `videos/${id}/episodes/${episode.id}/hls/`,
+        });
+      }
+    }
+  }
+
+  return content;
 }
 
 export async function unpublishContent(id: string) {
