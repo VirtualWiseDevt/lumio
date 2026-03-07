@@ -29,3 +29,28 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Responsive content card sizing: 2 → 3 → 4 → 5 → 6 cards */
+.content-card {
+  width: calc((100% - 8px) / 2);
+}
+@media (min-width: 500px) {
+  .content-card {
+    width: calc((100% - 2 * 8px) / 3);
+  }
+}
+@media (min-width: 800px) {
+  .content-card {
+    width: calc((100% - 3 * 8px) / 4);
+  }
+}
+@media (min-width: 1100px) {
+  .content-card {
+    width: calc((100% - 4 * 8px) / 5);
+  }
+}
+@media (min-width: 1400px) {
+  .content-card {
+    width: calc((100% - 5 * 8px) / 6);
+  }
+}
