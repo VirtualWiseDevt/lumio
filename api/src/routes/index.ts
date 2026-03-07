@@ -9,6 +9,7 @@ import { uploadRouter } from "./upload.routes.js";
 import { mediaRouter } from "./media.routes.js";
 import { seasonRouter } from "./season.routes.js";
 import { browseRouter } from "./browse.routes.js";
+import { progressRouter } from "./progress.routes.js";
 import { myListRouter } from "./mylist.routes.js";
 import { userRouter } from "./user.routes.js";
 
@@ -23,6 +24,7 @@ export {
   mediaRouter,
   seasonRouter,
   browseRouter,
+  progressRouter,
   myListRouter,
   userRouter,
 };
@@ -35,6 +37,7 @@ export function registerRoutes(app: Express): void {
   app.use("/api/auth", authRouter);
   app.use("/api/sessions", sessionRouter);
   app.use("/api/browse", browseRouter);
+  app.use("/api/progress", progressRouter);
   app.use("/api/admin", adminRouter);
   app.use("/api/admin/content", contentRouter);
   app.use("/api/admin/categories", categoryRouter);
