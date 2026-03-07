@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 5 of 10 (Video Player and User Features)
-Plan: 7 of 9 in Phase 5 (05-01, 05-02, 05-03, 05-04, 05-05, 05-06, 05-07 complete)
+Plan: 8 of 9 in Phase 5 (05-01, 05-02, 05-03, 05-04, 05-05, 05-06, 05-07, 05-08 complete)
 Status: In progress
-Last activity: 2026-03-07 -- Completed 05-07-PLAN.md
+Last activity: 2026-03-07 -- Completed 05-08-PLAN.md
 
-Progress: [██████████████████████████░] 30/~32 total plans
+Progress: [███████████████████████████░] 31/~32 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 30
+- Total plans completed: 31
 - Average duration: ~5 min
 - Total execution time: ~152 min (including Docker setup + reboot)
 
@@ -33,7 +33,7 @@ Progress: [███████████████████████
 | 04 - Client Browsing | 8/8 | ~23 min | ~2.9 min |
 
 **Recent Trend:**
-- Last 5 plans: 05-07 (~2 min), 05-06 (~2 min), 05-05 (~3 min), 05-04 (~3 min), 05-03 (~3 min)
+- Last 5 plans: 05-08 (~2 min), 05-07 (~2 min), 05-06 (~2 min), 05-05 (~3 min), 05-04 (~3 min)
 - Trend: Consistent ~2-3 min for client-only UI plans
 
 *Updated after each plan completion*
@@ -135,6 +135,10 @@ Recent decisions affecting current work:
 - [05-07]: 90% completion triggers next-episode overlay (matches server threshold)
 - [05-07]: loadedmetadata event for reliable initial time seek instead of setTimeout
 - [05-07]: isAdvancing ref prevents race conditions in next-episode auto-advance
+- [05-08]: MyListButton replaces static Plus button in HoverPopover and DetailModal
+- [05-08]: Auth interceptor reads token from localStorage key "token" and sets Bearer header
+- [05-08]: MyListRow uses retry: false to silently fail when user is not authenticated
+- [05-08]: ContentCard progress bar is 3px with bg-red-600 overlay at bottom of image area
 
 ### Pending Todos
 
@@ -150,7 +154,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 05-07-PLAN.md
+Stopped at: Completed 05-08-PLAN.md
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -242,3 +246,10 @@ IMPORTANT CONTEXT:
 - ContinueWatchingRow: TanStack Query with time filter, red progress bars, click navigates to /watch (client/src/components/content/ContinueWatchingRow.tsx)
 - VideoPlayer now integrates progress tracking and next episode overlay
 - Watch page resolves next episode across seasons and uses loadedmetadata for initial seek
+- HoverPopover uses MyListButton (size="sm") instead of static Plus button
+- DetailModal uses MyListButton (size="md") and Play navigates to /watch/[id]
+- PlayerControls accepts contentId prop and renders MyListButton in top-right
+- Home page renders ContinueWatchingRow and MyListRow above browse rows
+- API client (client/src/api/client.ts) has axios request interceptor for Bearer token from localStorage
+- ContentCard accepts optional progressPercent prop for red progress bar overlay
+- Navbar includes My List (/my-list) and Account (/account) links
