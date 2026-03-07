@@ -14,6 +14,9 @@ import { myListRouter } from "./mylist.routes.js";
 import { userRouter } from "./user.routes.js";
 import { videoUploadRouter } from "./video-upload.routes.js";
 import { streamRouter } from "./stream.routes.js";
+import { planRouter } from "./plan.routes.js";
+import { paymentRouter } from "./payment.routes.js";
+import { mpesaCallbackRouter } from "./mpesa-callback.routes.js";
 
 export {
   healthRouter,
@@ -31,6 +34,9 @@ export {
   userRouter,
   videoUploadRouter,
   streamRouter,
+  planRouter,
+  paymentRouter,
+  mpesaCallbackRouter,
 };
 
 /**
@@ -52,4 +58,7 @@ export function registerRoutes(app: Express): void {
   app.use("/api/user", userRouter);
   app.use("/api/admin/video-upload", videoUploadRouter);
   app.use("/api/stream", streamRouter);
+  app.use("/api/plans", planRouter);
+  app.use("/api/payments", paymentRouter);
+  app.use("/api/mpesa/callback", mpesaCallbackRouter);
 }
