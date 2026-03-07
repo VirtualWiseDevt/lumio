@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 3 of 10 (Content API and Admin Content Management)
-Plan: 1 of 9 in Phase 3
+Plan: 2 of 9 in Phase 3
 Status: In progress
-Last activity: 2026-03-07 -- Completed 03-01-PLAN.md (schema migration + admin auth foundation)
+Last activity: 2026-03-07 -- Completed 03-02-PLAN.md (admin panel shell with auth, sidebar, API client)
 
-Progress: [███████░░░] 7/~30 total plans
+Progress: [████████░░] 8/~30 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
+- Total plans completed: 8
 - Average duration: ~5 min
-- Total execution time: ~65 min (including Docker setup + reboot)
+- Total execution time: ~75 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [███████░░░] 7/~30 total plans
 |-------|-------|-------|----------|
 | 01 - Foundation | 3/3 | ~48 min | ~16 min |
 | 02 - Auth & Sessions | 3/3 | 12 min | 4 min |
-| 03 - Content API & Admin | 1/9 | 7 min | 7 min |
+| 03 - Content API & Admin | 2/9 | 17 min | 8.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-03 (~40 min, Docker setup), 02-01 (5 min), 02-02 (2 min), 02-03 (5 min), 03-01 (7 min)
-- Trend: Stabilizing at ~3-7 min per plan without infrastructure setup
+- Last 5 plans: 02-01 (5 min), 02-02 (2 min), 02-03 (5 min), 03-01 (7 min), 03-02 (10 min)
+- Trend: Stabilizing at ~5-10 min per plan
 
 *Updated after each plan completion*
 
@@ -70,6 +70,10 @@ Recent decisions affecting current work:
 - [03-01]: Admin login at dedicated /api/admin/login endpoint (separate from user login)
 - [03-01]: requireAdmin middleware always used after requireAuth in chain
 - [03-01]: No device limit check for admin sessions
+- [03-02]: Admin panel uses bundler moduleResolution (not NodeNext) for Vite compatibility
+- [03-02]: Manual route tree instead of TanStack Router codegen plugin
+- [03-02]: Sidebar uses anchor tags for future routes (will convert to Link when routes are registered)
+- [03-02]: shadcn v4 sonner component replaces deprecated toast component
 
 ### Pending Todos
 
@@ -85,7 +89,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 03-01-PLAN.md (schema migration + admin auth foundation)
+Stopped at: Completed 03-02-PLAN.md (admin panel shell with auth, sidebar, API client)
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -103,3 +107,10 @@ IMPORTANT CONTEXT:
 - Routes registered: /api/auth (7 endpoints), /api/sessions (2 endpoints), /api/admin (1 endpoint)
 - Admin seed account: admin@lumio.tv / AdminPass123! (phone: +254700000001)
 - Session cleanup job starts on server boot with hourly cron schedule
+- Admin panel: React 19 + Vite 6 + Tailwind 4 + shadcn/ui (dark theme) at localhost:3001
+- Admin panel uses "type": "module" in package.json, bundler moduleResolution in tsconfig
+- Admin API client (admin/src/api/client.ts) uses Axios with Bearer token from localStorage
+- Admin auth context (admin/src/hooks/useAuth.tsx) exports AuthProvider and useAuth
+- Admin routes use TanStack Router with manual route tree (admin/src/routeTree.gen.ts)
+- Vite proxies /api/* to localhost:5000 in dev mode
+- shadcn components installed: button, input, label, card, badge, separator, dropdown-menu, dialog, sheet, sonner
