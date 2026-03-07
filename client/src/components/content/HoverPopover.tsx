@@ -1,10 +1,14 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Play, ThumbsUp, ChevronDown } from "lucide-react";
 import { motion } from "motion/react";
 import { cn, mediaUrl, formatDuration } from "@/lib/utils";
 import { MyListButton } from "@/components/my-list/MyListButton";
+import { SubscribeGate } from "@/components/billing/SubscribeGate";
+import { useSubscription } from "@/hooks/use-subscription";
 import type { Content } from "@/types/content";
 
 interface HoverPopoverProps {
@@ -54,8 +58,20 @@ export function HoverPopover({
   onMouseLeave,
   onExpand,
 }: HoverPopoverProps) {
+  const router = useRouter();
+  const { isActive } = useSubscription();
+  const [showSubscribeGate, setShowSubscribeGate] = useState(false);
+
   const { left, top, width } = getPopoverPosition(cardRect);
   const backdropSrc = mediaUrl(content.posterLandscape);
+
+  const handlePlay = () => {
+    if (!isActive) {
+      setShowSubscribeGate(true);
+      return;
+    }
+    router.push(`/watch/${content.id}`);
+  };
 
   return (
     <motion.div
@@ -92,6 +108,7 @@ export function HoverPopover({
         {/* Action buttons */}
         <div className="mb-2 flex items-center gap-2">
           <button
+            onClick={handlePlay}
             className={cn(
               "flex h-8 w-8 items-center justify-center rounded-full",
               "bg-accent text-white hover:bg-accent-hover transition-colors"
@@ -150,6 +167,10 @@ export function HoverPopover({
           </p>
         )}
       </div>
+      <SubscribeGate
+        isOpen={showSubscribeGate}
+        onClose={() => setShowSubscribeGate(false)}
+      />
     </motion.div>
   );
 }

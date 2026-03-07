@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
@@ -9,6 +9,8 @@ import { X, Play } from "lucide-react";
 import { cn, formatDuration, mediaUrl } from "@/lib/utils";
 import { fetchTitleDetail } from "@/api/content";
 import { MyListButton } from "@/components/my-list/MyListButton";
+import { SubscribeGate } from "@/components/billing/SubscribeGate";
+import { useSubscription } from "@/hooks/use-subscription";
 import { EpisodeList } from "./EpisodeList";
 import { MoreLikeThis } from "./MoreLikeThis";
 
@@ -19,6 +21,8 @@ interface DetailModalProps {
 
 export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
   const router = useRouter();
+  const { isActive } = useSubscription();
+  const [showSubscribeGate, setShowSubscribeGate] = useState(false);
 
   const { data: content, isLoading, isError, refetch } = useQuery({
     queryKey: ["title", id],
@@ -121,6 +125,10 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => {
+                    if (!isActive) {
+                      setShowSubscribeGate(true);
+                      return;
+                    }
                     const watchUrl =
                       content.type === "SERIES" &&
                       content.seasons &&
@@ -213,39 +221,54 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
     </div>
   );
 
+  const subscribeGateEl = (
+    <SubscribeGate
+      isOpen={showSubscribeGate}
+      onClose={() => setShowSubscribeGate(false)}
+    />
+  );
+
   // Full page: no overlay
   if (isFullPage) {
-    return <div className="pb-16 pt-4">{modalContent}</div>;
+    return (
+      <>
+        <div className="pb-16 pt-4">{modalContent}</div>
+        {subscribeGateEl}
+      </>
+    );
   }
 
   // Modal: overlay with animation
   return (
-    <AnimatePresence>
-      <motion.div
-        className="fixed inset-0 z-50 overflow-y-auto"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-      >
-        {/* Backdrop */}
-        <div
-          className="fixed inset-0 bg-black/70"
-          onClick={handleClose}
-        />
+    <>
+      <AnimatePresence>
+        <motion.div
+          className="fixed inset-0 z-50 overflow-y-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/70"
+            onClick={handleClose}
+          />
 
-        {/* Modal container */}
-        <div className="relative mt-8 pb-8">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 40 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-          >
-            {modalContent}
-          </motion.div>
-        </div>
-      </motion.div>
-    </AnimatePresence>
+          {/* Modal container */}
+          <div className="relative mt-8 pb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 40 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              {modalContent}
+            </motion.div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+      {subscribeGateEl}
+    </>
   );
 }

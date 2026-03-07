@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { fetchTitleDetail, getStreamUrl } from "@/api/content";
 import { getProgress } from "@/api/progress";
 import { VideoPlayer } from "@/components/player/VideoPlayer";
+import { SubscribeGate } from "@/components/billing/SubscribeGate";
+import { useSubscription } from "@/hooks/use-subscription";
 import type { NextEpisodeInfo } from "@/components/player/NextEpisodeOverlay";
 import type { ContentDetail } from "@/types/content";
 
@@ -65,6 +67,8 @@ export default function WatchPage({ params }: WatchPageProps) {
   const searchParams = useSearchParams();
   const episodeId = searchParams.get("episode");
   const router = useRouter();
+
+  const { isActive: isSubscribed, isLoading: isSubLoading } = useSubscription();
 
   const [content, setContent] = useState<ContentDetail | null>(null);
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
@@ -190,6 +194,25 @@ export default function WatchPage({ params }: WatchPageProps) {
       video?.removeEventListener("loadedmetadata", handleLoadedMetadata);
     };
   }, [initialTime, videoSrc]);
+
+  // Show loading while checking subscription
+  if (isSubLoading) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+      </div>
+    );
+  }
+
+  // Block playback for expired/unsubscribed users
+  if (!isSubscribed) {
+    return (
+      <>
+        <div className="fixed inset-0 z-40 bg-black" />
+        <SubscribeGate isOpen onClose={() => router.back()} />
+      </>
+    );
+  }
 
   if (loading) {
     return (
