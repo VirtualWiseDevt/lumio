@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 5 of 10 (Video Player and User Features)
-Plan: 3 of 9 in Phase 5 (05-01, 05-02, 05-03 complete)
+Plan: 6 of 9 in Phase 5 (05-01, 05-02, 05-03, 05-04, 05-05, 05-06 complete)
 Status: In progress
-Last activity: 2026-03-07 -- Completed 05-01-PLAN.md
+Last activity: 2026-03-07 -- Completed 05-06-PLAN.md
 
-Progress: [██████████████████████░] 26/~32 total plans
+Progress: [█████████████████████████░] 29/~32 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 26
+- Total plans completed: 28
 - Average duration: ~5 min
-- Total execution time: ~142 min (including Docker setup + reboot)
+- Total execution time: ~148 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -33,8 +33,8 @@ Progress: [██████████████████████░
 | 04 - Client Browsing | 8/8 | ~23 min | ~2.9 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-08 (~2 min), 05-03 (~3 min), 05-02 (~4 min), 05-01 (~9 min)
-- Trend: 05-01 slower due to Docker startup + Prisma DLL lock
+- Last 5 plans: 05-05 (~3 min), 05-04 (~3 min), 05-03 (~3 min), 05-02 (~4 min), 05-01 (~9 min)
+- Trend: Consistent ~3 min for client-only UI plans
 
 *Updated after each plan completion*
 
@@ -121,6 +121,8 @@ Recent decisions affecting current work:
 - [05-01]: Prisma compound unique with nullable episodeId requires type assertion (null works at runtime)
 - [05-01]: Continue-watching route registered BEFORE /:contentId to prevent Express param matching
 - [05-01]: Hybrid threshold: max(120s, 5% duration), exclude completed (90%+), exclude <2min content
+- [05-05]: Broad invalidation of ["my-list"] on settle ensures /my-list page cache stays in sync with individual toggles
+- [05-05]: MyListButton uses stopPropagation + preventDefault to work inside clickable card containers
 
 ### Pending Todos
 
@@ -136,7 +138,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 05-01-PLAN.md
+Stopped at: Completed 05-05-PLAN.md
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -215,3 +217,6 @@ IMPORTANT CONTEXT:
 - User validators exports: updateProfileSchema, updatePreferencesSchema
 - Progress service exports: saveProgress, getProgress, getContinueWatching
 - Progress validators exports: saveProgressSchema, continueWatchingQuerySchema
+- useMyList hook: optimistic toggle with TanStack Query (client/src/hooks/use-my-list.ts)
+- MyListButton component: circular Plus/Check toggle with sm/md/lg sizes (client/src/components/my-list/MyListButton.tsx)
+- /my-list page: responsive grid with skeleton loading and empty state (client/src/app/my-list/page.tsx)
