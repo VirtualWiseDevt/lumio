@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 6 of 10 in progress (Video Infrastructure and HLS Delivery)
-Plan: 3 of 7 in Phase 6
+Plan: 4 of 7 in Phase 6
 Status: In progress
-Last activity: 2026-03-07 -- Completed 06-03-PLAN.md
+Last activity: 2026-03-07 -- Completed 06-04-PLAN.md
 
-Progress: [██████████████████████████████░] 35/~39 total plans
+Progress: [███████████████████████████████░] 36/~39 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 35
+- Total plans completed: 36
 - Average duration: ~5 min
 - Total execution time: ~170 min (including Docker setup + reboot)
 
@@ -32,10 +32,10 @@ Progress: [███████████████████████
 | 03 - Content API & Admin | 9/9 | 47 min | 5.2 min |
 | 04 - Client Browsing | 8/8 | ~23 min | ~2.9 min |
 | 05 - Video Player & User | 9/9 | ~20 min | ~2.2 min |
-| 06 - Video Infrastructure | 3/7 | ~15 min | ~5 min |
+| 06 - Video Infrastructure | 4/7 | ~19 min | ~4.75 min |
 
 **Recent Trend:**
-- Last 5 plans: 06-03 (~3 min), 06-02 (~3 min), 06-01 (~9 min), 05-08 (~2 min), 05-07 (~2 min)
+- Last 5 plans: 06-04 (~4 min), 06-03 (~3 min), 06-02 (~3 min), 06-01 (~9 min), 05-08 (~2 min)
 - Trend: Service/route plans faster than infrastructure setup plans
 
 *Updated after each plan completion*
@@ -167,7 +167,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 06-03-PLAN.md
+Stopped at: Completed 06-04-PLAN.md
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -279,6 +279,10 @@ IMPORTANT CONTEXT:
 - Transcode service exports: probeSource, transcodeToHls, generateMasterPlaylist (api/src/services/transcode.service.ts)
 - Transcode job exports: transcodeQueue, startTranscodeWorker, enqueueTranscode (api/src/jobs/transcode.job.ts)
 - BullMQ queue "transcode" with 2 attempts, 30s fixed backoff, concurrency 1
-- Worker NOT started yet -- Plan 06-04 wires startTranscodeWorker() into server.ts
+- Transcode worker starts on server boot (startTranscodeWorker() in server.ts)
 - Cache-Control on R2 uploads: .ts segments immutable (1yr), .m3u8 playlists 60s TTL
 - Episode HLS prefix: videos/{contentId}/episodes/{episodeId}/hls/, Content: videos/{contentId}/hls/
+- Stream service exports: getStreamPlaylist, getQualityPlaylist (api/src/services/stream.service.ts)
+- Stream routes: GET /api/stream/:contentId (master playlist), GET /api/stream/:contentId/:quality (quality playlist with presigned segments)
+- Routes registered: /api/stream (2 endpoints) added to existing route list
+- publishContent auto-enqueues transcode for content and episodes with sourceVideoKey
