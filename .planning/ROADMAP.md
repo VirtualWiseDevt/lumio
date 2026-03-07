@@ -12,8 +12,8 @@ Lumio is a premium video streaming platform for East Africa with M-Pesa payments
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Project Foundation and Database** - Monorepo, Docker, PostgreSQL, Prisma 7 schema, Express 5 skeleton
-- [ ] **Phase 2: Authentication and Sessions** - Registration, login, JWT + sessions hybrid, 2-device limit, session management
+- [x] **Phase 1: Project Foundation and Database** - Monorepo, Docker, PostgreSQL, Prisma 7 schema, Express 5 skeleton
+- [x] **Phase 2: Authentication and Sessions** - Registration, login, JWT + sessions hybrid, 2-device limit, session management
 - [ ] **Phase 3: Content API and Admin Content Management** - Content CRUD API, admin panel with content forms, admin auth, R2 thumbnails
 - [ ] **Phase 4: Client Browsing Experience** - Next.js 15 client app, browse pages, hero banners, content rows, detail modal, search
 - [ ] **Phase 5: Video Player and User Features** - hls.js player, controls, keyboard shortcuts, progress tracking, watchlist, favorites
@@ -39,7 +39,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 01-01-PLAN.md -- Monorepo scaffolding with npm workspaces, Docker Compose, TypeScript base config, workspace skeletons
 - [x] 01-02-PLAN.md -- Express 5 API skeleton with Prisma 7 config, middleware, health check, and graceful shutdown
-- [ ] 01-03-PLAN.md -- Complete Prisma 7 schema with all 14 models, initial migration, and end-to-end API verification
+- [x] 01-03-PLAN.md -- Complete Prisma 7 schema with all 14 models, initial migration, and end-to-end API verification
 
 ### Phase 2: Authentication and Sessions
 **Goal**: Users can securely create accounts, log in, manage their sessions, and are limited to 2 concurrent devices
@@ -54,9 +54,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md -- Schema migration (auth fields on User), install auth deps, env config, Express types, Zod validators, phone utils
-- [ ] 02-02-PLAN.md -- Token service (JWT sign/verify), session service (CRUD, 2-device limit), auth service (register/login/password), auth middleware
-- [ ] 02-03-PLAN.md -- Auth routes (register/login/logout/password), session routes (list/delete), cleanup cron job, route wiring, E2E verification
+- [x] 02-01-PLAN.md -- Schema migration (auth fields on User), install auth deps, env config, Express types, Zod validators, phone utils
+- [x] 02-02-PLAN.md -- Token service (JWT sign/verify), session service (CRUD, 2-device limit), auth service (register/login/password), auth middleware
+- [x] 02-03-PLAN.md -- Auth routes (register/login/logout/password), session routes (list/delete), cleanup cron job, route wiring, E2E verification
 
 ### Phase 3: Content API and Admin Content Management
 **Goal**: Admin users can manage the full content catalog (movies, series, documentaries, TV channels) through a dedicated admin panel, and the content API serves structured data for the client
@@ -198,8 +198,8 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Project Foundation and Database | 0/3 | Planning complete | - |
-| 2. Authentication and Sessions | 0/3 | Planning complete | - |
+| 1. Project Foundation and Database | 3/3 | Complete | 2026-03-07 |
+| 2. Authentication and Sessions | 3/3 | Complete | 2026-03-07 |
 | 3. Content API and Admin Content Management | 0/TBD | Not started | - |
 | 4. Client Browsing Experience | 0/TBD | Not started | - |
 | 5. Video Player and User Features | 0/TBD | Not started | - |
