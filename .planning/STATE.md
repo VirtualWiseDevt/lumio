@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 5 of 10 (Video Player and User Features)
-Plan: 3 of 9 in Phase 5
+Plan: 3 of 9 in Phase 5 (05-01, 05-02, 05-03 complete)
 Status: In progress
-Last activity: 2026-03-07 -- Completed 05-03-PLAN.md
+Last activity: 2026-03-07 -- Completed 05-02-PLAN.md
 
-Progress: [█████████████████████░] 24/~32 total plans
+Progress: [██████████████████████░] 25/~32 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 24
+- Total plans completed: 25
 - Average duration: ~5 min
 - Total execution time: ~133 min (including Docker setup + reboot)
 
@@ -33,7 +33,7 @@ Progress: [█████████████████████░] 2
 | 04 - Client Browsing | 8/8 | ~23 min | ~2.9 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-06 (~4 min), 04-07 (~3 min), 04-08 (~2 min), 05-03 (~3 min)
+- Last 5 plans: 04-07 (~3 min), 04-08 (~2 min), 05-03 (~3 min), 05-02 (~4 min)
 - Trend: Stable at ~3 min per plan
 
 *Updated after each plan completion*
@@ -112,6 +112,9 @@ Recent decisions affecting current work:
 - [04-06]: Search results use list layout with small poster thumbnails (not full cards) for density
 - [04-06]: ChannelCard uses Link component for navigation (accessibility + SEO)
 - [04-06]: Search overlay z-60 above navbar z-50 with bg-background/95 backdrop-blur
+- [05-02]: Watchlist model reused as My List backing store (no new model)
+- [05-02]: isPrismaError helper for P2002 phone uniqueness in user service
+- [05-02]: getUserSubscription returns null when no active subscription (not error)
 - [05-03]: Player store uses individual setter functions for granular Zustand reactivity
 - [05-03]: API client functions follow plain async pattern (not hooks) for TanStack Query compatibility
 - [05-03]: User sessions API reuses existing /sessions endpoints from Phase 2
@@ -130,7 +133,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 05-03-PLAN.md
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -145,7 +148,7 @@ IMPORTANT CONTEXT:
 - Session service exports: createSession, enforceDeviceLimit, getUserSessions, deleteSession, deleteOtherSessions, cleanupStaleSessions
 - Auth middleware exports: requireAuth, requireAdmin
 - Admin service exports: adminLogin (rejects non-admin users with generic error)
-- Routes registered: /api/auth (7 endpoints), /api/sessions (2 endpoints), /api/admin (1 endpoint), /api/admin/content (7 endpoints), /api/admin/categories (4 endpoints), /api/admin/upload (2 endpoints), /api/media (1 endpoint), /api/admin/content/:contentId/seasons (8 endpoints)
+- Routes registered: /api/auth (7 endpoints), /api/sessions (2 endpoints), /api/admin (1 endpoint), /api/admin/content (7 endpoints), /api/admin/categories (4 endpoints), /api/admin/upload (2 endpoints), /api/media (1 endpoint), /api/admin/content/:contentId/seasons (8 endpoints), /api/my-list (4 endpoints), /api/user (4 endpoints)
 - Season service exports: listSeasons, createSeason, updateSeason, deleteSeason, listEpisodes, createEpisode, updateEpisode, deleteEpisode, ServiceError
 - Season validators exports: createSeasonSchema, updateSeasonSchema, createEpisodeSchema, updateEpisodeSchema
 - Content service exports: listContent, getContent, createContent, updateContent, deleteContent, publishContent, unpublishContent
@@ -204,3 +207,6 @@ IMPORTANT CONTEXT:
 - Client API: my-list.ts exports getMyList, isInMyList, addToMyList, removeFromMyList
 - Client API: user.ts exports getUserProfile, updateUserProfile, updatePreferences, getUserSubscription, getUserSessions, deleteSession
 - hls.js ^1.6.15 and screenfull ^6.0.2 installed in client workspace
+- My List service exports: getMyList, isInMyList, addToMyList, removeFromMyList (uses Watchlist model)
+- User service exports: getUserProfile, updateUserProfile, updatePreferences, getUserSubscription
+- User validators exports: updateProfileSchema, updatePreferencesSchema
