@@ -5,3 +5,4 @@ dist/
 **/src/generated/
 .next/
 .claude/
+api/uploads/

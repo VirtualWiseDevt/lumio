@@ -5,6 +5,8 @@ import { sessionRouter } from "./session.routes.js";
 import { adminRouter } from "./admin.routes.js";
 import { contentRouter } from "./content.routes.js";
 import { categoryRouter } from "./category.routes.js";
+import { uploadRouter } from "./upload.routes.js";
+import { mediaRouter } from "./media.routes.js";
 
 export {
   healthRouter,
@@ -13,6 +15,8 @@ export {
   adminRouter,
   contentRouter,
   categoryRouter,
+  uploadRouter,
+  mediaRouter,
 };
 
 /**
@@ -25,4 +29,6 @@ export function registerRoutes(app: Express): void {
   app.use("/api/admin", adminRouter);
   app.use("/api/admin/content", contentRouter);
   app.use("/api/admin/categories", categoryRouter);
+  app.use("/api/admin/upload", uploadRouter);
+  app.use("/api/media", mediaRouter);
 }
