@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Client Browsing Experience** - Next.js 15 client app, browse pages, hero banners, content rows, detail modal, search
 - [x] **Phase 5: Video Player and User Features** - hls.js player, controls, keyboard shortcuts, progress tracking, watchlist, favorites
 - [x] **Phase 6: Video Infrastructure and HLS Delivery** - FFmpeg pipeline, keyframe alignment, R2 upload, presigned URLs, CDN cache rules
-- [ ] **Phase 7: Payments and Subscriptions** - M-Pesa STK Push via Daraja, billing UI, subscription guard, callback webhook, reconciliation
+- [x] **Phase 7: Payments and Subscriptions** - M-Pesa STK Push via Daraja, billing UI, subscription guard, callback webhook, reconciliation
 - [ ] **Phase 8: Referral System and Invite Model** - Referral codes, invite-only registration, stacking discounts, coupons
 - [ ] **Phase 9: Notifications and Scheduled Jobs** - Transactional emails, expiry warnings, payment confirmations, cron jobs
 - [ ] **Phase 10: Admin Operations and Dashboard** - Dashboard stats/charts, user management, billing management, settings, activity logs
@@ -160,12 +160,12 @@ Plans:
 **Plans**: 6 plans
 
 Plans:
-- [ ] 07-01-PLAN.md -- Schema migration (Payment fields), M-Pesa config, MpesaClient interface + mock + Daraja implementations, phone normalizer, plan seeding
-- [ ] 07-02-PLAN.md -- Payment service (STK Push initiation, callback processing, history), subscription service (activate, guard), validators
-- [ ] 07-03-PLAN.md -- Client billing types, API client functions with payment polling, useSubscription hook
-- [ ] 07-04-PLAN.md -- Payment routes, M-Pesa callback webhook, plans endpoint, subscription guard on streams, reconciliation cron
-- [ ] 07-05-PLAN.md -- Billing page UI (plan cards, subscription status, payment modal, payment history table)
-- [ ] 07-06-PLAN.md -- SubscribeGate enforcement on player/play actions, build verification, end-to-end human verification
+- [x] 07-01-PLAN.md -- Schema migration (Payment fields), M-Pesa config, MpesaClient interface + mock + Daraja implementations, phone normalizer, plan seeding
+- [x] 07-02-PLAN.md -- Payment service (STK Push initiation, callback processing, history), subscription service (activate, guard), validators
+- [x] 07-03-PLAN.md -- Client billing types, API client functions with payment polling, useSubscription hook
+- [x] 07-04-PLAN.md -- Payment routes, M-Pesa callback webhook, plans endpoint, subscription guard on streams, reconciliation cron
+- [x] 07-05-PLAN.md -- Billing page UI (plan cards, subscription status, payment modal, payment history table)
+- [x] 07-06-PLAN.md -- SubscribeGate enforcement on player/play actions, build verification, end-to-end human verification
 
 ### Phase 8: Referral System and Invite Model
 **Goal**: Lumio operates as an invite-only platform where users grow the community through referrals and earn stacking subscription discounts
@@ -177,11 +177,15 @@ Plans:
   3. At payment time, referral credits are deducted from the plan price; if credits exceed the price, payment is KES 0 and excess credits carry over to the next billing cycle
   4. Invite Friends page displays the user's unique referral link with a copy button and community guidelines
   5. User can enter and redeem coupon/promo codes for subscription discounts on the billing page
-**Plans**: TBD
+**Plans**: 6 plans
 
 Plans:
-- [ ] 08-01: TBD
-- [ ] 08-02: TBD
+- [ ] 08-01-PLAN.md -- Schema migration (referralCreditBalance, CouponRedemption, AdminInviteCode, Payment discount fields), referral and coupon services
+- [ ] 08-02-PLAN.md -- Payment service modification (credit/coupon deduction, KES 0 path, callback credit granting), referral/coupon API routes, auth invite code support
+- [ ] 08-03-PLAN.md -- Admin invite code API (CRUD endpoints) and admin panel invite codes management page
+- [ ] 08-04-PLAN.md -- Client registration and login pages with referral code pre-fill, real-time validation, and URL param capture
+- [ ] 08-05-PLAN.md -- Invite Friends page (referral link, WhatsApp/SMS sharing, stats, guidelines) and billing page coupon/credit integration
+- [ ] 08-06-PLAN.md -- Build verification, API smoke tests, and end-to-end human verification of referral system
 
 ### Phase 9: Notifications and Scheduled Jobs
 **Goal**: Users receive timely email notifications for account events, payments, and subscription lifecycle, driven by automated cron jobs
@@ -229,7 +233,7 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10
 | 4. Client Browsing Experience | 8/8 | Complete | 2026-03-07 |
 | 5. Video Player and User Features | 9/9 | Complete | 2026-03-07 |
 | 6. Video Infrastructure and HLS Delivery | 7/7 | Complete | 2026-03-07 |
-| 7. Payments and Subscriptions | 0/6 | Not started | - |
-| 8. Referral System and Invite Model | 0/TBD | Not started | - |
+| 7. Payments and Subscriptions | 6/6 | Complete | 2026-03-07 |
+| 8. Referral System and Invite Model | 0/6 | Not started | - |
 | 9. Notifications and Scheduled Jobs | 0/TBD | Not started | - |
 | 10. Admin Operations and Dashboard | 0/TBD | Not started | - |
