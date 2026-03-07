@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 7 of 10 (Payments and Subscriptions)
-Plan: 3 of 6 in Phase 7
+Plan: 2 of 6 in Phase 7
 Status: In progress
-Last activity: 2026-03-07 -- Completed 07-03-PLAN.md
+Last activity: 2026-03-07 -- Completed 07-02-PLAN.md
 
-Progress: [█████████████████████████████████████░░░░░░░] 41/~45 total plans
+Progress: [████████████████████████████████████░░░░░░░░] 41/~45 total plans
 
 ## Performance Metrics
 
@@ -167,7 +167,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 07-03-PLAN.md
+Stopped at: Completed 07-02-PLAN.md
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -310,6 +310,14 @@ IMPORTANT CONTEXT:
 - Subscription plans seeded: Weekly (500/7d), Monthly (1250/30d), Quarterly (3000/90d) via api/prisma/seed-plans.ts
 - Payment model has idempotencyKey (String? @unique), rawCallback (Json?), reconciliationAttempts (Int @default(0))
 - M-Pesa env vars: MPESA_ENVIRONMENT (mock/sandbox/production), MPESA_CONSUMER_KEY, MPESA_CONSUMER_SECRET, MPESA_SHORTCODE, MPESA_PASSKEY, MPESA_CALLBACK_URL
+- [07-02]: rawCallback stored as Prisma.InputJsonValue cast (Prisma Json type compatibility)
+- [07-02]: Subscription stacking: new sub extends from existing active sub's expiresAt, old sub marked EXPIRED
+- [07-02]: TxClient type derived from PrismaClient $transaction parameter types (no manual interface)
+- [07-02]: requireSubscription middleware returns 403 with SUBSCRIPTION_REQUIRED code
+- Payment service exports: initiatePayment, processCallback, getPaymentStatus, getPaymentHistory
+- Subscription service exports: activateSubscription, hasActiveSubscription, getActiveSubscription
+- Subscription middleware exports: requireSubscription
+- Payment validators exports: initiatePaymentSchema, callbackSchema
 - [07-03]: SubscriptionInfo type separate from UserSubscription (more fields: id, autoRenew)
 - [07-03]: pollPaymentStatus uses 3s interval / 20 max attempts (60s total timeout)
 - [07-03]: useSubscription urgency thresholds: green (7+), yellow (3-7), red (<3 days)
