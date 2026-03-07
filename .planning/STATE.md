@@ -9,29 +9,30 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 
 ## Current Position
 
-Phase: 1 of 10 COMPLETE (Project Foundation and Database)
-Plan: 3 of 3 in Phase 1
-Status: Phase 1 complete, ready to plan Phase 2
-Last activity: 2026-03-07 -- Phase 1 complete (all 3 plans executed, E2E verified)
+Phase: 2 of 10 (Authentication and Sessions)
+Plan: 1 of 3 in Phase 2
+Status: In progress
+Last activity: 2026-03-07 -- Completed 02-01-PLAN.md (auth foundation)
 
-Progress: [██████████] 3/3 Phase 1
+Progress: [████░░░░░░] 4/~30 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
+- Total plans completed: 4
 - Average duration: ~5 min
-- Total execution time: ~48 min (including Docker setup + reboot)
+- Total execution time: ~53 min (including Docker setup + reboot)
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01 - Foundation | 3/3 | ~48 min | ~16 min |
+| 02 - Auth & Sessions | 1/3 | 5 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (4 min), 01-02 (4 min), 01-03 (~40 min, Docker setup)
-- Trend: 01-03 inflated by Docker Desktop installation + reboot
+- Last 5 plans: 01-01 (4 min), 01-02 (4 min), 01-03 (~40 min, Docker setup), 02-01 (5 min)
+- Trend: Stabilizing at ~5 min per plan without infrastructure setup
 
 *Updated after each plan completion*
 
@@ -50,6 +51,9 @@ Recent decisions affecting current work:
 - [01-02]: Express middleware order: helmet > cors > json > urlencoded > rateLimit > routes > 404 > error
 - [01-03]: Prisma 6.19.2 installed (not 7) -- schema uses prisma-client-js provider with url in datasource block
 - [01-03]: Docker Desktop 4.63.0 installed with WSL2 backend for PostgreSQL 16
+- [02-01]: Zod phone transform uses ctx.addIssue + z.NEVER pattern (proper ZodError propagation)
+- [02-01]: Phone regex accepts 07XX and 01XX prefixes for Safaricom and Airtel Kenya
+- [02-01]: Removed prisma.config.ts from tsconfig include (outside rootDir, Prisma CLI only)
 - [Roadmap]: Stack corrected to Next.js 15.5.x (not 14 EOL), Express 5, Prisma 7, argon2, jose
 - [Roadmap]: Admin content management placed before client (client needs seeded content)
 - [Roadmap]: Video infrastructure isolated into own phase (keyframe errors require full re-transcode)
@@ -65,9 +69,10 @@ None yet.
 - Daraja sandbox reported unstable (Jan 2026) -- may need Pesa Playground alternative for Phase 7
 - Safaricom production go-live approval takes 2-3 weeks -- submit application during Phase 7, not after
 - HLS AES-128 encryption decision deferred -- revisit during Phase 6 planning
+- prisma migrate dev fails in non-interactive terminal -- use manual migration SQL + prisma migrate deploy
 
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Phase 1 complete -- ready to plan Phase 2
+Stopped at: Completed 02-01-PLAN.md (auth foundation)
 Resume file: None
