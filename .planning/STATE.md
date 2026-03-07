@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 6 of 10 in progress (Video Infrastructure and HLS Delivery)
-Plan: 4 of 7 in Phase 6
+Plan: 5 of 7 in Phase 6
 Status: In progress
-Last activity: 2026-03-07 -- Completed 06-04-PLAN.md
+Last activity: 2026-03-07 -- Completed 06-05-PLAN.md
 
-Progress: [███████████████████████████████░] 36/~39 total plans
+Progress: [████████████████████████████████░] 37/~39 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 36
+- Total plans completed: 37
 - Average duration: ~5 min
 - Total execution time: ~170 min (including Docker setup + reboot)
 
@@ -35,7 +35,7 @@ Progress: [███████████████████████
 | 06 - Video Infrastructure | 4/7 | ~19 min | ~4.75 min |
 
 **Recent Trend:**
-- Last 5 plans: 06-04 (~4 min), 06-03 (~3 min), 06-02 (~3 min), 06-01 (~9 min), 05-08 (~2 min)
+- Last 5 plans: 06-05 (~4 min), 06-04 (~4 min), 06-03 (~3 min), 06-02 (~3 min), 06-01 (~9 min)
 - Trend: Service/route plans faster than infrastructure setup plans
 
 *Updated after each plan completion*
@@ -167,7 +167,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 06-04-PLAN.md
+Stopped at: Completed 06-05-PLAN.md
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -286,3 +286,8 @@ IMPORTANT CONTEXT:
 - Stream routes: GET /api/stream/:contentId (master playlist), GET /api/stream/:contentId/:quality (quality playlist with presigned segments)
 - Routes registered: /api/stream (2 endpoints) added to existing route list
 - publishContent auto-enqueues transcode for content and episodes with sourceVideoKey
+- Video upload API client (admin/src/api/video-upload.ts) exports: getPresignedUploadUrl, confirmVideoUpload
+- VideoUploader component: direct R2 upload via presigned PUT, 5GB limit, MP4/MKV/MOV (admin/src/components/content/VideoUploader.tsx)
+- TranscodingBadge component: status-colored badges pending/processing/completed/failed (admin/src/components/content/TranscodingBadge.tsx)
+- VideoUploader integrated into MovieForm (edit mode only) and EpisodeForm (edit mode with contentId + episodeId)
+- Content and Episode admin types include sourceVideoKey, transcodingStatus, transcodingError, hlsKey fields
