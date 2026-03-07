@@ -6,6 +6,7 @@ import type { Content } from "@/types/content";
 
 interface ContentCardProps {
   content: Content;
+  progressPercent?: number;
   onMouseEnter?: (id: string, el: HTMLElement) => void;
   onMouseLeave?: () => void;
   onClick?: () => void;
@@ -13,6 +14,7 @@ interface ContentCardProps {
 
 export function ContentCard({
   content,
+  progressPercent,
   onMouseEnter,
   onMouseLeave,
   onClick,
@@ -43,6 +45,14 @@ export function ContentCard({
         ) : (
           <div className="flex h-full items-center justify-center bg-gradient-to-b from-card-hover to-card p-2">
             <span className="text-center text-sm text-muted">{content.title}</span>
+          </div>
+        )}
+        {progressPercent != null && progressPercent > 0 && (
+          <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/20">
+            <div
+              className="h-full bg-red-600"
+              style={{ width: `${progressPercent}%` }}
+            />
           </div>
         )}
       </div>

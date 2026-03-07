@@ -4,8 +4,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { HeroBanner } from "@/components/hero/HeroBanner";
 import { ContentRow } from "@/components/content/ContentRow";
+import { ContinueWatchingRow } from "@/components/content/ContinueWatchingRow";
+import { ContentCard } from "@/components/content/ContentCard";
 import { fetchHomePageData } from "@/api/content";
+import { getMyList } from "@/api/my-list";
+import { useContentRow } from "@/hooks/use-content-row";
 import type { Content } from "@/types/content";
+import type { MyListItem } from "@/types/player";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 function HomePageSkeleton() {
   return (
@@ -27,6 +34,74 @@ function HomePageSkeleton() {
         ))}
       </div>
     </div>
+  );
+}
+
+function MyListRow() {
+  const router = useRouter();
+  const { scrollRef, canScrollLeft, canScrollRight, scrollLeft, scrollRight } =
+    useContentRow();
+
+  const { data: items = [] } = useQuery<MyListItem[]>({
+    queryKey: ["my-list"],
+    queryFn: getMyList,
+    retry: false,
+  });
+
+  if (items.length === 0) return null;
+
+  return (
+    <section className="group/row relative">
+      <h2 className="mb-1 pl-[4%] text-lg font-semibold text-foreground">
+        My List
+      </h2>
+      <div className="relative">
+        {canScrollLeft && (
+          <button
+            onClick={scrollLeft}
+            className={cn(
+              "absolute left-0 top-0 bottom-0 z-10 flex w-10 items-center justify-center",
+              "bg-black/50 text-white opacity-0 transition-opacity",
+              "group-hover/row:opacity-100 hover:bg-black/70"
+            )}
+            aria-label="Scroll left"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+        )}
+        <div
+          ref={scrollRef}
+          className="scrollbar-hide flex flex-nowrap gap-2 overflow-x-auto px-[4%]"
+          style={{ scrollSnapType: "x mandatory" }}
+        >
+          {items.map((item) => (
+            <div
+              key={item.id}
+              className="content-card flex-shrink-0"
+              style={{ scrollSnapAlign: "start" }}
+            >
+              <ContentCard
+                content={item.content}
+                onClick={() => router.push(`/title/${item.content.id}`)}
+              />
+            </div>
+          ))}
+        </div>
+        {canScrollRight && (
+          <button
+            onClick={scrollRight}
+            className={cn(
+              "absolute right-0 top-0 bottom-0 z-10 flex w-10 items-center justify-center",
+              "bg-black/50 text-white opacity-0 transition-opacity",
+              "group-hover/row:opacity-100 hover:bg-black/70"
+            )}
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="h-6 w-6" />
+          </button>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -77,6 +152,8 @@ export default function HomePage() {
     <div>
       <HeroBanner items={data.featured} />
       <div className="px-4 md:px-12 -mt-16 relative z-10 space-y-2 pb-16">
+        <ContinueWatchingRow />
+        <MyListRow />
         {data.rows.map((row) => (
           <ContentRow
             key={row.slug}
