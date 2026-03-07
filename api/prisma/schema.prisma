@@ -113,6 +113,8 @@ model Content {
   ageRating       String?
   quality         String?
   categories      String[]
+  cast            String[]
+  director        String?
   posterPortrait  String?
   posterLandscape String?
   trailerUrl      String?
@@ -329,4 +331,13 @@ model ActivityLog {
   @@index([action])
   @@index([entityType])
   @@index([createdAt])
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+
+  @@index([name])
 }
