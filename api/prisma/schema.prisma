@@ -70,17 +70,19 @@ model User {
 
   // Referral code for invite system
   referralCode        String?   @unique
+  referralCreditBalance Int     @default(0)
 
   // Relations
-  sessions      Session[]
-  payments      Payment[]
-  subscriptions Subscription[]
-  watchProgress WatchProgress[]
-  watchlist     Watchlist[]
-  favorites     Favorite[]
-  referralsMade Referral[]     @relation("ReferrerRelation")
-  referredBy    Referral?      @relation("RefereeRelation")
-  activityLogs  ActivityLog[]
+  sessions         Session[]
+  payments         Payment[]
+  subscriptions    Subscription[]
+  watchProgress    WatchProgress[]
+  watchlist        Watchlist[]
+  favorites        Favorite[]
+  referralsMade    Referral[]          @relation("ReferrerRelation")
+  referredBy       Referral?           @relation("RefereeRelation")
+  activityLogs     ActivityLog[]
+  couponRedemptions CouponRedemption[]
 
   @@index([email])
   @@index([phone])
@@ -220,14 +222,22 @@ model Payment {
   createdAt               DateTime      @default(now())
   updatedAt               DateTime      @updatedAt
 
+  // Coupon/credit discount fields
+  couponId            String?
+  couponDiscount      Int           @default(0)
+  referralCreditsUsed Int           @default(0)
+
   // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan Plan @relation(fields: [planId], references: [id])
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan             Plan              @relation(fields: [planId], references: [id])
+  coupon           Coupon?           @relation(fields: [couponId], references: [id])
+  couponRedemption CouponRedemption?
 
   @@index([userId])
   @@index([planId])
   @@index([status])
   @@index([checkoutRequestId])
+  @@index([couponId])
   @@index([createdAt])
 }
 
@@ -324,12 +334,46 @@ model Coupon {
   value       Int
   maxUses     Int?
   currentUses Int        @default(0)
+  perUserLimit Int       @default(1)
   expiresAt   DateTime?
   isActive    Boolean    @default(true)
   createdAt   DateTime   @default(now())
 
+  // Relations
+  redemptions CouponRedemption[]
+  payments    Payment[]
+
   @@index([code])
   @@index([isActive])
+}
+
+model CouponRedemption {
+  id        String   @id @default(uuid())
+  couponId  String
+  userId    String
+  paymentId String?  @unique
+  createdAt DateTime @default(now())
+
+  // Relations
+  coupon  Coupon   @relation(fields: [couponId], references: [id])
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payment Payment? @relation(fields: [paymentId], references: [id])
+
+  @@unique([couponId, userId])
+  @@index([userId])
+  @@index([couponId])
+}
+
+model AdminInviteCode {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  maxUses   Int      @default(1)
+  usedCount Int      @default(0)
+  createdBy String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([code])
 }
 
 model ActivityLog {
