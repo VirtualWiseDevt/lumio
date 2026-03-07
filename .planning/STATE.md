@@ -104,6 +104,10 @@ Recent decisions affecting current work:
 - [04-04]: CSS media queries for responsive card sizing (avoids hydration mismatches vs JS approach)
 - [04-04]: 100ms close grace period on hover popover (prevents flicker when moving mouse to popover)
 - [04-04]: Fixed positioning for popover with viewport-aware edge clamping
+- [04-05]: API client functions are plain async (not hooks) -- used inside TanStack Query's queryFn
+- [04-05]: DetailModal uses isFullPage prop to toggle between modal overlay and full page rendering
+- [04-05]: Motion AnimatePresence wraps modal for opacity + translateY entrance animation
+- [04-05]: EpisodeList uses local state for season selection (no URL params needed)
 - [04-06]: Search results use list layout with small poster thumbnails (not full cards) for density
 - [04-06]: ChannelCard uses Link component for navigation (accessibility + SEO)
 - [04-06]: Search overlay z-60 above navbar z-50 with bg-background/95 backdrop-blur
@@ -188,3 +192,5 @@ IMPORTANT CONTEXT:
 - Search: useSearch hook (debounce + keyboard shortcuts), SearchOverlay (full-screen, z-60), SearchResults (grouped by type)
 - Live TV: ChannelCard (poster + pulsing LIVE badge), ChannelGrid (category sections), /live-tv page
 - Client API: content.ts exports fetchHomePageData, fetchBrowsePageData, fetchLiveTvData, fetchTitleDetail, fetchSimilarTitles, searchContent
+- Detail components: DetailModal (overlay/full-page), EpisodeList (season dropdown), MoreLikeThis (similar grid)
+- Detail routes: /title/[id] (full page), @modal/(.)title/[id] (intercepting route for modal overlay)
