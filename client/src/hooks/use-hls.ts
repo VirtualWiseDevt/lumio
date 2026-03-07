@@ -24,6 +24,16 @@ export function useHls(
           const hls = new Hls({
             maxBufferLength: 30,
             maxMaxBufferLength: 60,
+            xhrSetup: (xhr, url) => {
+              // Only add auth header for API requests (playlist fetches).
+              // Presigned R2 segment URLs must NOT receive extra headers.
+              if (url.startsWith("/api/") || url.startsWith(window.location.origin + "/api/")) {
+                const token = localStorage.getItem("token");
+                if (token) {
+                  xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+                }
+              }
+            },
           });
 
           hlsRef.current = hls;

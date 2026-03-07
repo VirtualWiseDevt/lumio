@@ -38,9 +38,15 @@ export interface Episode {
   duration: number | null;
   videoUrl: string | null;
   thumbnail: string | null;
+  transcodingStatus: string | null;
+  hlsKey: string | null;
+  sourceVideoKey: string | null;
 }
 
 export interface ContentDetail extends Content {
+  transcodingStatus: string | null;
+  hlsKey: string | null;
+  sourceVideoKey: string | null;
   seasons?: Season[];
 }
 

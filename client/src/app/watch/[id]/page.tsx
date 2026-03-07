@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { fetchTitleDetail } from "@/api/content";
+import { fetchTitleDetail, getStreamUrl } from "@/api/content";
 import { getProgress } from "@/api/progress";
 import { VideoPlayer } from "@/components/player/VideoPlayer";
 import type { NextEpisodeInfo } from "@/components/player/NextEpisodeOverlay";
@@ -86,18 +86,33 @@ export default function WatchPage({ params }: WatchPageProps) {
         setContent(detail);
 
         // Determine video source
+        // Prefer HLS stream endpoint for transcoded content, fall back to direct URLs
         let src: string | null = null;
 
         if (episodeId && detail.seasons) {
+          // Find the current episode
+          let episode: typeof detail.seasons[0]["episodes"][0] | undefined;
           for (const season of detail.seasons) {
-            const episode = season.episodes.find((ep) => ep.id === episodeId);
-            if (episode?.videoUrl) {
+            episode = season.episodes.find((ep) => ep.id === episodeId);
+            if (episode) break;
+          }
+
+          if (episode) {
+            // Use stream endpoint if episode is transcoded
+            if (episode.hlsKey) {
+              src = getStreamUrl(contentId, episodeId);
+            } else if (episode.videoUrl) {
               src = episode.videoUrl;
-              break;
             }
           }
         }
 
+        // Non-episode content: use stream endpoint if transcoded
+        if (!src && detail.hlsKey) {
+          src = getStreamUrl(contentId);
+        }
+
+        // Fall back to direct streamUrl
         if (!src) {
           src = detail.streamUrl ?? null;
         }
@@ -106,6 +121,10 @@ export default function WatchPage({ params }: WatchPageProps) {
         if (!src && detail.seasons) {
           for (const season of detail.seasons) {
             for (const episode of season.episodes) {
+              if (episode.hlsKey) {
+                src = getStreamUrl(contentId, episode.id);
+                break;
+              }
               if (episode.videoUrl) {
                 src = episode.videoUrl;
                 break;
