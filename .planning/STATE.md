@@ -19,9 +19,9 @@ Progress: [███████████████████████
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 28
+- Total plans completed: 29
 - Average duration: ~5 min
-- Total execution time: ~148 min (including Docker setup + reboot)
+- Total execution time: ~150 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -33,8 +33,8 @@ Progress: [███████████████████████
 | 04 - Client Browsing | 8/8 | ~23 min | ~2.9 min |
 
 **Recent Trend:**
-- Last 5 plans: 05-05 (~3 min), 05-04 (~3 min), 05-03 (~3 min), 05-02 (~4 min), 05-01 (~9 min)
-- Trend: Consistent ~3 min for client-only UI plans
+- Last 5 plans: 05-06 (~2 min), 05-05 (~3 min), 05-04 (~3 min), 05-03 (~3 min), 05-02 (~4 min)
+- Trend: Consistent ~2-3 min for client-only UI plans
 
 *Updated after each plan completion*
 
@@ -123,6 +123,9 @@ Recent decisions affecting current work:
 - [05-01]: Hybrid threshold: max(120s, 5% duration), exclude completed (90%+), exclude <2min content
 - [05-05]: Broad invalidation of ["my-list"] on settle ensures /my-list page cache stays in sync with individual toggles
 - [05-05]: MyListButton uses stopPropagation + preventDefault to work inside clickable card containers
+- [05-06]: Auto-renew toggle disabled with Phase 7 dependency note (no PATCH endpoint yet)
+- [05-06]: Device removal uses inline confirm/cancel pattern instead of modal dialog
+- [05-06]: Newsletter value read via unknown cast since UserProfile type lacks newsletter field
 
 ### Pending Todos
 
@@ -138,7 +141,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 05-05-PLAN.md
+Stopped at: Completed 05-06-PLAN.md
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -217,6 +220,8 @@ IMPORTANT CONTEXT:
 - User validators exports: updateProfileSchema, updatePreferencesSchema
 - Progress service exports: saveProgress, getProgress, getContinueWatching
 - Progress validators exports: saveProgressSchema, continueWatchingQuerySchema
+- Account components: ProfileSection, SubscriptionSection, DeviceSection, PreferencesSection (client/src/components/account/)
+- Account page at /account renders all 4 sections with TanStack Query for data fetching/mutations
 - useMyList hook: optimistic toggle with TanStack Query (client/src/hooks/use-my-list.ts)
 - MyListButton component: circular Plus/Check toggle with sm/md/lg sizes (client/src/components/my-list/MyListButton.tsx)
 - /my-list page: responsive grid with skeleton loading and empty state (client/src/app/my-list/page.tsx)
