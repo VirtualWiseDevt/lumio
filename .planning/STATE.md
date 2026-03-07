@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 2 of 10 (Authentication and Sessions)
-Plan: 1 of 3 in Phase 2
+Plan: 2 of 3 in Phase 2
 Status: In progress
-Last activity: 2026-03-07 -- Completed 02-01-PLAN.md (auth foundation)
+Last activity: 2026-03-07 -- Completed 02-02-PLAN.md (auth services & middleware)
 
-Progress: [████░░░░░░] 4/~30 total plans
+Progress: [█████░░░░░] 5/~30 total plans
 
 ## Performance Metrics
 
@@ -28,11 +28,11 @@ Progress: [████░░░░░░] 4/~30 total plans
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01 - Foundation | 3/3 | ~48 min | ~16 min |
-| 02 - Auth & Sessions | 1/3 | 5 min | 5 min |
+| 02 - Auth & Sessions | 2/3 | 7 min | 3.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (4 min), 01-02 (4 min), 01-03 (~40 min, Docker setup), 02-01 (5 min)
-- Trend: Stabilizing at ~5 min per plan without infrastructure setup
+- Last 5 plans: 01-01 (4 min), 01-02 (4 min), 01-03 (~40 min, Docker setup), 02-01 (5 min), 02-02 (2 min)
+- Trend: Stabilizing at ~3-5 min per plan without infrastructure setup
 
 *Updated after each plan completion*
 
@@ -54,6 +54,9 @@ Recent decisions affecting current work:
 - [02-01]: Zod phone transform uses ctx.addIssue + z.NEVER pattern (proper ZodError propagation)
 - [02-01]: Phone regex accepts 07XX and 01XX prefixes for Safaricom and Airtel Kenya
 - [02-01]: Removed prisma.config.ts from tsconfig include (outside rootDir, Prisma CLI only)
+- [02-02]: Register uses interactive Prisma $transaction for atomic user+referral+session creation
+- [02-02]: Login returns discriminated union (deviceLimitReached true/false) for type-safe route handling
+- [02-02]: Auth middleware fire-and-forget lastActiveAt update with .catch(() => {}) to avoid latency
 - [Roadmap]: Stack corrected to Next.js 15.5.x (not 14 EOL), Express 5, Prisma 7, argon2, jose
 - [Roadmap]: Admin content management placed before client (client needs seeded content)
 - [Roadmap]: Video infrastructure isolated into own phase (keyframe errors require full re-transcode)
@@ -74,5 +77,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 02-01-PLAN.md (auth foundation)
+Stopped at: Completed 02-02-PLAN.md (auth services & middleware)
 Resume file: None
