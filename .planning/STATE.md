@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 4 of 10 (Client Browsing Experience)
-Plan: 4 of ~8 in Phase 4
+Plan: 6 of ~8 in Phase 4
 Status: In progress
-Last activity: 2026-03-07 -- Completed 04-04-PLAN.md (Content Rows and Hover Popover)
+Last activity: 2026-03-07 -- Completed 04-06-PLAN.md (Search Overlay and Live TV)
 
-Progress: [███████████████████░] 19/~30 total plans
+Progress: [████████████████████░] 21/~30 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 19
+- Total plans completed: 21
 - Average duration: ~5 min
-- Total execution time: ~111 min (including Docker setup + reboot)
+- Total execution time: ~119 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -32,7 +32,7 @@ Progress: [███████████████████░] 19/~30 
 | 03 - Content API & Admin | 9/9 | 47 min | 5.2 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-09 (3 min), 04-01 (~5 min), 04-02 (~5 min), 04-03 (3 min), 04-04 (3 min)
+- Last 5 plans: 04-02 (~5 min), 04-03 (3 min), 04-04 (3 min), 04-05 (~4 min), 04-06 (~4 min)
 - Trend: Stabilizing at ~4 min per plan
 
 *Updated after each plan completion*
@@ -104,6 +104,9 @@ Recent decisions affecting current work:
 - [04-04]: CSS media queries for responsive card sizing (avoids hydration mismatches vs JS approach)
 - [04-04]: 100ms close grace period on hover popover (prevents flicker when moving mouse to popover)
 - [04-04]: Fixed positioning for popover with viewport-aware edge clamping
+- [04-06]: Search results use list layout with small poster thumbnails (not full cards) for density
+- [04-06]: ChannelCard uses Link component for navigation (accessibility + SEO)
+- [04-06]: Search overlay z-60 above navbar z-50 with bg-background/95 backdrop-blur
 
 ### Pending Todos
 
@@ -119,7 +122,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 04-04-PLAN.md (Content Rows and Hover Popover)
+Stopped at: Completed 04-06-PLAN.md (Search Overlay and Live TV)
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -182,3 +185,6 @@ IMPORTANT CONTEXT:
 - Content row components: ContentRow (horizontal scroll with arrows), ContentCard (poster + title), HoverPopover (enlarged card with metadata)
 - Content row hooks: useContentRow (scroll tracking, arrow visibility), useHoverPopover (500ms delay, shared hover zone)
 - .content-card CSS class provides responsive sizing: 2/3/4/5/6 cards at breakpoints <500/500/800/1100/1400px
+- Search: useSearch hook (debounce + keyboard shortcuts), SearchOverlay (full-screen, z-60), SearchResults (grouped by type)
+- Live TV: ChannelCard (poster + pulsing LIVE badge), ChannelGrid (category sections), /live-tv page
+- Client API: content.ts exports fetchHomePageData, fetchBrowsePageData, fetchLiveTvData, fetchTitleDetail, fetchSimilarTitles, searchContent
