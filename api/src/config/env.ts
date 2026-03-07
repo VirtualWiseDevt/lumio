@@ -18,6 +18,14 @@ const envSchema = z.object({
   R2_ACCESS_KEY_ID: z.string().min(1, "R2_ACCESS_KEY_ID is required"),
   R2_SECRET_ACCESS_KEY: z.string().min(1, "R2_SECRET_ACCESS_KEY is required"),
   R2_BUCKET_NAME: z.string().min(1, "R2_BUCKET_NAME is required"),
+
+  // M-Pesa / Daraja
+  MPESA_ENVIRONMENT: z.enum(["mock", "sandbox", "production"]).default("mock"),
+  MPESA_CONSUMER_KEY: z.string().default(""),
+  MPESA_CONSUMER_SECRET: z.string().default(""),
+  MPESA_SHORTCODE: z.string().default("174379"),
+  MPESA_PASSKEY: z.string().default(""),
+  MPESA_CALLBACK_URL: z.string().default("http://localhost:5000/api/mpesa/callback"),
 });
 
 const parsed = envSchema.safeParse(process.env);
