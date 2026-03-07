@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 
 ## Current Position
 
-Phase: 4 of 10 complete (Client Browsing Experience)
-Plan: 8 of 8 in Phase 4
-Status: Complete
-Last activity: 2026-03-07 -- Completed Phase 4 (all 8 plans)
+Phase: 5 of 10 (Video Player and User Features)
+Plan: 3 of 9 in Phase 5
+Status: In progress
+Last activity: 2026-03-07 -- Completed 05-03-PLAN.md
 
-Progress: [████████████████████░] 23/~30 total plans
+Progress: [█████████████████████░] 24/~32 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 23
+- Total plans completed: 24
 - Average duration: ~5 min
-- Total execution time: ~130 min (including Docker setup + reboot)
+- Total execution time: ~133 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -33,8 +33,8 @@ Progress: [████████████████████░] 23/~
 | 04 - Client Browsing | 8/8 | ~23 min | ~2.9 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-04 (3 min), 04-05 (~4 min), 04-06 (~4 min), 04-07 (~3 min), 04-08 (~2 min)
-- Trend: Accelerating at ~3 min per plan
+- Last 5 plans: 04-06 (~4 min), 04-07 (~3 min), 04-08 (~2 min), 05-03 (~3 min)
+- Trend: Stable at ~3 min per plan
 
 *Updated after each plan completion*
 
@@ -112,6 +112,9 @@ Recent decisions affecting current work:
 - [04-06]: Search results use list layout with small poster thumbnails (not full cards) for density
 - [04-06]: ChannelCard uses Link component for navigation (accessibility + SEO)
 - [04-06]: Search overlay z-60 above navbar z-50 with bg-background/95 backdrop-blur
+- [05-03]: Player store uses individual setter functions for granular Zustand reactivity
+- [05-03]: API client functions follow plain async pattern (not hooks) for TanStack Query compatibility
+- [05-03]: User sessions API reuses existing /sessions endpoints from Phase 2
 
 ### Pending Todos
 
@@ -127,7 +130,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed Phase 4 (all 8 plans verified)
+Stopped at: Completed 05-03-PLAN.md
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -195,3 +198,9 @@ IMPORTANT CONTEXT:
 - Client API: content.ts exports fetchHomePageData, fetchBrowsePageData, fetchLiveTvData, fetchTitleDetail, fetchSimilarTitles, searchContent
 - Detail components: DetailModal (overlay/full-page), EpisodeList (season dropdown), MoreLikeThis (similar grid)
 - Detail routes: /title/[id] (full page), @modal/(.)title/[id] (intercepting route for modal overlay)
+- Player types: PlayerState, ProgressData, ContinueWatchingItem, MyListItem, UserProfile, UserSubscription, DeviceSession (client/src/types/player.ts)
+- Player store: usePlayerStore with all state fields, individual setters, and reset() (client/src/stores/player.ts)
+- Client API: progress.ts exports saveProgress, getProgress, getContinueWatching
+- Client API: my-list.ts exports getMyList, isInMyList, addToMyList, removeFromMyList
+- Client API: user.ts exports getUserProfile, updateUserProfile, updatePreferences, getUserSubscription, getUserSessions, deleteSession
+- hls.js ^1.6.15 and screenfull ^6.0.2 installed in client workspace
