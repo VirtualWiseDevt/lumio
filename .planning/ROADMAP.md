@@ -157,12 +157,15 @@ Plans:
   3. Successful M-Pesa callback atomically records the payment and activates/extends the subscription, and the user gains immediate access to content
   4. A reconciliation cron job queries the Daraja Transaction Status API for PENDING payments older than 2 minutes and resolves lost callbacks
   5. Subscription guard middleware blocks expired users from all content pages and redirects them to the billing page, and payment history table is visible with method, date, plan, amount, and status
-**Plans**: TBD
+**Plans**: 6 plans
 
 Plans:
-- [ ] 07-01: TBD
-- [ ] 07-02: TBD
-- [ ] 07-03: TBD
+- [ ] 07-01-PLAN.md -- Schema migration (Payment fields), M-Pesa config, MpesaClient interface + mock + Daraja implementations, phone normalizer, plan seeding
+- [ ] 07-02-PLAN.md -- Payment service (STK Push initiation, callback processing, history), subscription service (activate, guard), validators
+- [ ] 07-03-PLAN.md -- Client billing types, API client functions with payment polling, useSubscription hook
+- [ ] 07-04-PLAN.md -- Payment routes, M-Pesa callback webhook, plans endpoint, subscription guard on streams, reconciliation cron
+- [ ] 07-05-PLAN.md -- Billing page UI (plan cards, subscription status, payment modal, payment history table)
+- [ ] 07-06-PLAN.md -- SubscribeGate enforcement on player/play actions, build verification, end-to-end human verification
 
 ### Phase 8: Referral System and Invite Model
 **Goal**: Lumio operates as an invite-only platform where users grow the community through referrals and earn stacking subscription discounts
@@ -226,7 +229,7 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10
 | 4. Client Browsing Experience | 8/8 | Complete | 2026-03-07 |
 | 5. Video Player and User Features | 9/9 | Complete | 2026-03-07 |
 | 6. Video Infrastructure and HLS Delivery | 7/7 | Complete | 2026-03-07 |
-| 7. Payments and Subscriptions | 0/TBD | Not started | - |
+| 7. Payments and Subscriptions | 0/6 | Not started | - |
 | 8. Referral System and Invite Model | 0/TBD | Not started | - |
 | 9. Notifications and Scheduled Jobs | 0/TBD | Not started | - |
 | 10. Admin Operations and Dashboard | 0/TBD | Not started | - |
