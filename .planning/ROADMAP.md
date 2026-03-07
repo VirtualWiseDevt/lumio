@@ -114,12 +114,18 @@ Plans:
   3. Keyboard shortcuts work: Space (play/pause), Arrow keys (skip 10s), F (fullscreen), M (mute), Esc (close player)
   4. Playback progress is saved periodically, and user sees a Continue Watching row with progress bars and time filtering (3/6/12 months) that resumes from where they left off
   5. User can add/remove content from Watchlist and Favorites, and the account settings page shows profile card, subscription status, premium days remaining, newsletter/auto-renew toggles, and device list
-**Plans**: TBD
+**Plans**: 9 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
-- [ ] 05-03: TBD
+- [ ] 05-01-PLAN.md -- Schema migration (User.newsletter), progress tracking service, continue-watching API endpoints
+- [ ] 05-02-PLAN.md -- My List API (backed by Watchlist model) and User profile/preferences/subscription API endpoints
+- [ ] 05-03-PLAN.md -- Client deps (hls.js, screenfull), player types, Zustand player store, API client functions
+- [ ] 05-04-PLAN.md -- Video player core + controls: VideoPlayer, useHls, PlayerControls, ProgressBar, VolumeControl, keyboard shortcuts, /watch/[id] page
+- [ ] 05-05-PLAN.md -- My List frontend: useMyList hook with optimistic updates, MyListButton component, /my-list page
+- [ ] 05-06-PLAN.md -- Account settings page with Profile, Subscription, Devices, Preferences sections
+- [ ] 05-07-PLAN.md -- Progress tracking hook, NextEpisodeOverlay, Continue Watching row with time filtering
+- [ ] 05-08-PLAN.md -- Integration wiring: MyListButton in cards/detail/player, Continue Watching on home, auth on API client, navbar links
+- [ ] 05-09-PLAN.md -- Build verification, API smoke tests, and end-to-end human verification
 
 ### Phase 6: Video Infrastructure and HLS Delivery
 **Goal**: Admin-uploaded video files are transcoded into multi-bitrate HLS with correct keyframe alignment and delivered securely via Cloudflare R2 and CDN
@@ -213,7 +219,7 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10
 | 2. Authentication and Sessions | 3/3 | Complete | 2026-03-07 |
 | 3. Content API and Admin Content Management | 9/9 | Complete | 2026-03-07 |
 | 4. Client Browsing Experience | 8/8 | Complete | 2026-03-07 |
-| 5. Video Player and User Features | 0/TBD | Not started | - |
+| 5. Video Player and User Features | 0/9 | Not started | - |
 | 6. Video Infrastructure and HLS Delivery | 0/TBD | Not started | - |
 | 7. Payments and Subscriptions | 0/TBD | Not started | - |
 | 8. Referral System and Invite Model | 0/TBD | Not started | - |
