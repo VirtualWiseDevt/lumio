@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 3 of 10 (Content API and Admin Content Management)
-Plan: 6 of 9 in Phase 3
+Plan: 7 of 9 in Phase 3
 Status: In progress
-Last activity: 2026-03-07 -- Completed 03-06-PLAN.md (Admin Content Listing Pages)
+Last activity: 2026-03-07 -- Completed 03-07-PLAN.md (Content Create/Edit Forms)
 
-Progress: [████████████░] 12/~30 total plans
+Progress: [█████████████░] 13/~30 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
+- Total plans completed: 13
 - Average duration: ~5 min
-- Total execution time: ~91 min (including Docker setup + reboot)
+- Total execution time: ~96 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [████████████░] 12/~30 total plans
 |-------|-------|-------|----------|
 | 01 - Foundation | 3/3 | ~48 min | ~16 min |
 | 02 - Auth & Sessions | 3/3 | 12 min | 4 min |
-| 03 - Content API & Admin | 6/9 | 33 min | 5.5 min |
+| 03 - Content API & Admin | 7/9 | 38 min | 5.4 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-02 (10 min), 03-03 (2 min), 03-04 (4 min), 03-05 (4 min), 03-06 (6 min)
+- Last 5 plans: 03-03 (2 min), 03-04 (4 min), 03-05 (4 min), 03-06 (6 min), 03-07 (5 min)
 - Trend: Stabilizing at ~5 min per plan
 
 *Updated after each plan completion*
@@ -89,6 +89,11 @@ Recent decisions affecting current work:
 - [03-06]: Edit navigation uses string cast for routes not yet registered (Plan 07 will add detail routes)
 - [03-06]: useContentFilters hook uses local state with debounce, not URL search params
 - [03-06]: Content list page pattern: PageContainer > FilterBar > Grid/Table > Pagination
+- [03-07]: MovieForm reused for MOVIE and DOCUMENTARY via contentType prop
+- [03-07]: Categories use toggle button list for visual multi-select (not dropdown)
+- [03-07]: Cast uses tag input pattern (Enter to add, X to remove)
+- [03-07]: Form stores releaseYear/duration as strings, converts to numbers at submit (Zod transform + react-hook-form incompatibility)
+- [03-07]: useParams({ strict: false }) with type assertion for route params
 
 ### Pending Todos
 
@@ -104,7 +109,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-07
-Stopped at: Completed 03-06-PLAN.md (Admin Content Listing Pages)
+Stopped at: Completed 03-07-PLAN.md (Content Create/Edit Forms)
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -139,7 +144,7 @@ IMPORTANT CONTEXT:
 - Upload middleware exports: imageUpload (multer instance), handleMulterError
 - Media route serves files from api/uploads/ directory (public, no auth)
 - Image paths are relative (e.g., "posters/large/uuid-large.webp") -- media route resolves against UPLOAD_DIR
-- shadcn components installed: button, input, label, card, badge, separator, dropdown-menu, dialog, sheet, sonner, table, select, skeleton, alert-dialog
+- shadcn components installed: button, input, label, card, badge, separator, dropdown-menu, dialog, sheet, sonner, table, select, skeleton, alert-dialog, switch, textarea
 - @tanstack/react-table installed for data table views
 - Admin content API client (admin/src/api/content.ts) exports: listContent, getContent, createContent, updateContent, deleteContent, publishContent, unpublishContent
 - Admin categories API client (admin/src/api/categories.ts) exports: listCategories, createCategory, updateCategory, deleteCategory
@@ -147,3 +152,9 @@ IMPORTANT CONTEXT:
 - Shared components: FilterBar, StatusBadge, Pagination, ContentCard, ContentGrid, ContentTable
 - Content column defs: getMovieColumns, getDocumentaryColumns, getChannelColumns
 - useContentFilters hook manages: status, category, search (debounced 300ms), page, sortBy, sortOrder, viewMode
+- Admin upload API client (admin/src/api/upload.ts) exports: uploadPoster, uploadBackdrop
+- ImageUploader component: drag-and-drop with react-dropzone, poster (2:3) and backdrop (16:9) types
+- MovieForm component: shared for MOVIE and DOCUMENTARY, React Hook Form + Zod, all content fields
+- ChannelForm component: simplified for CHANNEL with streamUrl field
+- Content create/edit routes registered: /movies/new, /movies/$movieId, /documentaries/new, /documentaries/$docId, /channels/new, /channels/$channelId
+- react-hook-form, @hookform/resolvers, react-dropzone installed in admin workspace
