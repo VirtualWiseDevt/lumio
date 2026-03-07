@@ -1,5 +1,6 @@
 import { Router, type Request, type Response } from "express";
 import { requireAuth } from "../middleware/auth.middleware.js";
+import { requireSubscription } from "../middleware/subscription.middleware.js";
 import { prisma } from "../config/database.js";
 import {
   getStreamPlaylist,
@@ -8,7 +9,7 @@ import {
 
 export const streamRouter = Router();
 
-streamRouter.use(requireAuth);
+streamRouter.use(requireAuth, requireSubscription);
 
 /**
  * GET /api/stream/:contentId

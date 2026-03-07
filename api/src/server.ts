@@ -4,6 +4,7 @@ import { env } from "./config/env.js";
 import { prisma } from "./config/database.js";
 import { startSessionCleanupJob } from "./jobs/sessionCleanup.job.js";
 import { startTranscodeWorker } from "./jobs/transcode.job.js";
+import { startReconciliationJob } from "./jobs/reconciliation.job.js";
 
 const app = buildApp();
 
@@ -12,6 +13,8 @@ const server = app.listen(env.PORT, () => {
   startSessionCleanupJob();
   startTranscodeWorker();
   console.log("Transcode worker started");
+  startReconciliationJob();
+  console.log("Reconciliation job started");
 });
 
 /**
