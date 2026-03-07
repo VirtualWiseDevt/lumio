@@ -51,11 +51,12 @@ Plans:
   3. User can view all their active sessions (device name, type, IP, last active time) and remotely terminate any session
   4. User can change their password from account settings, which invalidates all other active sessions
   5. Stale sessions (inactive 7+ days) are automatically cleaned up by the server
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md -- Schema migration (auth fields on User), install auth deps, env config, Express types, Zod validators, phone utils
+- [ ] 02-02-PLAN.md -- Token service (JWT sign/verify), session service (CRUD, 2-device limit), auth service (register/login/password), auth middleware
+- [ ] 02-03-PLAN.md -- Auth routes (register/login/logout/password), session routes (list/delete), cleanup cron job, route wiring, E2E verification
 
 ### Phase 3: Content API and Admin Content Management
 **Goal**: Admin users can manage the full content catalog (movies, series, documentaries, TV channels) through a dedicated admin panel, and the content API serves structured data for the client
@@ -198,7 +199,7 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Project Foundation and Database | 0/3 | Planning complete | - |
-| 2. Authentication and Sessions | 0/TBD | Not started | - |
+| 2. Authentication and Sessions | 0/3 | Planning complete | - |
 | 3. Content API and Admin Content Management | 0/TBD | Not started | - |
 | 4. Client Browsing Experience | 0/TBD | Not started | - |
 | 5. Video Player and User Features | 0/TBD | Not started | - |
