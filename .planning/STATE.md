@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-03-06)
 
 **Core value:** Users can stream high-quality movies, series, documentaries, and live TV with seamless M-Pesa subscription payments -- affordable, accessible, and built for East Africa.
-**Current focus:** Phase 8 - Referral System and Invite Model
+**Current focus:** Phase 9 - Notifications and Scheduled Jobs
 
 ## Current Position
 
-Phase: 8 of 10 (Referral System and Invite Model)
-Plan: 5 of 6 in Phase 8
-Status: In progress
-Last activity: 2026-03-08 -- Completed 08-05-PLAN.md (Client Referral & Coupon UI)
+Phase: 9 of 10 (Notifications and Scheduled Jobs)
+Plan: 0 of ? in Phase 9
+Status: Not started
+Last activity: 2026-03-08 -- Completed Phase 8 (all 6 plans, verified 5/5)
 
-Progress: [█████████████████████████████████████████████░] 52/~54 total plans
+Progress: [████████████████████████████████████████████░░] 53/~58 total plans
 
 ## Performance Metrics
 
@@ -34,10 +34,11 @@ Progress: [███████████████████████
 | 05 - Video Player & User | 9/9 | ~20 min | ~2.2 min |
 | 06 - Video Infrastructure | 7/7 | ~29 min | ~4.1 min |
 | 07 - Payments & Subscriptions | 6/6 | ~16 min | ~2.7 min |
+| 08 - Referral & Invite Model | 6/6 | ~15 min | ~2.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 08-05 (~4 min), 08-04 (~3 min), 07-06 (~6 min), 07-05 (~4 min), 07-04 (~3 min)
-- Trend: Referral phase continuing fast execution pattern
+- Last 5 plans: 08-05 (~4 min), 08-04 (~3 min), 08-03 (~2 min), 08-02 (~4 min), 08-01 (~3 min)
+- Trend: Referral phase very fast (~2.5 min avg), parallel waves efficient
 
 *Updated after each plan completion*
 
@@ -153,6 +154,21 @@ Recent decisions affecting current work:
 - [06-02]: headR2Object catches NotFound and NoSuchKey errors, returns null (S3-compatible)
 - [06-02]: Presign key pattern: videos/{contentId}[/episodes/{episodeId}]/raw/source.{ext}
 - [06-02]: ffprobe allowed codecs: h264, hevc, vp9, mpeg4, prores, dnxhd, vp8, av1
+- [08-01]: Referral code generated at registration via crypto.randomBytes(4).toString("hex")
+- [08-01]: AdminInviteCode model for bootstrapping initial users (code, maxUses, usedCount, isActive)
+- [08-01]: CouponRedemption model with @@unique([couponId, userId]) for per-user tracking
+- [08-02]: Credit deduction deferred to callback success (not initiation) to prevent credit loss on failed M-Pesa payments
+- [08-02]: KES 0 path creates SUCCESS payment with method "CREDITS" atomically (no M-Pesa needed)
+- [08-02]: grantReferralCreditIfFirst checks SUCCESS payment count === 1 for first-payment grant
+- [08-02]: Registration checks User.referralCode first, falls back to AdminInviteCode (no Referral for admin codes)
+- [08-04]: Navbar hidden on /register and /login paths (auth pages are standalone)
+- [08-04]: Register page debounces referral code validation at 500ms with real-time feedback
+- [08-05]: CouponInput expandable "Have a promo code?" pattern with validate/apply/remove
+- [08-05]: PaymentModal shows line item breakdown (plan - coupon - credits = total), "Activate Free" for KES 0
+- Routes registered: /api/referrals (3 endpoints), /api/coupons (1 endpoint), /api/admin/invite-codes (3 endpoints)
+- Client pages: /register, /login, /invite, /billing (updated with coupon+credits)
+- Client API: auth.ts (register, login, validateReferralCode, forceLogin), referral.ts (getMyReferralCode, getReferralStats)
+- Admin invite codes page at /invite-codes with generate, list, copy, toggle
 
 ### Pending Todos
 
@@ -168,7 +184,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-08
-Stopped at: Completed 08-04-PLAN.md (Auth Pages - Registration & Login)
+Stopped at: Completed Phase 8 (all 6 plans, verified 5/5)
 Resume file: None
 
 IMPORTANT CONTEXT:

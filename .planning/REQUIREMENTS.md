@@ -48,13 +48,13 @@
 
 ### Payments
 
-- [ ] **PAY-01**: M-Pesa STK Push payment initiated via Safaricom Daraja API
-- [ ] **PAY-02**: Three subscription plans available: Weekly (KES 500 / 7 days), Monthly (KES 1,250 / 30 days), Quarterly (KES 3,000 / 90 days)
-- [ ] **PAY-03**: Billing page displays current plan info, editable M-Pesa number, plan selection cards, Pay with M-Pesa button
-- [ ] **PAY-04**: M-Pesa payment modal shows amount, phone, waiting spinner, and success/failure states
-- [ ] **PAY-05**: Payment history table displays user, method, date, plan, amount, and status
-- [ ] **PAY-06**: Subscription guard middleware blocks expired users from content and redirects to billing page
-- [ ] **PAY-07**: M-Pesa callback webhook processes payment results and updates subscription status atomically
+- [x] **PAY-01**: M-Pesa STK Push payment initiated via Safaricom Daraja API
+- [x] **PAY-02**: Three subscription plans available: Weekly (KES 500 / 7 days), Monthly (KES 1,250 / 30 days), Quarterly (KES 3,000 / 90 days)
+- [x] **PAY-03**: Billing page displays current plan info, editable M-Pesa number, plan selection cards, Pay with M-Pesa button
+- [x] **PAY-04**: M-Pesa payment modal shows amount, phone, waiting spinner, and success/failure states
+- [x] **PAY-05**: Payment history table displays user, method, date, plan, amount, and status
+- [x] **PAY-06**: Subscription guard middleware blocks expired users from content and redirects to billing page
+- [x] **PAY-07**: M-Pesa callback webhook processes payment results and updates subscription status atomically
 
 ### Referral System
 
@@ -155,19 +155,19 @@
 | USER-03 | Phase 5 | Complete |
 | USER-04 | Phase 5 | Complete |
 | USER-05 | Phase 5 | Complete |
-| USER-06 | Phase 8 | Pending |
-| PAY-01 | Phase 7 | Pending |
-| PAY-02 | Phase 7 | Pending |
-| PAY-03 | Phase 7 | Pending |
-| PAY-04 | Phase 7 | Pending |
-| PAY-05 | Phase 7 | Pending |
-| PAY-06 | Phase 7 | Pending |
-| PAY-07 | Phase 7 | Pending |
-| REF-01 | Phase 8 | Pending |
-| REF-02 | Phase 8 | Pending |
-| REF-03 | Phase 8 | Pending |
-| REF-04 | Phase 8 | Pending |
-| REF-05 | Phase 8 | Pending |
+| USER-06 | Phase 8 | Complete |
+| PAY-01 | Phase 7 | Complete |
+| PAY-02 | Phase 7 | Complete |
+| PAY-03 | Phase 7 | Complete |
+| PAY-04 | Phase 7 | Complete |
+| PAY-05 | Phase 7 | Complete |
+| PAY-06 | Phase 7 | Complete |
+| PAY-07 | Phase 7 | Complete |
+| REF-01 | Phase 8 | Complete |
+| REF-02 | Phase 8 | Complete |
+| REF-03 | Phase 8 | Complete |
+| REF-04 | Phase 8 | Complete |
+| REF-05 | Phase 8 | Complete |
 | NOTF-01 | Phase 9 | Pending |
 | NOTF-02 | Phase 9 | Pending |
 | NOTF-03 | Phase 9 | Pending |

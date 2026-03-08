@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Video Player and User Features** - hls.js player, controls, keyboard shortcuts, progress tracking, watchlist, favorites
 - [x] **Phase 6: Video Infrastructure and HLS Delivery** - FFmpeg pipeline, keyframe alignment, R2 upload, presigned URLs, CDN cache rules
 - [x] **Phase 7: Payments and Subscriptions** - M-Pesa STK Push via Daraja, billing UI, subscription guard, callback webhook, reconciliation
-- [ ] **Phase 8: Referral System and Invite Model** - Referral codes, invite-only registration, stacking discounts, coupons
+- [x] **Phase 8: Referral System and Invite Model** - Referral codes, invite-only registration, stacking discounts, coupons
 - [ ] **Phase 9: Notifications and Scheduled Jobs** - Transactional emails, expiry warnings, payment confirmations, cron jobs
 - [ ] **Phase 10: Admin Operations and Dashboard** - Dashboard stats/charts, user management, billing management, settings, activity logs
 
