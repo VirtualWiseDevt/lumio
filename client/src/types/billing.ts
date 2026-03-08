@@ -45,3 +45,9 @@ export interface SubscriptionInfo {
   expiresAt: string;
   autoRenew: boolean;
 }
+
+export interface CouponValidation {
+  valid: boolean;
+  discountPercentage?: number;
+  message?: string;
+}

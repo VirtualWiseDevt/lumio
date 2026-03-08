@@ -5,6 +5,7 @@ import type {
   PaymentStatusResponse,
   PaymentHistoryResponse,
   SubscriptionInfo,
+  CouponValidation,
 } from "@/types/billing";
 
 export async function getPlans(): Promise<Plan[]> {
@@ -14,11 +15,12 @@ export async function getPlans(): Promise<Plan[]> {
 
 export async function initiatePayment(
   planId: string,
-  phone: string
+  phone: string,
+  couponCode?: string
 ): Promise<InitiatePaymentResponse> {
   const { data } = await api.post<InitiatePaymentResponse>(
     "/payments/initiate",
-    { planId, phone }
+    { planId, phone, couponCode }
   );
   return data;
 }
@@ -72,6 +74,33 @@ export async function getPaymentHistory(
     { params: { page, limit } }
   );
   return data;
+}
+
+export async function validateCoupon(code: string): Promise<CouponValidation> {
+  try {
+    const { data } = await api.post<CouponValidation>("/coupons/validate", {
+      code,
+    });
+    return data;
+  } catch (err) {
+    if (
+      err &&
+      typeof err === "object" &&
+      "response" in err &&
+      err.response &&
+      typeof err.response === "object" &&
+      "data" in err.response &&
+      err.response.data &&
+      typeof err.response.data === "object" &&
+      "message" in err.response.data
+    ) {
+      return {
+        valid: false,
+        message: (err.response.data as { message: string }).message,
+      };
+    }
+    return { valid: false, message: "Failed to validate coupon" };
+  }
 }
 
 export async function getSubscription(): Promise<SubscriptionInfo | null> {

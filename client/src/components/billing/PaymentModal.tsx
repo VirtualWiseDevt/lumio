@@ -11,6 +11,9 @@ interface PaymentModalProps {
   plan: Plan;
   userPhone: string;
   onSuccess: () => void;
+  couponCode?: string;
+  couponDiscount?: number;
+  referralCredits?: number;
 }
 
 type Step = "confirm" | "waiting" | "result";
@@ -22,6 +25,9 @@ export function PaymentModal({
   plan,
   userPhone,
   onSuccess,
+  couponCode,
+  couponDiscount,
+  referralCredits,
 }: PaymentModalProps) {
   const [step, setStep] = useState<Step>("confirm");
   const [result, setResult] = useState<Result>(null);
@@ -53,7 +59,7 @@ export function PaymentModal({
     setError(null);
 
     try {
-      const response = await initiatePayment(plan.id, phone);
+      const response = await initiatePayment(plan.id, phone, couponCode);
 
       setStep("waiting");
       pollingRef.current = true;
@@ -79,7 +85,7 @@ export function PaymentModal({
       );
       setIsSubmitting(false);
     }
-  }, [isSubmitting, plan.id, plan.name, phone]);
+  }, [isSubmitting, plan.id, plan.name, phone, couponCode]);
 
   const handleRetry = useCallback(() => {
     setStep("confirm");
@@ -98,6 +104,19 @@ export function PaymentModal({
     onSuccess();
     handleClose();
   }, [onSuccess, handleClose]);
+
+  // Calculate final amount with discounts
+  const couponAmount =
+    couponDiscount && couponDiscount > 0
+      ? Math.round((plan.price * couponDiscount) / 100)
+      : 0;
+  const creditsUsed = Math.min(
+    referralCredits ?? 0,
+    plan.price - couponAmount
+  );
+  const finalAmount = Math.max(0, plan.price - couponAmount - creditsUsed);
+  const hasDiscounts = couponAmount > 0 || creditsUsed > 0;
+  const isFree = finalAmount === 0;
 
   if (!isOpen) return null;
 
@@ -123,13 +142,35 @@ export function PaymentModal({
               <h2 className="text-xl font-semibold text-white">
                 Confirm Payment
               </h2>
-              <p className="mt-2 text-white/60">
-                You&apos;re subscribing to{" "}
-                <span className="font-medium text-white">{plan.name}</span> for{" "}
-                <span className="font-medium text-white">
-                  KES {plan.price.toLocaleString()}
-                </span>
-              </p>
+
+              {/* Line item breakdown */}
+              <div className="mt-4 space-y-2 rounded-lg border border-white/10 bg-white/5 p-4 text-sm">
+                <div className="flex justify-between text-white/60">
+                  <span>{plan.name}</span>
+                  <span>KES {plan.price.toLocaleString()}</span>
+                </div>
+                {couponAmount > 0 && (
+                  <div className="flex justify-between text-green-400">
+                    <span>Coupon ({couponDiscount}%)</span>
+                    <span>-KES {couponAmount.toLocaleString()}</span>
+                  </div>
+                )}
+                {creditsUsed > 0 && (
+                  <div className="flex justify-between text-green-400">
+                    <span>Referral Credits</span>
+                    <span>-KES {creditsUsed.toLocaleString()}</span>
+                  </div>
+                )}
+                {hasDiscounts && (
+                  <>
+                    <div className="border-t border-white/10" />
+                    <div className="flex justify-between font-semibold text-white">
+                      <span>Total</span>
+                      <span>KES {finalAmount.toLocaleString()}</span>
+                    </div>
+                  </>
+                )}
+              </div>
 
               <div className="mt-6">
                 <label
@@ -166,7 +207,11 @@ export function PaymentModal({
                   disabled={isSubmitting || !phone.trim()}
                   className="flex-1 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {isSubmitting ? "Sending..." : "Pay with M-Pesa"}
+                  {isSubmitting
+                    ? "Sending..."
+                    : isFree
+                      ? "Activate Free"
+                      : "Pay with M-Pesa"}
                 </button>
               </div>
             </motion.div>
@@ -193,7 +238,7 @@ export function PaymentModal({
                 Enter your M-Pesa PIN to complete the payment.
               </p>
               <p className="mt-3 text-lg font-semibold text-white">
-                KES {plan.price.toLocaleString()}
+                KES {finalAmount.toLocaleString()}
               </p>
             </motion.div>
           )}
