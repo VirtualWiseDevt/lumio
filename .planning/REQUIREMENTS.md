@@ -76,17 +76,17 @@
 ### Admin Panel
 
 - [ ] **ADMN-01**: Admin authentication with role-based access (admin JWT claim)
-- [ ] **ADMN-02**: Dashboard displays revenue, active users, total content, and failed payments stat cards with period comparison
-- [ ] **ADMN-03**: Dashboard displays revenue bar chart (6/12 month view) and content breakdown donut chart
-- [ ] **ADMN-04**: Dashboard displays recent activity feed with period filtering (week/month/quarter/all time/custom)
+- [x] **ADMN-02**: Dashboard displays revenue, active users, total content, and failed payments stat cards with period comparison
+- [x] **ADMN-03**: Dashboard displays revenue bar chart (6/12 month view) and content breakdown donut chart
+- [x] **ADMN-04**: Dashboard displays recent activity feed with period filtering (week/month/quarter/all time/custom)
 - [ ] **ADMN-05**: Movies management page with poster card grid, status filter, hover edit/delete actions, add/edit form with all fields
 - [ ] **ADMN-06**: Series management page with poster card grid, status filter, hover edit/delete actions, add/edit form with seasons/episodes
 - [ ] **ADMN-07**: Documentaries management page with poster card grid, status filter, hover edit/delete actions, add/edit form
 - [ ] **ADMN-08**: TV Channels management page with poster card grid, status filter, hover edit/delete actions, add/edit form with stream URL
-- [ ] **ADMN-09**: Users management page with stats cards, full table, active/inactive filter, add/edit/delete, session monitoring, CSV export
-- [ ] **ADMN-10**: Billing management page with stats cards, payment history table, status/user filtering, CSV export
-- [ ] **ADMN-11**: Settings page with M-Pesa Daraja API credentials config, connection test button, general settings, pricing config, device/invite limits
-- [ ] **ADMN-12**: Activity logs page with audit trail table of all admin CRUD operations (timestamp, admin, action, details)
+- [x] **ADMN-09**: Users management page with stats cards, full table, active/inactive filter, add/edit/delete, session monitoring, CSV export
+- [x] **ADMN-10**: Billing management page with stats cards, payment history table, status/user filtering, CSV export
+- [x] **ADMN-11**: Settings page with M-Pesa Daraja API credentials config, connection test button, general settings, pricing config, device/invite limits
+- [x] **ADMN-12**: Activity logs page with audit trail table of all admin CRUD operations (timestamp, admin, action, details)
 
 ## v2 Requirements
 
@@ -175,17 +175,17 @@
 | NOTF-05 | Phase 9 | Complete |
 | NOTF-06 | Phase 9 | Complete |
 | ADMN-01 | Phase 3 | Complete |
-| ADMN-02 | Phase 10 | Pending |
-| ADMN-03 | Phase 10 | Pending |
-| ADMN-04 | Phase 10 | Pending |
+| ADMN-02 | Phase 10 | Complete |
+| ADMN-03 | Phase 10 | Complete |
+| ADMN-04 | Phase 10 | Complete |
 | ADMN-05 | Phase 3 | Complete |
 | ADMN-06 | Phase 3 | Complete |
 | ADMN-07 | Phase 3 | Complete |
 | ADMN-08 | Phase 3 | Complete |
-| ADMN-09 | Phase 10 | Pending |
-| ADMN-10 | Phase 10 | Pending |
-| ADMN-11 | Phase 10 | Pending |
-| ADMN-12 | Phase 10 | Pending |
+| ADMN-09 | Phase 10 | Complete |
+| ADMN-10 | Phase 10 | Complete |
+| ADMN-11 | Phase 10 | Complete |
+| ADMN-12 | Phase 10 | Complete |
 
 **Coverage:**
 - v1 requirements: 59 total
