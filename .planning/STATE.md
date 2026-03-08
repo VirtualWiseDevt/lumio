@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 8 of 10 (Referral System and Invite Model)
-Plan: 1 of 6 in Phase 8
+Plan: 4 of 6 in Phase 8
 Status: In progress
-Last activity: 2026-03-07 -- Completed 08-01-PLAN.md (Schema & Services Foundation)
+Last activity: 2026-03-08 -- Completed 08-04-PLAN.md (Auth Pages - Registration & Login)
 
-Progress: [██████████████████████████████████████████░░░] 47/~52 total plans
+Progress: [████████████████████████████████████████████░░] 51/~52 total plans
 
 ## Performance Metrics
 
@@ -36,8 +36,8 @@ Progress: [███████████████████████
 | 07 - Payments & Subscriptions | 6/6 | ~16 min | ~2.7 min |
 
 **Recent Trend:**
-- Last 5 plans: 07-06 (~6 min), 07-05 (~4 min), 07-04 (~3 min), 07-03 (~2 min), 07-02 (~3 min)
-- Trend: Payment phase very fast (~2.7 min avg), parallel waves efficient
+- Last 5 plans: 08-04 (~3 min), 07-06 (~6 min), 07-05 (~4 min), 07-04 (~3 min), 07-03 (~2 min)
+- Trend: Referral phase continuing fast execution pattern
 
 *Updated after each plan completion*
 
@@ -167,8 +167,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-07
-Stopped at: Completed Phase 7 (all 6 plans, verified 5/5)
+Last session: 2026-03-08
+Stopped at: Completed 08-04-PLAN.md (Auth Pages - Registration & Login)
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -339,9 +339,17 @@ IMPORTANT CONTEXT:
 - [07-04]: Plans endpoint public (no auth) for SEO and billing page pre-auth loading
 - [07-04]: M-Pesa callback always returns 200 with ResultCode 0 regardless of processing outcome
 - [07-04]: Reconciliation success path uses console.log placeholder for Phase 9 notification (grep: RECONCILIATION_NOTIFICATION_PLACEHOLDER)
+- [08-04]: Navbar hidden on /register and /login via pathname check (not route groups)
+- [08-04]: Referral code validated with 500ms debounce, pre-filled from ?c= URL param or sessionStorage
+- [08-04]: Auth API client stores token in localStorage("token") on register/login success
 - Plan routes: GET /api/plans (public, no auth)
 - Payment routes: POST /api/payments/initiate, GET /api/payments/history, GET /api/payments/:id/status (all auth required)
 - M-Pesa callback route: POST /api/mpesa/callback (no auth, always returns 200)
 - Stream routes now require requireAuth + requireSubscription middleware chain
+- Client auth types: RegisterInput, LoginInput, AuthResponse, DeviceLimitResponse, ReferralValidation (client/src/types/auth.ts)
+- Client auth API: register, login, validateReferralCode, forceLogin (client/src/api/auth.ts)
+- Registration page at /register with invite code pre-fill, debounced validation, "Invited by [Name]." feedback
+- Login page at /login with device limit display and force-login (replace session) option
+- Home page redirects ?c=CODE to /register?c=CODE with sessionStorage fallback
 - Reconciliation job: startReconciliationJob() runs every 2 minutes, max 5 attempts, resolves lost M-Pesa callbacks
 - Server.ts starts reconciliation job on boot alongside session cleanup and transcode worker
