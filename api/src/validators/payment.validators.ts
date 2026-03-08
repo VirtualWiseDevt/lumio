@@ -5,6 +5,7 @@ import { z } from "zod";
 export const initiatePaymentSchema = z.object({
   planId: z.string().uuid(),
   phone: z.string().min(9).max(15),
+  couponCode: z.string().min(1).max(50).optional(),
 });
 
 export type InitiatePaymentInput = z.infer<typeof initiatePaymentSchema>;

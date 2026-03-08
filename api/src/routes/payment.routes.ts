@@ -17,7 +17,7 @@ paymentRouter.use(requireAuth);
  */
 paymentRouter.post("/initiate", async (req: Request, res: Response) => {
   const body = initiatePaymentSchema.parse(req.body);
-  const result = await initiatePayment(req.user!.id, body.planId, body.phone);
+  const result = await initiatePayment(req.user!.id, body.planId, body.phone, body.couponCode);
 
   res.json({
     paymentId: result.paymentId,

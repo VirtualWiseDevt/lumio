@@ -1,9 +1,11 @@
 import crypto from "node:crypto";
-import type { Prisma } from "../generated/prisma/client.js";
+import type { Prisma, PrismaClient } from "../generated/prisma/client.js";
 import { prisma } from "../config/database.js";
 import { getMpesaClient } from "../config/mpesa.js";
 import { normalizePhoneForDaraja } from "../utils/phone.js";
 import { activateSubscription } from "./subscription.service.js";
+import { validateCoupon, redeemCoupon } from "./coupon.service.js";
+import { grantReferralCredit } from "./referral.service.js";
 import type { CallbackInput } from "../validators/payment.validators.js";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -29,6 +31,7 @@ export async function initiatePayment(
   userId: string,
   planId: string,
   phone: string,
+  couponCode?: string,
 ): Promise<{
   paymentId: string;
   checkoutRequestId: string;
@@ -58,28 +61,98 @@ export async function initiatePayment(
     throw err;
   }
 
-  // Normalize phone for Daraja
-  const normalizedPhone = normalizePhoneForDaraja(phone);
+  // ─── Calculate discounts (coupon first, then referral credits) ───
+  let couponId: string | undefined;
+  let couponDiscount = 0;
 
-  // Create PENDING payment record
+  if (couponCode) {
+    const couponResult = await validateCoupon(couponCode, userId);
+    couponId = couponResult.couponId;
+    couponDiscount = Math.round(plan.price * (couponResult.discountPercentage / 100));
+  }
+
+  const afterCoupon = plan.price - couponDiscount;
+
+  // Fetch user's referral credit balance
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { id: userId },
+    select: { referralCreditBalance: true },
+  });
+  const creditsUsed = Math.min(user.referralCreditBalance, afterCoupon);
+  const finalAmount = afterCoupon - creditsUsed;
+
+  // ─── KES 0 path: fully covered by credits/coupon ───
+  if (finalAmount <= 0) {
+    const result = await prisma.$transaction(async (tx) => {
+      const payment = await tx.payment.create({
+        data: {
+          userId,
+          planId,
+          amount: 0,
+          discount: couponDiscount + creditsUsed,
+          status: "SUCCESS",
+          method: "CREDITS",
+          couponId: couponId ?? null,
+          couponDiscount,
+          referralCreditsUsed: creditsUsed,
+          idempotencyKey: crypto.randomUUID(),
+        },
+      });
+
+      // Deduct referral credits
+      if (creditsUsed > 0) {
+        await tx.user.update({
+          where: { id: userId },
+          data: { referralCreditBalance: { decrement: creditsUsed } },
+        });
+      }
+
+      // Redeem coupon
+      if (couponId) {
+        await redeemCoupon(tx, couponId, userId, payment.id);
+      }
+
+      // Activate subscription
+      await activateSubscription(tx, payment.id);
+
+      // Grant referral credit to referrer on referee's first payment
+      await grantReferralCreditIfFirst(tx, userId, payment.id);
+
+      return payment;
+    });
+
+    return {
+      paymentId: result.id,
+      checkoutRequestId: "CREDITS",
+      isExisting: false,
+    };
+  }
+
+  // ─── Normal M-Pesa path ───
+  const normalizedPhone = normalizePhoneForDaraja(phone);
   const idempotencyKey = crypto.randomUUID();
+
   const payment = await prisma.payment.create({
     data: {
       userId,
       planId,
-      amount: plan.price,
+      amount: finalAmount,
+      discount: couponDiscount + creditsUsed,
       phoneNumber: normalizedPhone,
       idempotencyKey,
       status: "PENDING",
+      couponId: couponId ?? null,
+      couponDiscount,
+      referralCreditsUsed: creditsUsed,
     },
   });
 
   try {
-    // Initiate STK Push
+    // Initiate STK Push with the discounted amount
     const mpesa = await getMpesaClient();
     const stkResponse = await mpesa.initiateSTKPush({
       phone: normalizedPhone,
-      amount: plan.price,
+      amount: finalAmount,
       accountRef: plan.name,
     });
 
@@ -105,6 +178,30 @@ export async function initiatePayment(
       },
     });
     throw error;
+  }
+}
+
+// ─── Grant Referral Credit (First Payment Check) ────────────────────────────
+
+/**
+ * Check if this is the referee's first successful payment and grant
+ * referral credit to the referrer if so. Called inside a transaction.
+ */
+type TxClient = Parameters<Parameters<PrismaClient["$transaction"]>[0]>[0];
+
+async function grantReferralCreditIfFirst(
+  tx: TxClient,
+  userId: string,
+  currentPaymentId: string,
+): Promise<void> {
+  // Count successful payments for this user (including the current one)
+  const successCount = await tx.payment.count({
+    where: { userId, status: "SUCCESS" },
+  });
+
+  // Only grant on first successful payment
+  if (successCount === 1) {
+    await grantReferralCredit(tx, userId);
   }
 }
 
@@ -150,6 +247,22 @@ export async function processCallback(
           rawCallback: callbackData as unknown as Prisma.InputJsonValue,
         },
       });
+
+      // Deduct referral credits used (deferred from initiation for safety)
+      if (payment.referralCreditsUsed > 0) {
+        await tx.user.update({
+          where: { id: payment.userId },
+          data: { referralCreditBalance: { decrement: payment.referralCreditsUsed } },
+        });
+      }
+
+      // Redeem coupon (deferred from initiation for safety)
+      if (payment.couponId) {
+        await redeemCoupon(tx, payment.couponId, payment.userId, payment.id);
+      }
+
+      // Grant referral credit to referrer on referee's first successful payment
+      await grantReferralCreditIfFirst(tx, payment.userId, payment.id);
 
       // Activate subscription within the same transaction
       await activateSubscription(tx, payment.id);

@@ -34,12 +34,26 @@ export async function register(
   },
   meta: { userAgent: string; ipAddress: string },
 ) {
-  // Validate referral code
+  // Validate referral code -- check both User referral codes and AdminInviteCodes
   const referrer = await prisma.user.findUnique({
     where: { referralCode: data.referralCode },
   });
+
+  let adminInviteCode: { id: string; code: string; maxUses: number; usedCount: number } | null = null;
+
   if (!referrer) {
-    throw new AuthError("INVALID_REFERRAL_CODE", "Invalid referral code", 400);
+    // Check admin invite codes
+    adminInviteCode = await prisma.adminInviteCode.findFirst({
+      where: { code: data.referralCode, isActive: true },
+    });
+
+    if (adminInviteCode) {
+      if (adminInviteCode.usedCount >= adminInviteCode.maxUses) {
+        throw new AuthError("INVITE_CODE_EXHAUSTED", "This invite code has been fully used", 400);
+      }
+    } else {
+      throw new AuthError("INVALID_REFERRAL_CODE", "Invalid referral code", 400);
+    }
   }
 
   // Check for existing user by email OR phone
@@ -56,7 +70,7 @@ export async function register(
   // Generate referral code for new user
   const generatedCode = crypto.randomBytes(4).toString("hex");
 
-  // Atomic transaction: create user + referral + session
+  // Atomic transaction: create user + referral/invite + session
   const { user, session } = await prisma.$transaction(async (tx) => {
     const newUser = await tx.user.create({
       data: {
@@ -68,12 +82,21 @@ export async function register(
       },
     });
 
-    await tx.referral.create({
-      data: {
-        referrerId: referrer.id,
-        refereeId: newUser.id,
-      },
-    });
+    if (referrer) {
+      // User referral code -- create Referral record
+      await tx.referral.create({
+        data: {
+          referrerId: referrer.id,
+          refereeId: newUser.id,
+        },
+      });
+    } else if (adminInviteCode) {
+      // Admin invite code -- increment usage count (no Referral record)
+      await tx.adminInviteCode.update({
+        where: { id: adminInviteCode.id },
+        data: { usedCount: { increment: 1 } },
+      });
+    }
 
     // Create session inside transaction for atomicity
     const parser = new UAParser(meta.userAgent);
