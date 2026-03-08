@@ -2,6 +2,8 @@ import * as argon2 from "argon2";
 import crypto from "node:crypto";
 import { UAParser } from "ua-parser-js";
 import { prisma } from "../config/database.js";
+import { env } from "../config/env.js";
+import { sendEmail, buildWelcomeEmail, buildPasswordResetEmail } from "./email.service.js";
 import {
   signToken,
   generateResetToken,
@@ -119,6 +121,11 @@ export async function register(
   });
 
   const token = await signToken({ sub: user.id, sid: session.id });
+
+  // Fire-and-forget welcome email (NOTF-01)
+  const welcomeEmail = buildWelcomeEmail(user.name);
+  sendEmail(user.email, welcomeEmail.subject, welcomeEmail.html, welcomeEmail.text)
+    .catch((err) => console.error("[EMAIL] Welcome email failed:", err));
 
   return {
     user: {
@@ -284,8 +291,11 @@ export async function forgotPassword(email: string) {
     },
   });
 
-  // DEV: Log token for development (real email service added in Phase 9)
-  console.log(`[DEV] Password reset token for ${email}: ${token}`);
+  // Send password reset email (replaces Phase 2 DEV console.log)
+  const resetUrl = `${env.CORS_ORIGINS[0]}/reset-password?token=${token}`;
+  const resetEmail = buildPasswordResetEmail(user.name, { resetUrl });
+  sendEmail(user.email, resetEmail.subject, resetEmail.html, resetEmail.text)
+    .catch((err) => console.error("[EMAIL] Password reset email failed:", err));
 
   return { message: "If an account exists, a reset link has been sent" };
 }
