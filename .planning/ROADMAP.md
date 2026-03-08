@@ -197,11 +197,13 @@ Plans:
   3. User receives a pre-expiry warning email 2 days before their subscription expires and a post-expiry notice email 1 day after expiry with a reactivation link
   4. Referrer receives a notification email when their referred user makes their first payment, showing the credits earned
   5. Cron jobs run on schedule for subscription expiry checks and notification dispatch without manual intervention
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 09-01: TBD
-- [ ] 09-02: TBD
+- [ ] 09-01-PLAN.md -- Schema migration (notification tracking fields), Nodemailer install, email transport factory, email service with 7 template builders
+- [ ] 09-02-PLAN.md -- Wire event-triggered emails: welcome (auth), payment success/failure (payment), referral reward, password reset, reconciliation
+- [ ] 09-03-PLAN.md -- Subscription expiry cron job with idempotent pre-expiry (2d, 1d) and post-expiry (1d) notifications
+- [ ] 09-04-PLAN.md -- Build verification, requirement audit, and fire-and-forget pattern enforcement
 
 ### Phase 10: Admin Operations and Dashboard
 **Goal**: Admin users have full operational visibility and management control over users, billing, platform settings, and system activity
@@ -235,5 +237,5 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10
 | 6. Video Infrastructure and HLS Delivery | 7/7 | Complete | 2026-03-07 |
 | 7. Payments and Subscriptions | 6/6 | Complete | 2026-03-07 |
 | 8. Referral System and Invite Model | 0/6 | Not started | - |
-| 9. Notifications and Scheduled Jobs | 0/TBD | Not started | - |
+| 9. Notifications and Scheduled Jobs | 0/4 | Not started | - |
 | 10. Admin Operations and Dashboard | 0/TBD | Not started | - |
