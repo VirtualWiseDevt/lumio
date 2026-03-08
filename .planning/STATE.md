@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 10 of 10 (Admin Operations and Dashboard)
-Plan: 2 of 6 in Phase 10
+Plan: 3 of 6 in Phase 10
 Status: In progress
-Last activity: 2026-03-08 -- Completed 10-02-PLAN.md (admin API routes)
+Last activity: 2026-03-08 -- Completed 10-03-PLAN.md (admin panel infrastructure)
 
-Progress: [██████████████████████████████████████████████████░░░░] 51/~55 total plans
+Progress: [███████████████████████████████████████████████████░░░] 52/~55 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 51
+- Total plans completed: 52
 - Average duration: ~4 min
-- Total execution time: ~216 min (including Docker setup + reboot)
+- Total execution time: ~221 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -37,11 +37,11 @@ Progress: [███████████████████████
 | 08 - Referral & Invite Model | 6/6 | ~15 min | ~2.5 min |
 
 | 09 - Notifications & Jobs | 4/4 | ~11 min | ~2.8 min |
-| 10 - Admin Operations | 2/6 | ~7 min | ~3.5 min |
+| 10 - Admin Operations | 3/6 | ~12 min | ~4 min |
 
 **Recent Trend:**
-- Last 5 plans: 10-02 (~2 min), 10-01 (~5 min), 09-04 (~3 min), 09-03 (~3 min), 09-02 (~3 min)
-- Trend: Route files are fast to create with services/validators already in place
+- Last 5 plans: 10-03 (~5 min), 10-02 (~2 min), 10-01 (~5 min), 09-04 (~3 min), 09-03 (~3 min)
+- Trend: Frontend infrastructure plan includes chart install + 6 new files + sidebar refactor
 
 *Updated after each plan completion*
 
@@ -187,7 +187,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-08
-Stopped at: Completed 10-02-PLAN.md (admin API routes)
+Stopped at: Completed 10-03-PLAN.md (admin panel infrastructure)
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -383,3 +383,14 @@ IMPORTANT CONTEXT:
 - Email service exports: sendEmail, buildWelcomeEmail, buildPasswordResetEmail, buildPaymentSuccessEmail, buildPaymentFailureEmail, buildPreExpiryEmail, buildPostExpiryEmail, buildReferralRewardEmail
 - Subscription expiry job: startSubscriptionExpiryJob() runs hourly, checks pre-expiry and post-expiry, sends emails
 - Server.ts starts 4 background jobs: session cleanup, transcode worker, reconciliation, subscription expiry
+- Admin API clients: dashboard.ts, users.ts, billing.ts, settings.ts, activity-logs.ts (all use apiClient from ./client)
+- Admin dashboard API exports: getDashboardStats, getRevenueChart, getContentBreakdown, getRecentActivity
+- Admin users API exports: listUsers, getUser, createUser, updateUser, deleteUser, getUserSessions, deleteUserSession, exportUsers
+- Admin billing API exports: getBillingStats, listPayments, exportPayments
+- Admin settings API exports: getSettings, updateSettings, testMpesaConnection
+- Admin activity-logs API exports: listActivityLogs
+- CSV export utility: exportToCsv(data, columns, filename) at admin/src/lib/csv-export.ts
+- shadcn chart component installed with Recharts for dashboard charts
+- Sidebar grouped into content (Dashboard/Movies/Series/Docs/Channels), operations (Users/Billing/Activity Logs), system (Settings/Invite Codes)
+- Placeholder route pages at /users, /billing, /settings, /activity-logs (will be replaced in Plans 04-06)
+- Admin routes registered: usersRoute, billingRoute, settingsRoute, activityLogsRoute added to routeTree.gen.ts
