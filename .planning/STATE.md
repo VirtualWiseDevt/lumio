@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-06)
 
 **Core value:** Users can stream high-quality movies, series, documentaries, and live TV with seamless M-Pesa subscription payments -- affordable, accessible, and built for East Africa.
-**Current focus:** Phase 9 - Notifications and Scheduled Jobs
+**Current focus:** Phase 9 - Notifications and Scheduled Jobs (COMPLETE)
 
 ## Current Position
 
 Phase: 9 of 10 (Notifications and Scheduled Jobs)
-Plan: 3 of 4 in Phase 9
-Status: In progress
-Last activity: 2026-03-08 -- Completed 09-03-PLAN.md (subscription expiry notifications)
+Plan: 4 of 4 in Phase 9
+Status: Phase complete
+Last activity: 2026-03-08 -- Completed 09-04-PLAN.md (full verification and requirement audit)
 
-Progress: [██████████████████████████████████████████████░░] 56/~58 total plans
+Progress: [████████████████████████████████████████████████] 57/~58 total plans
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 48
+- Total plans completed: 49
 - Average duration: ~4 min
-- Total execution time: ~206 min (including Docker setup + reboot)
+- Total execution time: ~209 min (including Docker setup + reboot)
 
 **By Phase:**
 
@@ -36,9 +36,11 @@ Progress: [███████████████████████
 | 07 - Payments & Subscriptions | 6/6 | ~16 min | ~2.7 min |
 | 08 - Referral & Invite Model | 6/6 | ~15 min | ~2.5 min |
 
+| 09 - Notifications & Jobs | 4/4 | ~11 min | ~2.8 min |
+
 **Recent Trend:**
-- Last 5 plans: 08-05 (~4 min), 08-04 (~3 min), 08-03 (~2 min), 08-02 (~4 min), 08-01 (~3 min)
-- Trend: Referral phase very fast (~2.5 min avg), parallel waves efficient
+- Last 5 plans: 09-04 (~3 min), 09-03 (~3 min), 09-02 (~3 min), 09-01 (~2 min), 08-06 (~3 min)
+- Trend: Notification phase fast (~2.8 min avg), verification plan clean pass
 
 *Updated after each plan completion*
 
@@ -184,7 +186,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-08
-Stopped at: Completed Phase 8 (all 6 plans, verified 5/5)
+Stopped at: Completed Phase 9 (all 4 plans, verified 8/8 checks pass)
 Resume file: None
 
 IMPORTANT CONTEXT:
@@ -369,3 +371,14 @@ IMPORTANT CONTEXT:
 - Home page redirects ?c=CODE to /register?c=CODE with sessionStorage fallback
 - Reconciliation job: startReconciliationJob() runs every 2 minutes, max 5 attempts, resolves lost M-Pesa callbacks
 - Server.ts starts reconciliation job on boot alongside session cleanup and transcode worker
+- [09-01]: Email service uses console transport in dev (no SMTP config needed for local development)
+- [09-01]: buildWelcomeEmail, buildPasswordResetEmail, buildPaymentSuccessEmail, buildPaymentFailureEmail, buildPreExpiryEmail, buildPostExpiryEmail, buildReferralRewardEmail exported from email.service.ts
+- [09-01]: sendEmail is fire-and-forget (no await) -- logs errors to console, never blocks request
+- [09-02]: Payment reconciliation wired with buildPaymentSuccessEmail and buildPaymentFailureEmail
+- [09-02]: Password reset DEV log replaced with buildPasswordResetEmail real email
+- [09-03]: Subscription expiry job: hourly cron, 2-day and 1-day pre-expiry + post-expiry notifications
+- [09-03]: Idempotent tracking via notifiedPreExpiry2Day, notifiedPreExpiry1Day, notifiedPostExpiry fields
+- [09-04]: Phase 9 verified: all 8 checks pass (tsc, prisma, startup, NOTF coverage, fire-and-forget, idempotency, placeholders)
+- Email service exports: sendEmail, buildWelcomeEmail, buildPasswordResetEmail, buildPaymentSuccessEmail, buildPaymentFailureEmail, buildPreExpiryEmail, buildPostExpiryEmail, buildReferralRewardEmail
+- Subscription expiry job: startSubscriptionExpiryJob() runs hourly, checks pre-expiry and post-expiry, sends emails
+- Server.ts starts 4 background jobs: session cleanup, transcode worker, reconciliation, subscription expiry
