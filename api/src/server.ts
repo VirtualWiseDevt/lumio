@@ -5,6 +5,7 @@ import { prisma } from "./config/database.js";
 import { startSessionCleanupJob } from "./jobs/sessionCleanup.job.js";
 import { startTranscodeWorker } from "./jobs/transcode.job.js";
 import { startReconciliationJob } from "./jobs/reconciliation.job.js";
+import { startSubscriptionExpiryJob } from "./jobs/subscriptionExpiry.job.js";
 
 const app = buildApp();
 
@@ -15,6 +16,8 @@ const server = app.listen(env.PORT, () => {
   console.log("Transcode worker started");
   startReconciliationJob();
   console.log("Reconciliation job started");
+  startSubscriptionExpiryJob();
+  console.log("Subscription expiry job started");
 });
 
 /**
