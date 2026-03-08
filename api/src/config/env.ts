@@ -26,6 +26,14 @@ const envSchema = z.object({
   MPESA_SHORTCODE: z.string().default("174379"),
   MPESA_PASSKEY: z.string().default(""),
   MPESA_CALLBACK_URL: z.string().default("http://localhost:5000/api/mpesa/callback"),
+
+  // Email / SMTP
+  EMAIL_TRANSPORT: z.enum(["console", "smtp"]).default("console"),
+  SMTP_HOST: z.string().default("smtp.gmail.com"),
+  SMTP_PORT: z.coerce.number().default(465),
+  SMTP_USER: z.string().default(""),
+  SMTP_PASS: z.string().default(""),
+  SMTP_FROM: z.string().default("noreply@lumio.tv"),
 });
 
 const parsed = envSchema.safeParse(process.env);
