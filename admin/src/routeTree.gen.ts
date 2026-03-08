@@ -16,6 +16,7 @@ import { seriesRoute } from "./routes/_authenticated/series/index";
 import { seriesNewRoute } from "./routes/_authenticated/series/new";
 import { seriesDetailRoute } from "./routes/_authenticated/series/$seriesId";
 import { seasonDetailRoute } from "./routes/_authenticated/series/$seriesId.seasons.$seasonId";
+import { inviteCodesRoute } from "./routes/_authenticated/invite-codes/index";
 
 export const routeTree = rootRoute.addChildren([
   loginRoute,
@@ -35,5 +36,6 @@ export const routeTree = rootRoute.addChildren([
     seriesNewRoute,
     seriesDetailRoute,
     seasonDetailRoute,
+    inviteCodesRoute,
   ]),
 ]);

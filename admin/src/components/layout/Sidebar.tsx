@@ -7,6 +7,7 @@ import {
   Radio,
   Settings,
   LogOut,
+  Ticket,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -27,6 +28,7 @@ const navItems: NavItem[] = [
   { to: "/documentaries", label: "Documentaries", icon: BookOpen },
   { to: "/channels", label: "TV Channels", icon: Radio },
   { to: "/settings/categories", label: "Settings", icon: Settings },
+  { to: "/invite-codes", label: "Invite Codes", icon: Ticket },
 ];
 
 export function Sidebar() {
