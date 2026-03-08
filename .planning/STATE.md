@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-03-06)
 ## Current Position
 
 Phase: 9 of 10 (Notifications and Scheduled Jobs)
-Plan: 2 of 4 in Phase 9
+Plan: 3 of 4 in Phase 9
 Status: In progress
-Last activity: 2026-03-08 -- Completed 09-02-PLAN.md (event-triggered email wiring)
+Last activity: 2026-03-08 -- Completed 09-03-PLAN.md (subscription expiry notifications)
 
-Progress: [██████████████████████████████████████████████░░] 55/~58 total plans
+Progress: [██████████████████████████████████████████████░░] 56/~58 total plans
 
 ## Performance Metrics
 
