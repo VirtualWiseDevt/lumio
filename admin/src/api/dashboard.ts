@@ -71,6 +71,9 @@ export async function getContentBreakdown(): Promise<ContentBreakdown[]> {
 export interface ActivityFeedParams {
   page?: number;
   limit?: number;
+  period?: "week" | "month" | "quarter" | "all" | "custom";
+  startDate?: string;
+  endDate?: string;
 }
 
 export async function getRecentActivity(
