@@ -17,6 +17,10 @@ import { seriesNewRoute } from "./routes/_authenticated/series/new";
 import { seriesDetailRoute } from "./routes/_authenticated/series/$seriesId";
 import { seasonDetailRoute } from "./routes/_authenticated/series/$seriesId.seasons.$seasonId";
 import { inviteCodesRoute } from "./routes/_authenticated/invite-codes/index";
+import { usersRoute } from "./routes/_authenticated/users/index";
+import { billingRoute } from "./routes/_authenticated/billing/index";
+import { settingsRoute } from "./routes/_authenticated/settings/index";
+import { activityLogsRoute } from "./routes/_authenticated/activity-logs/index";
 
 export const routeTree = rootRoute.addChildren([
   loginRoute,
@@ -37,5 +41,9 @@ export const routeTree = rootRoute.addChildren([
     seriesDetailRoute,
     seasonDetailRoute,
     inviteCodesRoute,
+    usersRoute,
+    billingRoute,
+    settingsRoute,
+    activityLogsRoute,
   ]),
 ]);

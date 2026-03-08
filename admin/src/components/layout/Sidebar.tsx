@@ -8,6 +8,9 @@ import {
   Settings,
   LogOut,
   Ticket,
+  Users,
+  CreditCard,
+  ScrollText,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,13 +24,22 @@ interface NavItem {
   icon: LucideIcon;
 }
 
-const navItems: NavItem[] = [
+const contentNavItems: NavItem[] = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/movies", label: "Movies", icon: Film },
   { to: "/series", label: "Series", icon: Tv },
   { to: "/documentaries", label: "Documentaries", icon: BookOpen },
   { to: "/channels", label: "TV Channels", icon: Radio },
-  { to: "/settings/categories", label: "Settings", icon: Settings },
+];
+
+const operationsNavItems: NavItem[] = [
+  { to: "/users", label: "Users", icon: Users },
+  { to: "/billing", label: "Billing", icon: CreditCard },
+  { to: "/activity-logs", label: "Activity Logs", icon: ScrollText },
+];
+
+const systemNavItems: NavItem[] = [
+  { to: "/settings", label: "Settings", icon: Settings },
   { to: "/invite-codes", label: "Invite Codes", icon: Ticket },
 ];
 
@@ -35,6 +47,31 @@ export function Sidebar() {
   const { logout } = useAuth();
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
+
+  function renderNavItems(items: NavItem[]) {
+    return items.map((item) => {
+      const isActive =
+        item.to === "/"
+          ? currentPath === "/"
+          : currentPath.startsWith(item.to);
+
+      return (
+        <a
+          key={item.to}
+          href={item.to}
+          className={cn(
+            "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+            isActive
+              ? "bg-accent text-accent-foreground"
+              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+          )}
+        >
+          <item.icon className="h-4 w-4" />
+          {item.label}
+        </a>
+      );
+    });
+  }
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-60 flex-col border-r border-border bg-card">
@@ -45,28 +82,11 @@ export function Sidebar() {
       <Separator />
 
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {navItems.map((item) => {
-          const isActive =
-            item.to === "/"
-              ? currentPath === "/"
-              : currentPath.startsWith(item.to);
-
-          return (
-            <a
-              key={item.to}
-              href={item.to}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-              )}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-            </a>
-          );
-        })}
+        {renderNavItems(contentNavItems)}
+        <Separator className="my-3" />
+        {renderNavItems(operationsNavItems)}
+        <Separator className="my-3" />
+        {renderNavItems(systemNavItems)}
       </nav>
 
       <Separator />
