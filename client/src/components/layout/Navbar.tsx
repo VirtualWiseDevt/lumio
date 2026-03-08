@@ -20,6 +20,9 @@ export function Navbar() {
   const pathname = usePathname();
   const openSearch = useUIStore((s) => s.openSearch);
 
+  // Hide navbar on auth pages
+  if (pathname === "/register" || pathname === "/login") return null;
+
   return (
     <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
       <nav className="flex items-center justify-between px-4 md:px-8 h-16">
