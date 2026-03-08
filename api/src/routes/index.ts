@@ -20,6 +20,11 @@ import { mpesaCallbackRouter } from "./mpesa-callback.routes.js";
 import { adminInviteRouter } from "./admin-invite.routes.js";
 import { referralRouter } from "./referral.routes.js";
 import { couponRouter } from "./coupon.routes.js";
+import { adminDashboardRouter } from "./admin-dashboard.routes.js";
+import { adminUserRouter } from "./admin-user.routes.js";
+import { adminBillingRouter } from "./admin-billing.routes.js";
+import { adminSettingsRouter } from "./admin-settings.routes.js";
+import { adminActivityRouter } from "./admin-activity.routes.js";
 
 export {
   healthRouter,
@@ -43,6 +48,11 @@ export {
   adminInviteRouter,
   referralRouter,
   couponRouter,
+  adminDashboardRouter,
+  adminUserRouter,
+  adminBillingRouter,
+  adminSettingsRouter,
+  adminActivityRouter,
 };
 
 /**
@@ -70,4 +80,9 @@ export function registerRoutes(app: Express): void {
   app.use("/api/admin/invite-codes", adminInviteRouter);
   app.use("/api/referrals", referralRouter);
   app.use("/api/coupons", couponRouter);
+  app.use("/api/admin/dashboard", adminDashboardRouter);
+  app.use("/api/admin/users", adminUserRouter);
+  app.use("/api/admin/billing", adminBillingRouter);
+  app.use("/api/admin/settings", adminSettingsRouter);
+  app.use("/api/admin/activity-logs", adminActivityRouter);
 }
