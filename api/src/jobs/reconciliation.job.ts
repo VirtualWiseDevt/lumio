@@ -2,6 +2,7 @@ import cron from "node-cron";
 import { prisma } from "../config/database.js";
 import { getMpesaClient } from "../config/mpesa.js";
 import { activateSubscription } from "../services/subscription.service.js";
+import { sendEmail, buildPaymentSuccessEmail } from "../services/email.service.js";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -76,14 +77,26 @@ export function startReconciliationJob(): void {
               `[RECONCILIATION] Resolved payment ${payment.id} as SUCCESS`,
             );
 
-            // TODO(Phase 9): Replace with real notification/email when notification infrastructure is built.
-            // CONTEXT.md requirement: "auto-activate subscription AND send confirmation notification/email"
-            // Grep anchor: RECONCILIATION_NOTIFICATION_PLACEHOLDER
-            console.log(
-              `[RECONCILIATION] NOTIFICATION_PENDING: Payment ${payment.id} reconciled successfully. ` +
-                `User ${payment.userId} subscription activated. Receipt: ${result.ResultDesc}. ` +
-                `Confirmation notification/email NOT YET SENT - awaiting Phase 9 notification infrastructure.`,
-            );
+            // Send payment confirmation email for reconciled payment
+            const reconciledPayment = await prisma.payment.findUnique({
+              where: { id: payment.id },
+              include: { user: true, plan: true },
+            });
+            if (reconciledPayment) {
+              const sub = await prisma.subscription.findFirst({
+                where: { userId: payment.userId, status: "ACTIVE" },
+                orderBy: { expiresAt: "desc" },
+              });
+              const email = buildPaymentSuccessEmail(reconciledPayment.user.name, {
+                amount: reconciledPayment.amount,
+                planName: reconciledPayment.plan.name,
+                duration: `${reconciledPayment.plan.durationDays} days`,
+                expiresAt: sub?.expiresAt ?? new Date(),
+                mpesaReceipt: result.ResultDesc ?? null,
+              });
+              sendEmail(reconciledPayment.user.email, email.subject, email.html, email.text)
+                .catch((err) => console.error("[EMAIL] Reconciliation confirmation email failed:", err));
+            }
           } else if (isTerminalResultCode(result.ResultCode)) {
             // Terminal failure -- mark as FAILED
             await prisma.payment.update({

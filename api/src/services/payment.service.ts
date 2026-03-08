@@ -7,6 +7,7 @@ import { activateSubscription } from "./subscription.service.js";
 import { validateCoupon, redeemCoupon } from "./coupon.service.js";
 import { grantReferralCredit } from "./referral.service.js";
 import type { CallbackInput } from "../validators/payment.validators.js";
+import { sendEmail, buildPaymentSuccessEmail, buildPaymentFailureEmail } from "./email.service.js";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -120,6 +121,29 @@ export async function initiatePayment(
 
       return payment;
     });
+
+    // Fire-and-forget payment success email for credits-only payment
+    const kes0Payment = await prisma.payment.findUnique({
+      where: { id: result.id },
+      include: { user: true, plan: true },
+    });
+    if (kes0Payment) {
+      const sub = await prisma.subscription.findFirst({
+        where: { userId, status: "ACTIVE" },
+        orderBy: { expiresAt: "desc" },
+      });
+      const successEmail = buildPaymentSuccessEmail(kes0Payment.user.name, {
+        amount: 0,
+        planName: kes0Payment.plan.name,
+        duration: `${kes0Payment.plan.durationDays} days`,
+        expiresAt: sub?.expiresAt ?? new Date(),
+        mpesaReceipt: null,
+        couponDiscount: couponDiscount > 0 ? couponDiscount : undefined,
+        creditsUsed: creditsUsed > 0 ? creditsUsed : undefined,
+      });
+      sendEmail(kes0Payment.user.email, successEmail.subject, successEmail.html, successEmail.text)
+        .catch((err) => console.error("[EMAIL] Payment success email failed:", err));
+    }
 
     return {
       paymentId: result.id,
@@ -267,6 +291,29 @@ export async function processCallback(
       // Activate subscription within the same transaction
       await activateSubscription(tx, payment.id);
     });
+
+    // Fire-and-forget payment success email (NOTF-02)
+    const successPayment = await prisma.payment.findUnique({
+      where: { id: payment.id },
+      include: { user: true, plan: true },
+    });
+    if (successPayment) {
+      const sub = await prisma.subscription.findFirst({
+        where: { userId: payment.userId, status: "ACTIVE" },
+        orderBy: { expiresAt: "desc" },
+      });
+      const successEmail = buildPaymentSuccessEmail(successPayment.user.name, {
+        amount: successPayment.amount,
+        planName: successPayment.plan.name,
+        duration: `${successPayment.plan.durationDays} days`,
+        expiresAt: sub?.expiresAt ?? new Date(),
+        mpesaReceipt: metadata.mpesaReceiptNumber ?? null,
+        couponDiscount: successPayment.couponDiscount > 0 ? successPayment.couponDiscount : undefined,
+        creditsUsed: successPayment.referralCreditsUsed > 0 ? successPayment.referralCreditsUsed : undefined,
+      });
+      sendEmail(successPayment.user.email, successEmail.subject, successEmail.html, successEmail.text)
+        .catch((err) => console.error("[EMAIL] Payment success email failed:", err));
+    }
   } else {
     // Failure -- update payment status
     await prisma.payment.update({
@@ -278,6 +325,20 @@ export async function processCallback(
         rawCallback: callbackData as unknown as Prisma.InputJsonValue,
       },
     });
+
+    // Fire-and-forget payment failure email (NOTF-03)
+    const failedPayment = await prisma.payment.findUnique({
+      where: { id: payment.id },
+      include: { user: true, plan: true },
+    });
+    if (failedPayment) {
+      const failEmail = buildPaymentFailureEmail(failedPayment.user.name, {
+        planName: failedPayment.plan.name,
+        amount: failedPayment.amount,
+      });
+      sendEmail(failedPayment.user.email, failEmail.subject, failEmail.html, failEmail.text)
+        .catch((err) => console.error("[EMAIL] Payment failure email failed:", err));
+    }
   }
 }
 

@@ -1,5 +1,6 @@
 import type { PrismaClient } from "../generated/prisma/client.js";
 import { prisma } from "../config/database.js";
+import { sendEmail, buildReferralRewardEmail } from "./email.service.js";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -144,4 +145,19 @@ export async function grantReferralCredit(
     where: { id: referral.referrerId },
     data: { referralCreditBalance: { increment: cappedCredit } },
   });
+
+  // Fire-and-forget referral reward email to the referrer (NOTF-06)
+  const [referrerUser, refereeUser] = await Promise.all([
+    tx.user.findUnique({ where: { id: referral.referrerId }, select: { name: true, email: true } }),
+    tx.user.findUnique({ where: { id: refereeUserId }, select: { name: true } }),
+  ]);
+  if (referrerUser && refereeUser) {
+    const rewardEmail = buildReferralRewardEmail(referrerUser.name, {
+      refereeName: refereeUser.name,
+      creditsEarned: cappedCredit,
+      newBalance: currentBalance + cappedCredit,
+    });
+    sendEmail(referrerUser.email, rewardEmail.subject, rewardEmail.html, rewardEmail.text)
+      .catch((err) => console.error("[EMAIL] Referral reward email failed:", err));
+  }
 }
