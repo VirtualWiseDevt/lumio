@@ -215,12 +215,15 @@ Plans:
   3. Admin can view, filter, add, edit, and delete users with stats cards, session monitoring, and CSV export
   4. Admin can view and filter payment history with stats cards, status/user filtering, and CSV export
   5. Admin can configure M-Pesa Daraja API credentials with a connection test button, manage general settings, pricing config, device/invite limits, and view an audit trail of all admin CRUD operations
-**Plans**: TBD
+**Plans**: 6 plans
 
 Plans:
-- [ ] 10-01: TBD
-- [ ] 10-02: TBD
-- [ ] 10-03: TBD
+- [ ] 10-01-PLAN.md -- Schema migration (SystemSetting model), backend services (dashboard, user, billing, settings, activity-log), validators
+- [ ] 10-02-PLAN.md -- API routes (dashboard, users, billing, settings, activity-logs) and route registration
+- [ ] 10-03-PLAN.md -- Admin panel setup (API clients, CSV utility, chart install, sidebar nav, route tree)
+- [ ] 10-04-PLAN.md -- Dashboard page (stat cards, revenue bar chart, content donut chart, activity feed)
+- [ ] 10-05-PLAN.md -- Users management page and billing management page with tables, forms, CSV export
+- [ ] 10-06-PLAN.md -- Settings page (M-Pesa, general, pricing, limits) and activity logs page with audit trail
 
 ## Progress
 
@@ -238,4 +241,4 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10
 | 7. Payments and Subscriptions | 6/6 | Complete | 2026-03-07 |
 | 8. Referral System and Invite Model | 6/6 | Complete | 2026-03-08 |
 | 9. Notifications and Scheduled Jobs | 4/4 | Complete | 2026-03-08 |
-| 10. Admin Operations and Dashboard | 0/TBD | Not started | - |
+| 10. Admin Operations and Dashboard | 0/6 | Not started | - |
