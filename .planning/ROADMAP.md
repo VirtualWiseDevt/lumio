@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: Video Infrastructure and HLS Delivery** - FFmpeg pipeline, keyframe alignment, R2 upload, presigned URLs, CDN cache rules
 - [x] **Phase 7: Payments and Subscriptions** - M-Pesa STK Push via Daraja, billing UI, subscription guard, callback webhook, reconciliation
 - [x] **Phase 8: Referral System and Invite Model** - Referral codes, invite-only registration, stacking discounts, coupons
-- [ ] **Phase 9: Notifications and Scheduled Jobs** - Transactional emails, expiry warnings, payment confirmations, cron jobs
+- [x] **Phase 9: Notifications and Scheduled Jobs** - Transactional emails, expiry warnings, payment confirmations, cron jobs
 - [ ] **Phase 10: Admin Operations and Dashboard** - Dashboard stats/charts, user management, billing management, settings, activity logs
 
 ## Phase Details
@@ -180,12 +180,12 @@ Plans:
 **Plans**: 6 plans
 
 Plans:
-- [ ] 08-01-PLAN.md -- Schema migration (referralCreditBalance, CouponRedemption, AdminInviteCode, Payment discount fields), referral and coupon services
-- [ ] 08-02-PLAN.md -- Payment service modification (credit/coupon deduction, KES 0 path, callback credit granting), referral/coupon API routes, auth invite code support
-- [ ] 08-03-PLAN.md -- Admin invite code API (CRUD endpoints) and admin panel invite codes management page
-- [ ] 08-04-PLAN.md -- Client registration and login pages with referral code pre-fill, real-time validation, and URL param capture
-- [ ] 08-05-PLAN.md -- Invite Friends page (referral link, WhatsApp/SMS sharing, stats, guidelines) and billing page coupon/credit integration
-- [ ] 08-06-PLAN.md -- Build verification, API smoke tests, and end-to-end human verification of referral system
+- [x] 08-01-PLAN.md -- Schema migration (referralCreditBalance, CouponRedemption, AdminInviteCode, Payment discount fields), referral and coupon services
+- [x] 08-02-PLAN.md -- Payment service modification (credit/coupon deduction, KES 0 path, callback credit granting), referral/coupon API routes, auth invite code support
+- [x] 08-03-PLAN.md -- Admin invite code API (CRUD endpoints) and admin panel invite codes management page
+- [x] 08-04-PLAN.md -- Client registration and login pages with referral code pre-fill, real-time validation, and URL param capture
+- [x] 08-05-PLAN.md -- Invite Friends page (referral link, WhatsApp/SMS sharing, stats, guidelines) and billing page coupon/credit integration
+- [x] 08-06-PLAN.md -- Build verification, API smoke tests, and end-to-end human verification of referral system
 
 ### Phase 9: Notifications and Scheduled Jobs
 **Goal**: Users receive timely email notifications for account events, payments, and subscription lifecycle, driven by automated cron jobs
@@ -200,10 +200,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 09-01-PLAN.md -- Schema migration (notification tracking fields), Nodemailer install, email transport factory, email service with 7 template builders
-- [ ] 09-02-PLAN.md -- Wire event-triggered emails: welcome (auth), payment success/failure (payment), referral reward, password reset, reconciliation
-- [ ] 09-03-PLAN.md -- Subscription expiry cron job with idempotent pre-expiry (2d, 1d) and post-expiry (1d) notifications
-- [ ] 09-04-PLAN.md -- Build verification, requirement audit, and fire-and-forget pattern enforcement
+- [x] 09-01-PLAN.md -- Schema migration (notification tracking fields), Nodemailer install, email transport factory, email service with 7 template builders
+- [x] 09-02-PLAN.md -- Wire event-triggered emails: welcome (auth), payment success/failure (payment), referral reward, password reset, reconciliation
+- [x] 09-03-PLAN.md -- Subscription expiry cron job with idempotent pre-expiry (2d, 1d) and post-expiry (1d) notifications
+- [x] 09-04-PLAN.md -- Build verification, requirement audit, and fire-and-forget pattern enforcement
 
 ### Phase 10: Admin Operations and Dashboard
 **Goal**: Admin users have full operational visibility and management control over users, billing, platform settings, and system activity
@@ -236,6 +236,6 @@ Phases execute in numeric order: 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8 > 9 > 10
 | 5. Video Player and User Features | 9/9 | Complete | 2026-03-07 |
 | 6. Video Infrastructure and HLS Delivery | 7/7 | Complete | 2026-03-07 |
 | 7. Payments and Subscriptions | 6/6 | Complete | 2026-03-07 |
-| 8. Referral System and Invite Model | 0/6 | Not started | - |
-| 9. Notifications and Scheduled Jobs | 0/4 | Not started | - |
+| 8. Referral System and Invite Model | 6/6 | Complete | 2026-03-08 |
+| 9. Notifications and Scheduled Jobs | 4/4 | Complete | 2026-03-08 |
 | 10. Admin Operations and Dashboard | 0/TBD | Not started | - |
