@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { HeroBanner } from "@/components/hero/HeroBanner";
 import { ContentRow } from "@/components/content/ContentRow";
 import { ContinueWatchingRow } from "@/components/content/ContinueWatchingRow";
@@ -107,6 +108,15 @@ function MyListRow() {
 
 export default function HomePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const code = searchParams.get("c");
+    if (code) {
+      sessionStorage.setItem("referralCode", code);
+      router.push(`/register?c=${encodeURIComponent(code)}`);
+    }
+  }, [searchParams, router]);
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["home"],
