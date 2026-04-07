@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Suspense, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -11,6 +11,7 @@ import { fetchHomePageData } from "@/api/content";
 import { getMyList } from "@/api/my-list";
 import { useContentRow } from "@/hooks/use-content-row";
 import type { Content } from "@/types/content";
+import type { MyListItem } from "@/types/player";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -44,7 +45,7 @@ function MyListRow() {
   const { scrollRef, canScrollLeft, canScrollRight, scrollLeft, scrollRight } =
     useContentRow();
 
-  const { data: items = [] } = useQuery<Content[]>({
+  const { data: items = [] } = useQuery<MyListItem[]>({
     queryKey: ["my-list"],
     queryFn: getMyList,
     retry: false,
@@ -91,8 +92,8 @@ function MyListRow() {
               style={{ scrollSnapAlign: "start" }}
             >
               <ContentCard
-                content={item}
-                onClick={() => router.push(`/title/${item.id}`)}
+                content={item.content}
+                onClick={() => router.push(`/title/${item.content.id}`)}
               />
             </div>
           ))}
@@ -199,3 +200,4 @@ export default function HomePage() {
     </div>
   );
 }
+
