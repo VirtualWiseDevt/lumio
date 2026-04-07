@@ -30,28 +30,29 @@ export function PlanCard({
       type="button"
       onClick={() => onSelect(plan)}
       className={cn(
-        "relative flex flex-col items-center rounded-xl p-6 text-center transition-all hover:shadow-lg",
+        "relative flex flex-col items-center rounded-xl text-center transition-all hover:shadow-lg overflow-visible",
         "border border-white/10 bg-white/5",
         isSelected && "border-primary bg-primary/10 ring-2 ring-primary",
         isRecommended &&
           !isSelected &&
           "border-primary/50 ring-1 ring-primary/50",
-        "cursor-pointer"
+        "cursor-pointer",
+        (isRecommended || isCurrentPlan) ? "pt-8 px-6 pb-6" : "p-6"
       )}
     >
       {isRecommended && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-white">
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-[#141414] px-3 text-sm font-semibold text-gold whitespace-nowrap">
           Best Value
         </span>
       )}
 
       {isCurrentPlan && (
-        <span className="absolute -top-3 right-3 rounded-full bg-white/20 px-3 py-0.5 text-xs font-medium text-white/80">
+        <span className="absolute -top-3 right-3 z-10 bg-[#141414] px-3 text-sm font-medium text-white/80 whitespace-nowrap">
           Current Plan
         </span>
       )}
 
-      <h3 className="mt-2 text-lg font-semibold text-white">{plan.name}</h3>
+      <h3 className="text-lg font-semibold text-white">{plan.name}</h3>
 
       <div className="mt-4">
         <span className="text-3xl font-bold text-white">

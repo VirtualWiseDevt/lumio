@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Play, ThumbsUp, ChevronDown } from "lucide-react";
+import { Play, Plus, ThumbsUp, ChevronDown, Volume2, VolumeOff } from "lucide-react";
 import { motion } from "motion/react";
 import { cn, mediaUrl, formatDuration } from "@/lib/utils";
 import { MyListButton } from "@/components/my-list/MyListButton";
@@ -20,31 +20,26 @@ interface HoverPopoverProps {
 }
 
 function getPopoverPosition(cardRect: DOMRect) {
-  const popoverWidth = cardRect.width * 1.5;
+  const popoverWidth = 320;
   const viewportWidth = typeof window !== "undefined" ? window.innerWidth : 1400;
 
-  // Center over the card by default
   let left = cardRect.left + cardRect.width / 2 - popoverWidth / 2;
 
-  // Clamp to viewport edges with 8px margin
   if (left < 8) {
     left = 8;
   } else if (left + popoverWidth > viewportWidth - 8) {
     left = viewportWidth - 8 - popoverWidth;
   }
 
-  // Position above or below card based on available space
   const topSpace = cardRect.top;
   const bottomSpace =
     (typeof window !== "undefined" ? window.innerHeight : 800) - cardRect.bottom;
-  const estimatedHeight = popoverWidth * 0.75 + 120; // rough height estimate
+  const estimatedHeight = popoverWidth * 0.75 + 120;
 
   let top: number;
   if (bottomSpace >= estimatedHeight || bottomSpace >= topSpace) {
-    // Show below or default to below
     top = cardRect.top - 20;
   } else {
-    // Show above
     top = cardRect.bottom - estimatedHeight + 20;
   }
 
@@ -61,9 +56,20 @@ export function HoverPopover({
   const router = useRouter();
   const { isActive } = useSubscription();
   const [showSubscribeGate, setShowSubscribeGate] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const popoverVideoRef = useRef<HTMLVideoElement>(null);
 
   const { left, top, width } = getPopoverPosition(cardRect);
   const backdropSrc = mediaUrl(content.posterLandscape);
+
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const video = popoverVideoRef.current;
+    if (video) {
+      video.muted = !video.muted;
+      setIsMuted(!isMuted);
+    }
+  };
 
   const handlePlay = () => {
     if (!isActive) {
@@ -79,20 +85,45 @@ export function HoverPopover({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="fixed z-50 shadow-2xl"
-      style={{ left, top, width }}
+      className="fixed z-50"
+      style={{
+        left,
+        top,
+        width,
+        borderRadius: 6,
+        boxShadow: "0 14px 36px rgba(0,0,0,0.75), 0 6px 12px rgba(0,0,0,0.5)",
+      }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Backdrop image */}
-      <div className="relative aspect-video w-full overflow-hidden rounded-t-lg bg-card">
-        {backdropSrc ? (
+      {/* Backdrop: preview video or poster image */}
+      <div className="relative aspect-video w-full overflow-hidden bg-card" style={{ borderRadius: "6px 6px 0 0" }}>
+        {content.previewUrl ? (
+          <>
+            <video
+              ref={popoverVideoRef}
+              src={`/api/stream/${content.id}/preview`}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <button
+              onClick={toggleMute}
+              className="absolute bottom-2 right-2 z-10 rounded-full border border-white/40 bg-black/60 p-1.5 text-white hover:bg-black/80 transition-colors"
+              aria-label={isMuted ? "Unmute" : "Mute"}
+            >
+              {isMuted ? <VolumeOff className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
+            </button>
+          </>
+        ) : backdropSrc ? (
           <Image
             src={backdropSrc}
             alt={content.title}
             fill
             className="object-cover"
-            sizes="400px"
+            sizes="320px"
           />
         ) : (
           <div className="flex h-full items-center justify-center bg-gradient-to-b from-card-hover to-card">
@@ -101,38 +132,33 @@ export function HoverPopover({
             </span>
           </div>
         )}
+        {/* Gradient + title overlay */}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-card via-card/50 to-transparent px-3 pb-3 pt-10">
+          <p className="text-sm font-bold text-white">{content.title}</p>
+        </div>
       </div>
 
       {/* Info section */}
-      <div className="rounded-b-lg bg-card p-3">
+      <div className="bg-card p-3" style={{ borderRadius: "0 0 6px 6px" }}>
         {/* Action buttons */}
-        <div className="mb-2 flex items-center gap-2">
+        <div className="mb-2.5 flex items-center gap-2">
           <button
             onClick={handlePlay}
-            className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-full",
-              "bg-accent text-white hover:bg-accent-hover transition-colors"
-            )}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black hover:bg-white/80 transition-colors"
             aria-label="Play"
           >
             <Play className="h-4 w-4 fill-current" />
           </button>
           <MyListButton contentId={content.id} size="sm" />
           <button
-            className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-full",
-              "border border-border text-foreground hover:border-foreground transition-colors"
-            )}
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-[#555] text-white hover:border-white transition-colors"
             aria-label="Like"
           >
             <ThumbsUp className="h-4 w-4" />
           </button>
           <div className="flex-1" />
           <button
-            className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-full",
-              "border border-border text-foreground hover:border-foreground transition-colors"
-            )}
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-[#555] text-white hover:border-white transition-colors"
             aria-label="More Info"
             onClick={onExpand}
           >
@@ -141,28 +167,29 @@ export function HoverPopover({
         </div>
 
         {/* Metadata row */}
-        <div className="mb-1 flex items-center gap-2 text-xs">
+        <div className="mb-1.5 flex items-center gap-2 text-xs">
+          <span className="font-semibold text-green">98% Match</span>
           {content.ageRating && (
-            <span className="rounded border border-border px-1.5 py-0.5 text-muted">
+            <span className="flex h-5 items-center justify-center rounded-sm border border-[#555] px-1.5 text-[11px] text-silver">
               {content.ageRating}
             </span>
           )}
           {content.quality && (
-            <span className="rounded border border-border px-1.5 py-0.5 text-muted">
+            <span className="flex h-5 items-center justify-center rounded-sm border border-[#555] px-1.5 text-[11px] text-silver">
               {content.quality}
             </span>
           )}
           {content.duration !== null && content.duration > 0 && (
-            <span className="text-muted">{formatDuration(content.duration)}</span>
+            <span className="text-silver">{formatDuration(content.duration)}</span>
           )}
           {content.releaseYear && (
-            <span className="text-muted">{content.releaseYear}</span>
+            <span className="text-silver">{content.releaseYear}</span>
           )}
         </div>
 
-        {/* Categories */}
+        {/* Categories with dot separator */}
         {content.categories.length > 0 && (
-          <p className="text-xs text-muted">
+          <p className="text-xs text-silver">
             {content.categories.slice(0, 3).join(" \u2022 ")}
           </p>
         )}

@@ -21,7 +21,7 @@ export const registerSchema = z.object({
     .regex(/[a-z]/, "Password must contain a lowercase letter")
     .regex(/[A-Z]/, "Password must contain an uppercase letter")
     .regex(/[0-9]/, "Password must contain a digit"),
-  referralCode: z.string().min(1, "Referral code is required").trim(),
+  referralCode: z.string().trim().min(1, "Invite code is required"),
 });
 
 export const loginSchema = z.object({

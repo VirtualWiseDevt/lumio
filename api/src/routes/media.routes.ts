@@ -12,6 +12,10 @@ const MIME_TYPES: Record<string, string> = {
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
   ".png": "image/png",
+  ".mp4": "video/mp4",
+  ".m3u8": "application/vnd.apple.mpegurl",
+  ".ts": "video/mp2t",
+  ".mkv": "video/x-matroska",
 };
 
 /**
@@ -65,18 +69,41 @@ mediaRouter.get("/{*filepath}", async (req, res) => {
   const ext = extname(fullPath).toLowerCase();
   const contentType = MIME_TYPES[ext] || "application/octet-stream";
 
-  res.set("Content-Type", contentType);
-  res.set("Content-Length", String(fileStat.size));
-  res.set("Cache-Control", "public, max-age=86400"); // 1 day for dev
+  // Handle range requests for video seeking
+  const range = req.headers.range;
 
-  // Stream the file
-  const stream = createReadStream(fullPath);
-  stream.pipe(res);
-  stream.on("error", () => {
-    if (!res.headersSent) {
-      res.status(500).json({
-        error: { message: "Error reading file", code: "READ_ERROR" },
-      });
-    }
-  });
+  if (range) {
+    const parts = range.replace(/bytes=/, "").split("-");
+    const start = parseInt(parts[0], 10);
+    const end = parts[1] ? parseInt(parts[1], 10) : fileStat.size - 1;
+    const chunkSize = end - start + 1;
+
+    res.status(206);
+    res.set("Content-Range", `bytes ${start}-${end}/${fileStat.size}`);
+    res.set("Accept-Ranges", "bytes");
+    res.set("Content-Length", String(chunkSize));
+    res.set("Content-Type", contentType);
+    res.set("Cache-Control", "public, max-age=86400");
+
+    const stream = createReadStream(fullPath, { start, end });
+    stream.pipe(res);
+    stream.on("error", () => {
+      if (!res.headersSent) {
+        res.status(500).json({ error: { message: "Error reading file", code: "READ_ERROR" } });
+      }
+    });
+  } else {
+    res.set("Accept-Ranges", "bytes");
+    res.set("Content-Type", contentType);
+    res.set("Content-Length", String(fileStat.size));
+    res.set("Cache-Control", "public, max-age=86400");
+
+    const stream = createReadStream(fullPath);
+    stream.pipe(res);
+    stream.on("error", () => {
+      if (!res.headersSent) {
+        res.status(500).json({ error: { message: "Error reading file", code: "READ_ERROR" } });
+      }
+    });
+  }
 });

@@ -19,16 +19,16 @@ function timeAgo(dateString: string): string {
   return `${days} day${days === 1 ? "" : "s"} ago`;
 }
 
-function DeviceIcon({ type }: { type: string }) {
+function DeviceIcon({ type }: { type?: string }) {
   const className = "h-5 w-5 text-gray-400";
-  switch (type.toLowerCase()) {
-    case "mobile":
-      return <Smartphone className={className} />;
-    case "tablet":
-      return <Tablet className={className} />;
-    default:
-      return <Monitor className={className} />;
+  const t = (type || "").toLowerCase();
+  if (t.includes("mobile") || t.includes("android") || t.includes("iphone")) {
+    return <Smartphone className={className} />;
   }
+  if (t.includes("tablet") || t.includes("ipad")) {
+    return <Tablet className={className} />;
+  }
+  return <Monitor className={className} />;
 }
 
 function DeviceRow({ session }: { session: DeviceSession }) {
@@ -45,7 +45,7 @@ function DeviceRow({ session }: { session: DeviceSession }) {
 
   return (
     <div className="flex items-center gap-4 rounded-lg bg-white/5 px-4 py-3">
-      <DeviceIcon type={session.deviceType} />
+      <DeviceIcon type={session.deviceName || session.deviceType} />
 
       <div className="flex-1">
         <div className="flex items-center gap-2">
@@ -59,7 +59,7 @@ function DeviceRow({ session }: { session: DeviceSession }) {
           )}
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-500">
-          <span>{session.ipAddress}</span>
+          <span>{session.ipAddress || "Unknown IP"}</span>
           <span>--</span>
           <span>{timeAgo(session.lastActiveAt)}</span>
         </div>

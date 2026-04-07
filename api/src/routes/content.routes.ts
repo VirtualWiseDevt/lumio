@@ -14,6 +14,7 @@ import {
   publishContent,
   unpublishContent,
 } from "../services/content.service.js";
+import { logActivity } from "../services/activity-log.service.js";
 
 export const contentRouter = Router();
 
@@ -72,6 +73,14 @@ contentRouter.post("/", async (req, res) => {
     }
 
     const content = await createContent(result.data);
+    logActivity({
+      userId: req.user!.id,
+      action: "CREATE",
+      entityType: "CONTENT",
+      entityId: content.id,
+      details: { title: content.title },
+      ipAddress: req.ip || undefined,
+    }).catch(() => {});
     res.status(201).json(content);
   } catch (error) {
     throw error;
@@ -93,6 +102,14 @@ contentRouter.put("/:id", async (req, res) => {
     }
 
     const content = await updateContent(req.params.id, result.data);
+    logActivity({
+      userId: req.user!.id,
+      action: "UPDATE",
+      entityType: "CONTENT",
+      entityId: content.id,
+      details: { title: content.title },
+      ipAddress: req.ip || undefined,
+    }).catch(() => {});
     res.json(content);
   } catch (error) {
     if (
@@ -113,6 +130,14 @@ contentRouter.put("/:id", async (req, res) => {
 contentRouter.delete("/:id", async (req, res) => {
   try {
     await deleteContent(req.params.id);
+    logActivity({
+      userId: req.user!.id,
+      action: "DELETE",
+      entityType: "CONTENT",
+      entityId: req.params.id,
+      details: {},
+      ipAddress: req.ip || undefined,
+    }).catch(() => {});
     res.status(204).send();
   } catch (error) {
     if (
@@ -133,6 +158,14 @@ contentRouter.delete("/:id", async (req, res) => {
 contentRouter.patch("/:id/publish", async (req, res) => {
   try {
     const content = await publishContent(req.params.id);
+    logActivity({
+      userId: req.user!.id,
+      action: "UPDATE",
+      entityType: "CONTENT",
+      entityId: content.id,
+      details: { title: content.title, published: true },
+      ipAddress: req.ip || undefined,
+    }).catch(() => {});
     res.json(content);
   } catch (error) {
     if (
@@ -153,6 +186,14 @@ contentRouter.patch("/:id/publish", async (req, res) => {
 contentRouter.patch("/:id/unpublish", async (req, res) => {
   try {
     const content = await unpublishContent(req.params.id);
+    logActivity({
+      userId: req.user!.id,
+      action: "UPDATE",
+      entityType: "CONTENT",
+      entityId: content.id,
+      details: { title: content.title, published: false },
+      ipAddress: req.ip || undefined,
+    }).catch(() => {});
     res.json(content);
   } catch (error) {
     if (

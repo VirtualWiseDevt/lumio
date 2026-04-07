@@ -18,7 +18,7 @@ export const activityQuerySchema = z.object({
 });
 
 export const dashboardStatsQuerySchema = z.object({
-  periodDays: z.coerce.number().int().min(1).max(365).default(30),
+  periodDays: z.coerce.number().int().min(1).max(3650).optional(),
 });
 
 export const revenueChartQuerySchema = z.object({

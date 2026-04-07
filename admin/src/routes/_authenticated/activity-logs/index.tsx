@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { createRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import type { SortingState } from "@tanstack/react-table";
+import { X } from "lucide-react";
 import { authenticatedRoute } from "@/routes/_authenticated";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Pagination } from "@/components/shared/Pagination";
@@ -133,6 +134,21 @@ function ActivityLogsPage() {
             className="w-40"
             placeholder="End date"
           />
+
+          {(actionFilter !== "all" || entityTypeFilter !== "all" || startDate !== "" || endDate !== "") && (
+            <button
+              onClick={() => {
+                setActionFilter("all");
+                setEntityTypeFilter("all");
+                setStartDate("");
+                setEndDate("");
+                setPage(1);
+              }}
+              className="flex items-center gap-1.5 rounded-full bg-red-500/20 px-3 py-1.5 text-sm font-medium text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-colors"
+            >
+              <X className="h-3.5 w-3.5" /> Clear Filters
+            </button>
+          )}
         </div>
 
         {/* Table */}

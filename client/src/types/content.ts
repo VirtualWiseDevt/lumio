@@ -16,6 +16,7 @@ export interface Content {
   posterLandscape: string | null;
   trailerUrl: string | null;
   streamUrl: string | null;
+  previewUrl: string | null;
   isFeatured: boolean;
   createdAt: string;
   updatedAt: string;
@@ -44,6 +45,7 @@ export interface Episode {
 }
 
 export interface ContentDetail extends Content {
+  videoUrl: string | null;
   transcodingStatus: string | null;
   hlsKey: string | null;
   sourceVideoKey: string | null;

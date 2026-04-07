@@ -13,7 +13,7 @@ interface ChannelGridProps {
 export function ChannelGrid({ categories }: ChannelGridProps) {
   if (categories.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-muted">
+      <div className="flex flex-col items-center justify-center py-24 text-silver">
         <p className="text-lg">No live channels available</p>
         <p className="mt-1 text-sm">Check back later for live content</p>
       </div>
@@ -27,10 +27,10 @@ export function ChannelGrid({ categories }: ChannelGridProps) {
 
         return (
           <section key={category.name}>
-            <h2 className="mb-4 text-lg font-semibold text-foreground">
+            <h2 className="mb-4 text-lg font-semibold text-[#e5e5e5]">
               {category.name}
             </h2>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
               {category.channels.map((channel) => (
                 <ChannelCard key={channel.id} channel={channel} />
               ))}

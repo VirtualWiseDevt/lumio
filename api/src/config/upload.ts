@@ -20,6 +20,10 @@ export const IMAGE_SIZES = {
     large: { width: 1920, suffix: "large" },
     medium: { width: 960, suffix: "medium" },
   },
+  thumbnail: {
+    large: { width: 1280, height: 720, suffix: "large" },
+    medium: { width: 640, height: 360, suffix: "medium" },
+  },
 } as const;
 
 /** MIME types accepted for image upload. */
@@ -47,6 +51,9 @@ export function ensureUploadDirs(): void {
     join(UPLOAD_DIR, "backdrops", "original"),
     join(UPLOAD_DIR, "backdrops", "large"),
     join(UPLOAD_DIR, "backdrops", "medium"),
+    join(UPLOAD_DIR, "thumbnails", "original"),
+    join(UPLOAD_DIR, "thumbnails", "large"),
+    join(UPLOAD_DIR, "thumbnails", "medium"),
   ];
 
   for (const dir of dirs) {

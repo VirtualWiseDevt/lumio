@@ -28,10 +28,10 @@ interface PaymentTableProps {
 }
 
 const statusStyles: Record<string, string> = {
-  COMPLETED: "border-green-600 text-green-500",
-  FAILED: "border-red-600 text-red-500",
-  PENDING: "border-yellow-600 text-yellow-500",
-  REFUNDED: "border-gray-600 text-gray-500",
+  COMPLETED: "bg-green-500/20 text-green-400 border border-green-500/30",
+  FAILED: "bg-red-500/20 text-red-400 border border-red-500/30",
+  PENDING: "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
+  REFUNDED: "bg-gray-500/20 text-gray-400 border border-gray-500/30",
 };
 
 function formatKES(amount: number): string {
@@ -88,7 +88,6 @@ export function PaymentTable({
           const status = row.original.status;
           return (
             <Badge
-              variant="outline"
               className={statusStyles[status] ?? ""}
             >
               {status}
@@ -149,7 +148,7 @@ export function PaymentTable({
                 return (
                   <TableHead
                     key={header.id}
-                    className={cn(canSort && "cursor-pointer select-none")}
+                    className={cn("bg-white/5 text-xs font-semibold uppercase tracking-wider text-muted-foreground", canSort && "cursor-pointer select-none")}
                     onClick={
                       canSort
                         ? header.column.getToggleSortingHandler()

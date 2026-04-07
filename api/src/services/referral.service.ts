@@ -79,13 +79,14 @@ export async function getReferralStats(
  * Grant referral credit to the referrer when referee completes their first payment.
  * Called inside a Prisma $transaction.
  *
- * Credit = 10% of the referrer's own plan price.
+ * Credit = 10% of the referee's actual payment amount.
  * Balance is capped at 100% of the referrer's plan price (10 referrals = free streaming).
  * If the cap is reached, the referral is still marked as redeemed but no credit is added.
  */
 export async function grantReferralCredit(
   tx: TxClient,
   refereeUserId: string,
+  refereePaymentAmount: number,
 ): Promise<void> {
   // Find unredeemed referral for this referee
   const referral = await tx.referral.findUnique({
@@ -94,7 +95,7 @@ export async function grantReferralCredit(
 
   if (!referral || referral.isRedeemed) return;
 
-  // Get referrer's active subscription to determine plan price
+  // Get referrer's active subscription to determine cap
   const referrerSub = await tx.subscription.findFirst({
     where: {
       userId: referral.referrerId,
@@ -114,7 +115,7 @@ export async function grantReferralCredit(
   }
 
   const planPrice = referrerSub.plan.price;
-  const credit = Math.round(planPrice * 0.1);
+  const credit = Math.round(refereePaymentAmount * 0.1);
 
   // Fetch referrer's current balance to enforce 100% cap
   const referrer = await tx.user.findUniqueOrThrow({

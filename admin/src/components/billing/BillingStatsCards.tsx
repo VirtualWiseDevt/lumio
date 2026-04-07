@@ -14,14 +14,18 @@ const cardDefs = [
     label: "Total Revenue",
     icon: DollarSign,
     prefix: "KES ",
-    color: "",
+    color: "text-emerald-500",
+    border: "border-l-emerald-500",
+    iconBg: "bg-emerald-500/10",
   },
   {
     key: "successfulPayments" as const,
     label: "Successful Payments",
     icon: CheckCircle,
     prefix: "",
-    color: "text-green-500",
+    color: "text-blue-500",
+    border: "border-l-blue-500",
+    iconBg: "bg-blue-500/10",
   },
   {
     key: "failedPayments" as const,
@@ -29,13 +33,17 @@ const cardDefs = [
     icon: XCircle,
     prefix: "",
     color: "text-red-500",
+    border: "border-l-red-500",
+    iconBg: "bg-red-500/10",
   },
   {
     key: "pendingPayments" as const,
     label: "Pending Payments",
     icon: Clock,
     prefix: "",
-    color: "text-yellow-500",
+    color: "text-amber-500",
+    border: "border-l-amber-500",
+    iconBg: "bg-amber-500/10",
   },
 ] as const;
 
@@ -78,12 +86,14 @@ export function BillingStatsCards({ stats, loading }: BillingStatsCardsProps) {
           });
 
         return (
-          <Card key={c.key}>
+          <Card key={c.key} className={`border-l-4 ${c.border}`}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {c.label}
               </CardTitle>
-              <Icon className={`h-4 w-4 ${c.color || "text-muted-foreground"}`} />
+              <div className={`rounded-lg p-2 ${c.iconBg}`}>
+                <Icon className={`h-4 w-4 ${c.color}`} />
+              </div>
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold">{value}</p>

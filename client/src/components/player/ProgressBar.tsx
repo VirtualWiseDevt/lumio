@@ -36,17 +36,18 @@ export function ProgressBar({ videoRef }: ProgressBarProps) {
     (clientX: number) => {
       const bar = barRef.current;
       const video = videoRef.current;
-      if (!bar || !video || !duration) return;
+      if (!bar || !video || !video.duration) return;
 
       const rect = bar.getBoundingClientRect();
       const fraction = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-      video.currentTime = fraction * duration;
+      video.currentTime = fraction * video.duration;
     },
-    [videoRef, duration]
+    [videoRef]
   );
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
+      e.stopPropagation();
       setIsDragging(true);
       seekToPosition(e.clientX);
     },

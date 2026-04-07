@@ -1,5 +1,6 @@
 import { Queue, Worker, type Job } from "bullmq";
 import { mkdir, readdir, readFile, rm } from "node:fs/promises";
+import { spawn } from "node:child_process";
 import path from "node:path";
 
 import { redis } from "../config/redis.js";
@@ -164,9 +165,49 @@ async function processTranscodeJob(
       "public, max-age=60"
     );
 
-    // 9. Update DB: completed
+    // 9. Extract 15-second preview clip (non-episode content only)
+    let previewUrl: string | null = null;
+    if (!episodeId) {
+      try {
+        const startTime = Math.max(0, Math.floor(probe.duration * 0.1));
+        const previewPath = path.join(tempDir, "preview.mp4");
+        const previewKey = `videos/${contentId}/preview.mp4`;
+
+        await spawnAsync("ffmpeg", [
+          "-ss", String(startTime),
+          "-i", sourcePath,
+          "-t", "15",
+          "-vf", "scale=1280:720",
+          "-c:v", "libx264",
+          "-preset", "fast",
+          "-crf", "28",
+          "-c:a", "aac",
+          "-b:a", "96k",
+          "-movflags", "+faststart",
+          "-y",
+          previewPath,
+        ]);
+
+        const previewBuffer = await readFile(previewPath);
+        await uploadToR2(previewKey, previewBuffer, "video/mp4", "public, max-age=86400");
+        previewUrl = previewKey;
+        console.log(`[TRANSCODE] Job ${job.id}: preview extracted at ${startTime}s`);
+      } catch (err) {
+        console.error(`[TRANSCODE] Job ${job.id}: preview extraction failed (non-fatal):`, err);
+      }
+    }
+
+    // 10. Update DB: completed
     const hlsKey = `${outputPrefix}/`;
     await setStatus(job.data, "completed", { hlsKey });
+
+    // Update previewUrl if extracted
+    if (previewUrl) {
+      await prisma.content.update({
+        where: { id: contentId },
+        data: { previewUrl },
+      }).catch(() => {});
+    }
 
     console.log(
       `[TRANSCODE] Job ${job.id}: completed - ${transcodedQualities.length} quality levels`
@@ -207,4 +248,21 @@ export function startTranscodeWorker(): Worker<TranscodeJobData> {
   });
 
   return worker;
+}
+
+// ---------------------------------------------------------------------------
+// Spawn helper
+// ---------------------------------------------------------------------------
+
+function spawnAsync(cmd: string, args: string[]): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const proc = spawn(cmd, args);
+    let stderr = "";
+    proc.stderr.on("data", (d: Buffer) => { stderr += d.toString(); });
+    proc.on("close", (code) => {
+      if (code !== 0) reject(new Error(`${cmd} exited with code ${code}: ${stderr.slice(0, 500)}`));
+      else resolve();
+    });
+    proc.on("error", reject);
+  });
 }

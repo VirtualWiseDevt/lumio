@@ -17,6 +17,7 @@ import {
   deleteEpisode,
   ServiceError,
 } from "../services/season.service.js";
+import { logActivity } from "../services/activity-log.service.js";
 
 export const seasonRouter = Router({ mergeParams: true });
 
@@ -50,6 +51,14 @@ seasonRouter.post("/", async (req, res) => {
 
   try {
     const season = await createSeason(getParam(req, "contentId"), result.data);
+    logActivity({
+      userId: req.user!.id,
+      action: "CREATE",
+      entityType: "SEASON",
+      entityId: season.id,
+      details: { seasonNumber: season.seasonNumber },
+      ipAddress: req.ip || undefined,
+    }).catch(() => {});
     res.status(201).json(season);
   } catch (error) {
     if (error instanceof ServiceError) {
@@ -77,6 +86,14 @@ seasonRouter.put("/:seasonId", async (req, res) => {
 
   try {
     const season = await updateSeason(getParam(req, "seasonId"), result.data);
+    logActivity({
+      userId: req.user!.id,
+      action: "UPDATE",
+      entityType: "SEASON",
+      entityId: season.id,
+      details: { seasonNumber: season.seasonNumber },
+      ipAddress: req.ip || undefined,
+    }).catch(() => {});
     res.json(season);
   } catch (error) {
     if (error instanceof ServiceError) {
@@ -93,6 +110,14 @@ seasonRouter.put("/:seasonId", async (req, res) => {
 seasonRouter.delete("/:seasonId", async (req, res) => {
   try {
     await deleteSeason(getParam(req, "seasonId"));
+    logActivity({
+      userId: req.user!.id,
+      action: "DELETE",
+      entityType: "SEASON",
+      entityId: getParam(req, "seasonId"),
+      details: {},
+      ipAddress: req.ip || undefined,
+    }).catch(() => {});
     res.status(204).send();
   } catch (error) {
     if (error instanceof ServiceError) {
@@ -128,6 +153,14 @@ seasonRouter.post("/:seasonId/episodes", async (req, res) => {
 
   try {
     const episode = await createEpisode(getParam(req, "seasonId"), result.data);
+    logActivity({
+      userId: req.user!.id,
+      action: "CREATE",
+      entityType: "EPISODE",
+      entityId: episode.id,
+      details: { title: episode.title, episodeNumber: episode.episodeNumber },
+      ipAddress: req.ip || undefined,
+    }).catch(() => {});
     res.status(201).json(episode);
   } catch (error) {
     if (error instanceof ServiceError) {
@@ -155,6 +188,14 @@ seasonRouter.put("/:seasonId/episodes/:episodeId", async (req, res) => {
 
   try {
     const episode = await updateEpisode(getParam(req, "episodeId"), result.data);
+    logActivity({
+      userId: req.user!.id,
+      action: "UPDATE",
+      entityType: "EPISODE",
+      entityId: episode.id,
+      details: { title: episode.title, episodeNumber: episode.episodeNumber },
+      ipAddress: req.ip || undefined,
+    }).catch(() => {});
     res.json(episode);
   } catch (error) {
     if (error instanceof ServiceError) {
@@ -171,6 +212,14 @@ seasonRouter.put("/:seasonId/episodes/:episodeId", async (req, res) => {
 seasonRouter.delete("/:seasonId/episodes/:episodeId", async (req, res) => {
   try {
     await deleteEpisode(getParam(req, "episodeId"));
+    logActivity({
+      userId: req.user!.id,
+      action: "DELETE",
+      entityType: "EPISODE",
+      entityId: getParam(req, "episodeId"),
+      details: {},
+      ipAddress: req.ip || undefined,
+    }).catch(() => {});
     res.status(204).send();
   } catch (error) {
     if (error instanceof ServiceError) {

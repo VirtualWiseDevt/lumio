@@ -51,5 +51,25 @@ uploadRouter.post(
   },
 );
 
+/**
+ * POST /thumbnail
+ * Upload an episode thumbnail image (16:9, 1280x720 cover crop).
+ */
+uploadRouter.post(
+  "/thumbnail",
+  imageUpload.single("image"),
+  async (req, res) => {
+    if (!req.file) {
+      res.status(400).json({
+        error: { message: "No image provided", code: "NO_IMAGE" },
+      });
+      return;
+    }
+
+    const paths = await processImage(req.file.buffer, "thumbnail");
+    res.status(201).json({ paths });
+  },
+);
+
 // Handle Multer-specific errors (file size, invalid type)
 uploadRouter.use(handleMulterError);

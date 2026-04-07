@@ -10,9 +10,9 @@ interface UserStatsCardsProps {
 }
 
 const stats = [
-  { key: "total", label: "Total Users", icon: Users },
-  { key: "active", label: "Active Users", icon: UserCheck },
-  { key: "admin", label: "Admin Users", icon: Shield },
+  { key: "total", label: "Total Users", icon: Users, border: "border-l-blue-500", iconBg: "bg-blue-500/10", iconText: "text-blue-500" },
+  { key: "active", label: "Active Users", icon: UserCheck, border: "border-l-emerald-500", iconBg: "bg-emerald-500/10", iconText: "text-emerald-500" },
+  { key: "admin", label: "Admin Users", icon: Shield, border: "border-l-amber-500", iconBg: "bg-amber-500/10", iconText: "text-amber-500" },
 ] as const;
 
 export function UserStatsCards({
@@ -50,12 +50,14 @@ export function UserStatsCards({
       {stats.map((s) => {
         const Icon = s.icon;
         return (
-          <Card key={s.key}>
+          <Card key={s.key} className={`border-l-4 ${s.border}`}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {s.label}
               </CardTitle>
-              <Icon className="h-4 w-4 text-muted-foreground" />
+              <div className={`rounded-lg p-2 ${s.iconBg}`}>
+                <Icon className={`h-4 w-4 ${s.iconText}`} />
+              </div>
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold">{values[s.key]}</p>

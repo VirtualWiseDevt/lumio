@@ -6,9 +6,31 @@ import {
   getStreamPlaylist,
   getQualityPlaylist,
 } from "../services/stream.service.js";
+import { generatePresignedDownloadUrl } from "../services/r2.service.js";
 
 export const streamRouter = Router();
 
+/**
+ * GET /api/stream/:contentId/preview
+ * Public endpoint — redirects to a presigned URL for the 15-second preview clip.
+ * No auth required since previews are short clips and <video> elements can't send headers.
+ */
+streamRouter.get("/:contentId/preview", async (req: Request, res: Response) => {
+  const contentId = req.params.contentId as string;
+  const content = await prisma.content.findUnique({
+    where: { id: contentId, isPublished: true },
+  });
+
+  if (!content?.previewUrl) {
+    res.status(404).json({ error: { message: "No preview available" } });
+    return;
+  }
+
+  const url = await generatePresignedDownloadUrl(content.previewUrl);
+  res.redirect(url);
+});
+
+// All routes below require authentication and active subscription
 streamRouter.use(requireAuth, requireSubscription);
 
 /**

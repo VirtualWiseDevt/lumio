@@ -1,12 +1,21 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 import { register, validateReferralCode } from "@/api/auth";
 import type { ReferralValidation } from "@/types/auth";
 
 export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
+  );
+}
+
+function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -14,6 +23,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [referralCode, setReferralCode] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -24,7 +34,6 @@ export default function RegisterPage() {
   const [referrerName, setReferrerName] = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Pre-fill referral code from URL or sessionStorage
   useEffect(() => {
     const urlCode = searchParams.get("c");
     if (urlCode) {
@@ -60,7 +69,6 @@ export default function RegisterPage() {
     }, 500);
   }, []);
 
-  // Trigger validation when referralCode changes
   useEffect(() => {
     validateCode(referralCode);
     return () => {
@@ -71,6 +79,11 @@ export default function RegisterPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+
+    if (!referralCode.trim()) {
+      setError("Invite code is required. Lumio is invite-only.");
+      return;
+    }
 
     if (password.length < 8) {
       setError("Password must be at least 8 characters.");
@@ -103,27 +116,31 @@ export default function RegisterPage() {
     }
   }
 
+  const inputClass = "w-full rounded border border-[#555] bg-[#333] px-3 py-2.5 text-white placeholder:text-silver focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold";
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <Link href="/" className="text-3xl font-bold tracking-tight">
-            <span className="text-accent">L</span>umio
+          <Link href="/" className="font-display text-[28px] font-black tracking-[3px]">
+            <span className="text-white">L</span>
+            <span className="text-gold">&#x25C8;</span>
+            <span className="text-white">MIO</span>
           </Link>
-          <h1 className="mt-4 text-xl font-semibold text-foreground">
+          <h1 className="mt-4 text-xl font-semibold text-white">
             Create your account
           </h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-md bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm text-red-400">
+            <div className="rounded-md bg-red/10 border border-red/20 px-4 py-3 text-sm text-red-400">
               {error}
             </div>
           )}
 
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
+            <label htmlFor="name" className="block text-sm font-medium text-white mb-1">
               Name
             </label>
             <input
@@ -132,13 +149,13 @@ export default function RegisterPage() {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-md border border-border bg-card px-3 py-2.5 text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              className={inputClass}
               placeholder="Your name"
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-white mb-1">
               Email
             </label>
             <input
@@ -147,13 +164,13 @@ export default function RegisterPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-md border border-border bg-card px-3 py-2.5 text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              className={inputClass}
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-1">
+            <label htmlFor="phone" className="block text-sm font-medium text-white mb-1">
               Phone
             </label>
             <input
@@ -162,29 +179,39 @@ export default function RegisterPage() {
               required
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full rounded-md border border-border bg-card px-3 py-2.5 text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              className={inputClass}
               placeholder="0712345678"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-white mb-1">
               Password
             </label>
-            <input
-              id="password"
-              type="password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-md border border-border bg-card px-3 py-2.5 text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
-              placeholder="Min 8 characters"
-            />
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`${inputClass} pr-10`}
+                placeholder="Min 8 characters"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
 
           <div>
-            <label htmlFor="referralCode" className="block text-sm font-medium text-foreground mb-1">
+            <label htmlFor="referralCode" className="block text-sm font-medium text-white mb-1">
               Invite Code
             </label>
             <input
@@ -193,34 +220,34 @@ export default function RegisterPage() {
               required
               value={referralCode}
               onChange={(e) => setReferralCode(e.target.value)}
-              className="w-full rounded-md border border-border bg-card px-3 py-2.5 text-foreground placeholder:text-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              className={inputClass}
               placeholder="Enter your invite code"
             />
             {codeStatus === "checking" && (
               <p className="mt-1 text-xs text-white/60">Checking code...</p>
             )}
             {codeStatus === "valid" && (
-              <p className="mt-1 text-xs text-green-500">
+              <p className="mt-1 text-xs text-green">
                 Invited by {referrerName}.
               </p>
             )}
             {codeStatus === "invalid" && (
-              <p className="mt-1 text-xs text-red-400">Invalid invite code</p>
+              <p className="mt-1 text-xs text-red">Invalid invite code</p>
             )}
           </div>
 
           <button
             type="submit"
-            disabled={submitting}
-            className="w-full rounded-md bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={submitting || codeStatus === "checking" || (referralCode.trim() !== "" && codeStatus === "invalid")}
+            className="w-full rounded bg-gold px-4 py-2.5 text-sm font-bold text-black transition-colors hover:bg-gold-bright disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting ? "Creating account..." : "Create Account"}
           </button>
         </form>
 
-        <p className="text-center text-sm text-muted">
+        <p className="text-center text-sm text-silver">
           Already have an account?{" "}
-          <Link href="/login" className="text-accent hover:underline">
+          <Link href="/login" className="text-gold hover:underline">
             Log in
           </Link>
         </p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { HeroBanner } from "@/components/hero/HeroBanner";
@@ -11,23 +11,24 @@ import { fetchHomePageData } from "@/api/content";
 import { getMyList } from "@/api/my-list";
 import { useContentRow } from "@/hooks/use-content-row";
 import type { Content } from "@/types/content";
-import type { MyListItem } from "@/types/player";
+
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function HomePageSkeleton() {
   return (
     <div>
-      <div className="aspect-video w-full bg-card animate-pulse" />
-      <div className="px-4 md:px-12 mt-8 space-y-10">
+      <div className="w-full bg-card animate-pulse" style={{ height: "90vh" }} />
+      <div className="mt-8 space-y-10" style={{ padding: "0 56px" }}>
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="space-y-3">
             <div className="h-6 w-48 bg-card animate-pulse rounded" />
-            <div className="flex gap-2 overflow-hidden">
+            <div className="flex gap-[5px] overflow-hidden">
               {Array.from({ length: 6 }).map((_, j) => (
                 <div
                   key={j}
-                  className="flex-shrink-0 aspect-[2/3] w-[160px] bg-card animate-pulse rounded"
+                  className="flex-shrink-0 bg-card animate-pulse rounded"
+                  style={{ aspectRatio: "16/9", width: "calc((100vw - 112px - 25px) / 6)", minWidth: 200 }}
                 />
               ))}
             </div>
@@ -43,7 +44,7 @@ function MyListRow() {
   const { scrollRef, canScrollLeft, canScrollRight, scrollLeft, scrollRight } =
     useContentRow();
 
-  const { data: items = [] } = useQuery<MyListItem[]>({
+  const { data: items = [] } = useQuery<Content[]>({
     queryKey: ["my-list"],
     queryFn: getMyList,
     retry: false,
@@ -52,27 +53,35 @@ function MyListRow() {
   if (items.length === 0) return null;
 
   return (
-    <section className="group/row relative">
-      <h2 className="mb-1 pl-[4%] text-lg font-semibold text-foreground">
-        My List
-      </h2>
-      <div className="relative">
+    <section className="group/row relative mb-12">
+      <div className="mb-2 flex items-center justify-between" style={{ padding: "0 56px" }}>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: "#e5e5e5" }}>My List</h2>
+        <span className="text-sm text-gold opacity-0 group-hover/row:opacity-100 transition-opacity cursor-pointer hover:underline">
+          Explore All
+        </span>
+      </div>
+      <div className="relative" style={{ padding: "0 56px" }}>
         {canScrollLeft && (
           <button
             onClick={scrollLeft}
             className={cn(
-              "absolute left-0 top-0 bottom-0 z-10 flex w-10 items-center justify-center",
-              "bg-black/50 text-white opacity-0 transition-opacity",
-              "group-hover/row:opacity-100 hover:bg-black/70"
+              "absolute top-0 bottom-0 z-10 flex items-center justify-center",
+              "text-white opacity-0 transition-opacity",
+              "group-hover/row:opacity-100"
             )}
+            style={{
+              left: 0,
+              width: 56,
+              background: "linear-gradient(to right, rgba(20,20,20,0.8), transparent)",
+            }}
             aria-label="Scroll left"
           >
-            <ChevronLeft className="h-6 w-6" />
+            <ChevronLeft className="h-8 w-8" />
           </button>
         )}
         <div
           ref={scrollRef}
-          className="scrollbar-hide flex flex-nowrap gap-2 overflow-x-auto px-[4%]"
+          className="scrollbar-hide flex flex-nowrap gap-[5px] overflow-x-auto"
           style={{ scrollSnapType: "x mandatory" }}
         >
           {items.map((item) => (
@@ -82,8 +91,8 @@ function MyListRow() {
               style={{ scrollSnapAlign: "start" }}
             >
               <ContentCard
-                content={item.content}
-                onClick={() => router.push(`/title/${item.content.id}`)}
+                content={item}
+                onClick={() => router.push(`/title/${item.id}`)}
               />
             </div>
           ))}
@@ -92,13 +101,18 @@ function MyListRow() {
           <button
             onClick={scrollRight}
             className={cn(
-              "absolute right-0 top-0 bottom-0 z-10 flex w-10 items-center justify-center",
-              "bg-black/50 text-white opacity-0 transition-opacity",
-              "group-hover/row:opacity-100 hover:bg-black/70"
+              "absolute top-0 bottom-0 z-10 flex items-center justify-center",
+              "text-white opacity-0 transition-opacity",
+              "group-hover/row:opacity-100"
             )}
+            style={{
+              right: 0,
+              width: 56,
+              background: "linear-gradient(to left, rgba(20,20,20,0.8), transparent)",
+            }}
             aria-label="Scroll right"
           >
-            <ChevronRight className="h-6 w-6" />
+            <ChevronRight className="h-8 w-8" />
           </button>
         )}
       </div>
@@ -106,7 +120,7 @@ function MyListRow() {
   );
 }
 
-export default function HomePage() {
+function ReferralRedirect() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -117,6 +131,12 @@ export default function HomePage() {
       router.push(`/register?c=${encodeURIComponent(code)}`);
     }
   }, [searchParams, router]);
+
+  return null;
+}
+
+export default function HomePage() {
+  const router = useRouter();
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["home"],
@@ -134,15 +154,15 @@ export default function HomePage() {
   if (isError) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh] gap-4">
-        <p className="text-foreground text-lg">
+        <p className="text-white text-lg">
           Something went wrong loading the home page.
         </p>
-        <p className="text-muted text-sm">
+        <p className="text-silver text-sm">
           {error instanceof Error ? error.message : "Unknown error"}
         </p>
         <button
           onClick={() => refetch()}
-          className="px-6 py-2 bg-accent text-white rounded hover:bg-accent/90 transition-colors"
+          className="px-6 py-2 bg-gold text-black rounded font-semibold hover:bg-gold/90 transition-colors"
         >
           Try Again
         </button>
@@ -150,18 +170,21 @@ export default function HomePage() {
     );
   }
 
-  if (!data || data.featured.length === 0) {
+  const hasContent = data && (data.featured.length > 0 || data.rows.some((r) => r.items.length > 0));
+
+  if (!hasContent) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
-        <p className="text-muted text-lg">No content available yet.</p>
+        <p className="text-silver text-lg">No content available yet.</p>
       </div>
     );
   }
 
   return (
     <div>
-      <HeroBanner items={data.featured} />
-      <div className="px-4 md:px-12 -mt-16 relative z-10 space-y-2 pb-16">
+      <Suspense><ReferralRedirect /></Suspense>
+      {data.featured.length > 0 && <HeroBanner items={data.featured} />}
+      <div className="relative z-10 space-y-2" style={{ marginTop: -120, paddingBottom: 60 }}>
         <ContinueWatchingRow />
         <MyListRow />
         {data.rows.map((row) => (

@@ -87,7 +87,7 @@ export function PaymentHistory() {
                 <td className="py-3 pr-4 whitespace-nowrap">
                   KES {payment.amount.toLocaleString()}
                 </td>
-                <td className="py-3 pr-4">{payment.plan.name}</td>
+                <td className="py-3 pr-4">{payment.plan?.name || "—"}</td>
                 <td className="py-3 pr-4 font-mono text-xs">
                   {payment.mpesaReceiptNumber || "-"}
                 </td>

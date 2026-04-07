@@ -33,7 +33,6 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
     router.back();
   }, [router]);
 
-  // Close on Escape key
   useEffect(() => {
     if (isFullPage) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -43,7 +42,6 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isFullPage, handleClose]);
 
-  // Prevent body scroll when modal is open
   useEffect(() => {
     if (isFullPage) return;
     document.body.style.overflow = "hidden";
@@ -55,17 +53,18 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
   const modalContent = (
     <div
       className={cn(
-        "relative rounded-t-lg bg-card",
-        isFullPage ? "mx-auto max-w-4xl" : "mx-auto max-w-4xl overflow-y-auto",
+        "relative bg-[#181818]",
+        isFullPage ? "mx-auto max-w-[900px]" : "mx-auto max-w-[900px] overflow-y-auto",
         !isFullPage && "max-h-[90vh]"
       )}
+      style={{ borderRadius: 8 }}
       onClick={(e) => e.stopPropagation()}
     >
       {/* Close button */}
       {!isFullPage && (
         <button
           onClick={handleClose}
-          className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-card/80 text-foreground transition-colors hover:bg-card"
+          className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-[#181818] text-white transition-colors hover:bg-[#333]"
           aria-label="Close"
         >
           <X className="h-5 w-5" />
@@ -87,10 +86,10 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
       {/* Error state */}
       {isError && (
         <div className="flex flex-col items-center justify-center gap-4 p-16">
-          <p className="text-muted">Failed to load title details</p>
+          <p className="text-silver">Failed to load title details</p>
           <button
             onClick={() => refetch()}
-            className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
+            className="rounded bg-gold px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-gold/90"
           >
             Try Again
           </button>
@@ -101,25 +100,24 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
       {content && (
         <>
           {/* Header / Backdrop */}
-          <div className="relative aspect-video w-full overflow-hidden">
+          <div className="relative aspect-video w-full overflow-hidden" style={{ borderRadius: "8px 8px 0 0" }}>
             {content.posterLandscape ? (
               <Image
                 src={mediaUrl(content.posterLandscape)}
                 alt={content.title}
                 fill
                 className="object-cover"
-                sizes="(min-width: 896px) 896px, 100vw"
+                sizes="(min-width: 900px) 900px, 100vw"
                 priority
               />
             ) : (
               <div className="h-full w-full bg-gradient-to-b from-card-hover to-card" />
             )}
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#181818] via-[#181818]/40 to-transparent" />
 
             {/* Title and buttons */}
             <div className="absolute bottom-0 left-0 right-0 p-8">
-              <h1 className="mb-4 text-3xl font-bold text-white md:text-4xl">
+              <h1 className="mb-4 font-serif text-3xl text-white md:text-4xl" style={{ fontWeight: 700 }}>
                 {content.title}
               </h1>
               <div className="flex items-center gap-3">
@@ -137,12 +135,10 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
                       content.seasons[0].episodes.length > 0
                         ? `/watch/${content.id}?episode=${content.seasons[0].episodes[0].id}`
                         : `/watch/${content.id}`;
-                    router.push(watchUrl);
+                    window.location.href = watchUrl;
                   }}
-                  className={cn(
-                    "flex items-center gap-2 rounded-md px-6 py-2 text-sm font-semibold transition-colors",
-                    "bg-white text-black hover:bg-white/80"
-                  )}
+                  className="flex items-center gap-2 bg-white text-black font-bold hover:bg-white/80 transition-colors"
+                  style={{ padding: "10px 28px", borderRadius: 4 }}
                 >
                   <Play className="h-5 w-5 fill-current" />
                   Play
@@ -152,54 +148,59 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
             </div>
           </div>
 
-          {/* Metadata */}
-          <div className="px-8 py-6">
-            <div className="mb-4 flex flex-wrap items-center gap-3 text-sm">
-              {content.releaseYear && (
-                <span className="text-foreground">{content.releaseYear}</span>
-              )}
-              {content.duration && (
-                <span className="text-foreground">
-                  {formatDuration(content.duration)}
-                </span>
-              )}
-              {content.quality && (
-                <span className="rounded border border-border px-1.5 py-0.5 text-xs font-medium text-foreground">
-                  {content.quality}
-                </span>
-              )}
-              {content.ageRating && (
-                <span className="rounded border border-border px-1.5 py-0.5 text-xs font-medium text-foreground">
-                  {content.ageRating}
-                </span>
+          {/* Two-column layout */}
+          <div className="flex gap-8 px-8 py-6">
+            {/* Main content */}
+            <div className="flex-1 min-w-0">
+              <div className="mb-4 flex flex-wrap items-center gap-3 text-sm">
+                <span className="font-semibold text-green">98% Match</span>
+                {content.releaseYear && (
+                  <span className="text-white">{content.releaseYear}</span>
+                )}
+                {content.duration && (
+                  <span className="text-white">
+                    {formatDuration(content.duration)}
+                  </span>
+                )}
+                {content.quality && (
+                  <span className="rounded border border-[#555] px-1.5 py-0.5 text-xs text-white">
+                    {content.quality}
+                  </span>
+                )}
+                {content.ageRating && (
+                  <span className="rounded border border-[#555] px-1.5 py-0.5 text-xs text-white">
+                    {content.ageRating}
+                  </span>
+                )}
+              </div>
+
+              {content.description && (
+                <p className="mb-4 text-sm text-[#ddd]" style={{ lineHeight: 1.7 }}>
+                  {content.description}
+                </p>
               )}
             </div>
 
-            {content.description && (
-              <p className="mb-4 text-sm leading-relaxed text-foreground">
-                {content.description}
-              </p>
-            )}
-
-            <div className="space-y-1 text-sm">
+            {/* Side metadata */}
+            <div className="hidden md:block w-[200px] shrink-0 space-y-2 text-[13px]">
               {content.cast.length > 0 && (
                 <p>
-                  <span className="text-muted">Cast: </span>
-                  <span className="text-foreground">
+                  <span className="text-silver">Cast: </span>
+                  <span className="font-semibold text-white">
                     {content.cast.join(", ")}
                   </span>
                 </p>
               )}
               {content.director && (
                 <p>
-                  <span className="text-muted">Director: </span>
-                  <span className="text-foreground">{content.director}</span>
+                  <span className="text-silver">Director: </span>
+                  <span className="font-semibold text-white">{content.director}</span>
                 </p>
               )}
               {content.categories.length > 0 && (
                 <p>
-                  <span className="text-muted">Genres: </span>
-                  <span className="text-foreground">
+                  <span className="text-silver">Genres: </span>
+                  <span className="font-semibold text-white">
                     {content.categories.join(", ")}
                   </span>
                 </p>
@@ -228,7 +229,6 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
     />
   );
 
-  // Full page: no overlay
   if (isFullPage) {
     return (
       <>
@@ -238,7 +238,6 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
     );
   }
 
-  // Modal: overlay with animation
   return (
     <>
       <AnimatePresence>
@@ -249,13 +248,11 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/70"
+            className="fixed inset-0"
+            style={{ background: "rgba(0,0,0,0.7)" }}
             onClick={handleClose}
           />
-
-          {/* Modal container */}
           <div className="relative mt-8 pb-8">
             <motion.div
               initial={{ opacity: 0, y: 40 }}

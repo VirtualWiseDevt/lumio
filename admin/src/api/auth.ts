@@ -24,6 +24,6 @@ export async function login(
 }
 
 export async function getProfile(): Promise<AdminUser> {
-  const { data } = await apiClient.get<{ user: AdminUser }>("/sessions");
-  return data.user;
+  const { data } = await apiClient.get<AdminUser>("/user/profile");
+  return data;
 }

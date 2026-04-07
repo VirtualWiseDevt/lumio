@@ -1,4 +1,4 @@
-import { Pie, PieChart } from "recharts";
+import { Pie, PieChart, Cell } from "recharts";
 import {
   Card,
   CardContent,
@@ -8,8 +8,6 @@ import {
 import {
   type ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
@@ -20,31 +18,29 @@ interface ContentChartProps {
   loading?: boolean;
 }
 
+const TYPE_COLORS: Record<string, string> = {
+  movie: "#f59e0b",
+  movies: "#f59e0b",
+  series: "#3b82f6",
+  documentary: "#22c55e",
+  documentaries: "#22c55e",
+  channel: "#ef4444",
+  channels: "#ef4444",
+};
+
 const chartConfig = {
-  movies: {
-    label: "Movies",
-    color: "hsl(var(--chart-1))",
-  },
-  series: {
-    label: "Series",
-    color: "hsl(var(--chart-2))",
-  },
-  documentaries: {
-    label: "Documentaries",
-    color: "hsl(var(--chart-3))",
-  },
-  channels: {
-    label: "Channels",
-    color: "hsl(var(--chart-4))",
-  },
+  movies: { label: "Movies", color: "#f59e0b" },
+  series: { label: "Series", color: "#3b82f6" },
+  documentaries: { label: "Documentaries", color: "#22c55e" },
+  channels: { label: "Channels", color: "#ef4444" },
 } satisfies ChartConfig;
 
-function getColorForType(type: string): string {
-  const key = type.toLowerCase();
-  if (key in chartConfig) {
-    return `var(--color-${key})`;
-  }
-  return "hsl(var(--chart-5))";
+function getColor(type: string): string {
+  return TYPE_COLORS[type.toLowerCase()] || "#6b7280";
+}
+
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 export function ContentChart({ data, loading = false }: ContentChartProps) {
@@ -64,29 +60,60 @@ export function ContentChart({ data, loading = false }: ContentChartProps) {
   const chartData = data.map((item) => ({
     ...item,
     type: item.type.toLowerCase(),
-    fill: getColorForType(item.type),
+    fill: getColor(item.type),
   }));
 
+  const total = chartData.reduce((sum, d) => sum + d.count, 0);
+
   return (
-    <Card>
+    <Card className="h-full flex flex-col">
       <CardHeader>
         <CardTitle>Content Breakdown</CardTitle>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="mx-auto aspect-square h-[300px]">
-          <PieChart>
-            <ChartTooltip content={<ChartTooltipContent nameKey="type" />} />
-            <Pie
-              data={chartData}
-              dataKey="count"
-              nameKey="type"
-              innerRadius={60}
-              outerRadius={100}
-              strokeWidth={2}
-            />
-            <ChartLegend content={<ChartLegendContent nameKey="type" />} />
-          </PieChart>
-        </ChartContainer>
+      <CardContent className="flex-1 flex items-center">
+        <div className="flex items-center gap-6 w-full">
+          <ChartContainer config={chartConfig} className="aspect-square h-[200px] flex-shrink-0">
+            <PieChart>
+              <ChartTooltip content={<ChartTooltipContent nameKey="type" />} />
+              <Pie
+                data={chartData}
+                dataKey="count"
+                nameKey="type"
+                innerRadius={50}
+                outerRadius={85}
+                strokeWidth={2}
+                stroke="hsl(var(--card))"
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={index} fill={entry.fill} />
+                ))}
+              </Pie>
+            </PieChart>
+          </ChartContainer>
+
+          {/* Legend with counts */}
+          <div className="flex flex-col gap-3">
+            {chartData.map((item) => (
+              <div key={item.type} className="flex items-center gap-2">
+                <div
+                  className="h-3 w-3 rounded-sm flex-shrink-0"
+                  style={{ backgroundColor: item.fill }}
+                />
+                <span className="text-sm text-foreground">
+                  {capitalize(item.type)}
+                </span>
+                <span className="text-sm font-semibold text-foreground">
+                  ({item.count})
+                </span>
+              </div>
+            ))}
+            {total > 0 && (
+              <div className="mt-1 border-t border-border pt-2 text-xs text-muted-foreground">
+                {total} total
+              </div>
+            )}
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

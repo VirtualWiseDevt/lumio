@@ -21,6 +21,7 @@ const browseContentSelect = {
   posterLandscape: true,
   trailerUrl: true,
   matchScore: true,
+  previewUrl: true,
   isFeatured: true,
   createdAt: true,
   updatedAt: true,
@@ -30,43 +31,110 @@ const browseContentSelect = {
  * Returns home page data: featured content and admin-configured rows.
  */
 export async function getHomePageData() {
-  const [featured, browseRows] = await Promise.all([
-    prisma.content.findMany({
-      where: { isPublished: true, isFeatured: true },
+  let featured = await prisma.content.findMany({
+    where: { isPublished: true, isFeatured: true },
+    select: browseContentSelect,
+    orderBy: { updatedAt: "desc" },
+    take: 5,
+  });
+
+  // Fallback: if no content is explicitly featured, use the most recent published items
+  if (featured.length === 0) {
+    featured = await prisma.content.findMany({
+      where: { isPublished: true },
       select: browseContentSelect,
-      orderBy: { updatedAt: "desc" },
+      orderBy: { createdAt: "desc" },
       take: 5,
-    }),
-    prisma.browseRow.findMany({
-      where: { isActive: true },
-      orderBy: { position: "asc" },
-    }),
-  ]);
+    });
+  }
 
-  // Resolve content IDs for each browse row
-  const rows = await Promise.all(
-    browseRows.map(async (row) => {
-      if (row.contentIds.length === 0) {
-        return { title: row.title, slug: row.slug, items: [] };
-      }
+  const browseRows = await prisma.browseRow.findMany({
+    where: { isActive: true },
+    orderBy: { position: "asc" },
+  });
 
-      const items = await prisma.content.findMany({
-        where: {
-          id: { in: row.contentIds },
-          isPublished: true,
-        },
-        select: browseContentSelect,
+  let rows: { title: string; slug: string; items: typeof featured }[];
+
+  if (browseRows.length > 0) {
+    // Use admin-configured rows
+    rows = await Promise.all(
+      browseRows.map(async (row) => {
+        if (row.contentIds.length === 0) {
+          return { title: row.title, slug: row.slug, items: [] };
+        }
+
+        const items = await prisma.content.findMany({
+          where: {
+            id: { in: row.contentIds },
+            isPublished: true,
+          },
+          select: browseContentSelect,
+        });
+
+        // Preserve the order from contentIds
+        const itemMap = new Map(items.map((item) => [item.id, item]));
+        const orderedItems = row.contentIds
+          .map((id) => itemMap.get(id))
+          .filter((item): item is NonNullable<typeof item> => item != null);
+
+        return { title: row.title, slug: row.slug, items: orderedItems };
+      }),
+    );
+  } else {
+    // Auto-generate rows from published content
+    rows = [];
+
+    const allPublished = await prisma.content.findMany({
+      where: { isPublished: true },
+      select: browseContentSelect,
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (allPublished.length > 0) {
+      rows.push({
+        title: "Recently Added",
+        slug: "recently-added",
+        items: allPublished.slice(0, 20),
       });
+    }
 
-      // Preserve the order from contentIds
-      const itemMap = new Map(items.map((item) => [item.id, item]));
-      const orderedItems = row.contentIds
-        .map((id) => itemMap.get(id))
-        .filter((item): item is NonNullable<typeof item> => item != null);
+    // Group by category
+    const categoryMap = new Map<string, typeof allPublished>();
+    for (const item of allPublished) {
+      for (const cat of item.categories) {
+        const existing = categoryMap.get(cat);
+        if (existing) {
+          if (existing.length < 20) existing.push(item);
+        } else {
+          categoryMap.set(cat, [item]);
+        }
+      }
+    }
 
-      return { title: row.title, slug: row.slug, items: orderedItems };
-    }),
-  );
+    for (const [category, items] of categoryMap) {
+      rows.push({
+        title: category,
+        slug: category.toLowerCase().replace(/\s+/g, "-"),
+        items,
+      });
+    }
+
+    // Type-specific rows
+    const movies = allPublished.filter((c) => c.type === "MOVIE");
+    if (movies.length > 0) {
+      rows.push({ title: "Movies", slug: "movies", items: movies.slice(0, 20) });
+    }
+
+    const series = allPublished.filter((c) => c.type === "SERIES");
+    if (series.length > 0) {
+      rows.push({ title: "Series", slug: "series", items: series.slice(0, 20) });
+    }
+
+    const docs = allPublished.filter((c) => c.type === "DOCUMENTARY");
+    if (docs.length > 0) {
+      rows.push({ title: "Documentaries", slug: "documentaries", items: docs.slice(0, 20) });
+    }
+  }
 
   return { featured, rows };
 }
@@ -76,7 +144,7 @@ export async function getHomePageData() {
  * Featured items + category-based rows + "Recently Added" row.
  */
 export async function getBrowsePageData(type: ContentType) {
-  const [featured, allContent] = await Promise.all([
+  const [featuredRaw, allContent] = await Promise.all([
     prisma.content.findMany({
       where: { isPublished: true, isFeatured: true, type },
       select: browseContentSelect,
@@ -89,6 +157,9 @@ export async function getBrowsePageData(type: ContentType) {
       orderBy: { createdAt: "desc" },
     }),
   ]);
+
+  // Fallback: if no content is explicitly featured, use the most recent published items
+  const featured = featuredRaw.length > 0 ? featuredRaw : allContent.slice(0, 5);
 
   // "Recently Added" row
   const recentlyAdded = allContent.slice(0, 20);
@@ -188,13 +259,11 @@ export async function getTitleDetail(id: string) {
 
   // Strip seasons for non-SERIES content
   if (content.type !== "SERIES") {
-    const { seasons: _seasons, videoUrl: _videoUrl, streamUrl: _streamUrl, ...rest } = content;
+    const { seasons: _seasons, ...rest } = content;
     return rest;
   }
 
-  // For SERIES, strip videoUrl/streamUrl from top level but keep episodes
-  const { videoUrl: _videoUrl, streamUrl: _streamUrl, ...rest } = content;
-  return rest;
+  return content;
 }
 
 /**

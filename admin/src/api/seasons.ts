@@ -19,7 +19,7 @@ export interface Episode {
   description: string | null;
   duration: number | null;
   videoUrl: string | null;
-  thumbnailUrl: string | null;
+  thumbnail: string | null;
   sourceVideoKey: string | null;
   transcodingStatus: string | null;
   transcodingError: string | null;
@@ -44,7 +44,7 @@ export interface CreateEpisodeData {
   description?: string | null;
   duration?: number | null;
   videoUrl?: string | null;
-  thumbnailUrl?: string | null;
+  thumbnail?: string | null;
 }
 
 export interface UpdateEpisodeData {
@@ -53,7 +53,7 @@ export interface UpdateEpisodeData {
   description?: string | null;
   duration?: number | null;
   videoUrl?: string | null;
-  thumbnailUrl?: string | null;
+  thumbnail?: string | null;
 }
 
 // Season CRUD

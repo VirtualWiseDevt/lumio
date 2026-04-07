@@ -1,15 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #0a0a0a;
-  --color-foreground: #e5e5e5;
-  --color-card: #141414;
-  --color-card-hover: #1a1a1a;
-  --color-border: #262626;
-  --color-muted: #737373;
-  --color-accent: #e50914;
-  --color-accent-hover: #f40612;
-  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --color-background: #141414;
+  --color-foreground: #F5F5F5;
+  --color-card: #181818;
+  --color-card-hover: #222222;
+  --color-border: #333333;
+  --color-muted: #999999;
+  --color-accent: #E8A020;
+  --color-accent-hover: #D4911C;
+  --color-gold: #E8A020;
+  --color-gold-bright: #FFD700;
+  --color-red: #e50914;
+  --color-silver: #999999;
+  --color-green: #46d369;
+  --font-sans: var(--font-dm-sans), "Helvetica Neue", Arial, sans-serif;
+  --font-serif: var(--font-dm-serif), Georgia, serif;
+  --font-display: var(--font-playfair), Georgia, serif;
 }
 
 html {
@@ -17,9 +24,15 @@ html {
 }
 
 body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  background: var(--color-background);
+  color: #fff;
   font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 /* Scrollbar hiding for content rows */
@@ -30,27 +43,41 @@ body {
   display: none;
 }
 
-/* Responsive content card sizing: 2 → 3 → 4 → 5 → 6 cards */
+/* Responsive content card sizing: 6 cards at full width, 56px padding each side, 5px gaps */
 .content-card {
-  width: calc((100% - 8px) / 2);
+  width: calc((100vw - 112px - 25px) / 6);
+  min-width: 200px;
 }
-@media (min-width: 500px) {
+@media (max-width: 1399px) {
   .content-card {
-    width: calc((100% - 2 * 8px) / 3);
+    width: calc((100vw - 112px - 20px) / 5);
+    min-width: 180px;
   }
 }
-@media (min-width: 800px) {
+@media (max-width: 1099px) {
   .content-card {
-    width: calc((100% - 3 * 8px) / 4);
+    width: calc((100vw - 112px - 15px) / 4);
+    min-width: 160px;
   }
 }
-@media (min-width: 1100px) {
+@media (max-width: 799px) {
   .content-card {
-    width: calc((100% - 4 * 8px) / 5);
+    width: calc((100vw - 112px - 10px) / 3);
+    min-width: 140px;
   }
 }
-@media (min-width: 1400px) {
+@media (max-width: 499px) {
   .content-card {
-    width: calc((100% - 5 * 8px) / 6);
+    width: calc((100vw - 32px - 5px) / 2);
+    min-width: 120px;
   }
+}
+
+/* Live badge pulse animation */
+@keyframes livePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.live-dot {
+  animation: livePulse 1.5s ease-in-out infinite;
 }

@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { createRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import type { SortingState } from "@tanstack/react-table";
-import { Search, Download } from "lucide-react";
+import { Search, Download, X } from "lucide-react";
 import { toast } from "sonner";
 import { authenticatedRoute } from "@/routes/_authenticated";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -209,6 +209,22 @@ function BillingPage() {
             className="w-36"
             placeholder="End date"
           />
+
+          {(search !== "" || statusFilter !== "all" || startDate !== "" || endDate !== "") && (
+            <button
+              onClick={() => {
+                setSearch("");
+                setDebouncedSearch("");
+                setStatusFilter("all");
+                setStartDate("");
+                setEndDate("");
+                setPage(1);
+              }}
+              className="flex items-center gap-1.5 rounded-full bg-red-500/20 px-3 py-1.5 text-sm font-medium text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-colors"
+            >
+              <X className="h-3.5 w-3.5" /> Clear Filters
+            </button>
+          )}
 
           <Button variant="outline" onClick={handleExport}>
             <Download className="mr-2 h-4 w-4" />

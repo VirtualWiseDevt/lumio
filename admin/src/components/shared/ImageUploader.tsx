@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import {
   uploadPoster,
   uploadBackdrop,
+  uploadThumbnail,
   type ImagePaths,
 } from "@/api/upload";
 
 interface ImageUploaderProps {
-  type: "poster" | "backdrop";
+  type: "poster" | "backdrop" | "thumbnail";
   value: ImagePaths | null;
   onChange: (paths: ImagePaths | null) => void;
   label: string;
@@ -38,7 +39,12 @@ export function ImageUploader({
 
       setIsUploading(true);
       try {
-        const uploadFn = type === "poster" ? uploadPoster : uploadBackdrop;
+        const uploadFn =
+          type === "poster"
+            ? uploadPoster
+            : type === "thumbnail"
+              ? uploadThumbnail
+              : uploadBackdrop;
         const result = await uploadFn(file);
         onChange(result.paths);
         toast.success(`${label} uploaded successfully`);
@@ -80,7 +86,11 @@ export function ImageUploader({
   const aspectClass =
     type === "poster" ? "aspect-[2/3]" : "aspect-[16/9]";
   const aspectHint =
-    type === "poster" ? "2:3 portrait" : "16:9 landscape";
+    type === "poster"
+      ? "2:3 portrait"
+      : type === "thumbnail"
+        ? "16:9 (1280x720)"
+        : "16:9 landscape";
 
   // Uploaded state: show preview
   if (value && previewSrc) {

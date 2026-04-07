@@ -117,7 +117,7 @@ export async function initiatePayment(
       await activateSubscription(tx, payment.id);
 
       // Grant referral credit to referrer on referee's first payment
-      await grantReferralCreditIfFirst(tx, userId, payment.id);
+      await grantReferralCreditIfFirst(tx, userId, payment.amount);
 
       return payment;
     });
@@ -216,7 +216,7 @@ type TxClient = Parameters<Parameters<PrismaClient["$transaction"]>[0]>[0];
 async function grantReferralCreditIfFirst(
   tx: TxClient,
   userId: string,
-  currentPaymentId: string,
+  paymentAmount: number,
 ): Promise<void> {
   // Count successful payments for this user (including the current one)
   const successCount = await tx.payment.count({
@@ -225,7 +225,7 @@ async function grantReferralCreditIfFirst(
 
   // Only grant on first successful payment
   if (successCount === 1) {
-    await grantReferralCredit(tx, userId);
+    await grantReferralCredit(tx, userId, paymentAmount);
   }
 }
 
@@ -286,7 +286,7 @@ export async function processCallback(
       }
 
       // Grant referral credit to referrer on referee's first successful payment
-      await grantReferralCreditIfFirst(tx, payment.userId, payment.id);
+      await grantReferralCreditIfFirst(tx, payment.userId, payment.amount);
 
       // Activate subscription within the same transaction
       await activateSubscription(tx, payment.id);

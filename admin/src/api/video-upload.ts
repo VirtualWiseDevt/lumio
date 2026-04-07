@@ -1,4 +1,5 @@
 import { apiClient } from "./client";
+import type { AxiosProgressEvent } from "axios";
 
 export interface PresignUploadData {
   contentId: string;
@@ -24,6 +25,11 @@ export interface ConfirmUploadResponse {
   key: string;
 }
 
+export interface ProxyUploadResponse {
+  success: boolean;
+  key: string;
+}
+
 export async function getPresignedUploadUrl(
   data: PresignUploadData,
 ): Promise<PresignUploadResponse> {
@@ -40,6 +46,33 @@ export async function confirmVideoUpload(
   const { data: result } = await apiClient.post<ConfirmUploadResponse>(
     "/admin/video-upload/confirm",
     data,
+  );
+  return result;
+}
+
+export async function uploadVideo(
+  file: File,
+  contentId: string,
+  episodeId: string | undefined,
+  onProgress?: (percent: number) => void,
+): Promise<ProxyUploadResponse> {
+  const formData = new FormData();
+  formData.append("video", file);
+  formData.append("contentId", contentId);
+  if (episodeId) {
+    formData.append("episodeId", episodeId);
+  }
+
+  const { data: result } = await apiClient.post<ProxyUploadResponse>(
+    "/admin/video-upload/upload",
+    formData,
+    {
+      onUploadProgress: (event: AxiosProgressEvent) => {
+        if (onProgress && event.total) {
+          onProgress(Math.round((event.loaded * 100) / event.total));
+        }
+      },
+    },
   );
   return result;
 }

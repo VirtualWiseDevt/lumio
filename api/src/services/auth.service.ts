@@ -32,29 +32,32 @@ export async function register(
     email: string;
     phone: string;
     password: string;
-    referralCode: string;
+    referralCode?: string;
   },
   meta: { userAgent: string; ipAddress: string },
 ) {
   // Validate referral code -- check both User referral codes and AdminInviteCodes
-  const referrer = await prisma.user.findUnique({
-    where: { referralCode: data.referralCode },
-  });
-
+  let referrer: { id: string; referralCode: string | null } | null = null;
   let adminInviteCode: { id: string; code: string; maxUses: number; usedCount: number } | null = null;
 
-  if (!referrer) {
-    // Check admin invite codes
-    adminInviteCode = await prisma.adminInviteCode.findFirst({
-      where: { code: data.referralCode, isActive: true },
+  if (data.referralCode) {
+    referrer = await prisma.user.findUnique({
+      where: { referralCode: data.referralCode },
     });
 
-    if (adminInviteCode) {
-      if (adminInviteCode.usedCount >= adminInviteCode.maxUses) {
-        throw new AuthError("INVITE_CODE_EXHAUSTED", "This invite code has been fully used", 400);
+    if (!referrer) {
+      // Check admin invite codes
+      adminInviteCode = await prisma.adminInviteCode.findFirst({
+        where: { code: data.referralCode, isActive: true },
+      });
+
+      if (adminInviteCode) {
+        if (adminInviteCode.usedCount >= adminInviteCode.maxUses) {
+          throw new AuthError("INVITE_CODE_EXHAUSTED", "This invite code has been fully used", 400);
+        }
+      } else {
+        throw new AuthError("INVALID_REFERRAL_CODE", "Invalid referral code", 400);
       }
-    } else {
-      throw new AuthError("INVALID_REFERRAL_CODE", "Invalid referral code", 400);
     }
   }
 

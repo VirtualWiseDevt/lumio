@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { createRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { SortingState } from "@tanstack/react-table";
-import { Search, Plus, Download } from "lucide-react";
+import { Search, Plus, Download, X } from "lucide-react";
 import { toast } from "sonner";
 import { authenticatedRoute } from "@/routes/_authenticated";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -253,6 +253,20 @@ function UsersPage() {
               <SelectItem value="inactive">Inactive</SelectItem>
             </SelectContent>
           </Select>
+
+          {(search !== "" || statusFilter !== "all") && (
+            <button
+              onClick={() => {
+                setSearch("");
+                setDebouncedSearch("");
+                setStatusFilter("all");
+                setPage(1);
+              }}
+              className="flex items-center gap-1.5 rounded-full bg-red-500/20 px-3 py-1.5 text-sm font-medium text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-colors"
+            >
+              <X className="h-3.5 w-3.5" /> Clear Filters
+            </button>
+          )}
 
           <Button onClick={handleAdd}>
             <Plus className="mr-2 h-4 w-4" />

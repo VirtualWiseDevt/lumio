@@ -19,44 +19,46 @@ export function ContentCard({
   onMouseLeave,
   onClick,
 }: ContentCardProps) {
-  const posterSrc = mediaUrl(content.posterPortrait);
+  const posterSrc = mediaUrl(content.posterLandscape || content.posterPortrait);
 
   return (
     <div
-      className="cursor-pointer"
+      className="cursor-pointer group/card"
       onMouseEnter={(e) => onMouseEnter?.(content.id, e.currentTarget)}
       onMouseLeave={onMouseLeave}
       onClick={onClick}
     >
       <div
         className={cn(
-          "relative aspect-[2/3] overflow-hidden rounded-md bg-card",
-          "transition-transform duration-200 hover:scale-105"
+          "relative overflow-hidden bg-[#222]",
+          "transition-all duration-200 group-hover/card:scale-105 group-hover/card:shadow-[0_8px_25px_rgba(0,0,0,0.6)]"
         )}
+        style={{ aspectRatio: "16/9", borderRadius: 4 }}
       >
-        {posterSrc ? (
-          <Image
-            src={posterSrc}
-            alt={content.title}
-            fill
-            className="object-cover"
-            sizes="(min-width: 1400px) 16vw, (min-width: 1100px) 20vw, (min-width: 800px) 25vw, (min-width: 500px) 33vw, 50vw"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center bg-gradient-to-b from-card-hover to-card p-2">
-            <span className="text-center text-sm text-muted">{content.title}</span>
-          </div>
-        )}
+        <Image
+          src={posterSrc}
+          alt={content.title}
+          fill
+          className="object-cover"
+          sizes="(min-width: 1400px) 16vw, (min-width: 1100px) 20vw, (min-width: 800px) 25vw, (min-width: 500px) 33vw, 50vw"
+          unoptimized={posterSrc.endsWith(".svg")}
+        />
+
+        {/* Title overlay at bottom */}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent px-3 pb-2.5 pt-8">
+          <p className="text-[13px] font-bold text-white truncate">{content.title}</p>
+        </div>
+
+        {/* Progress bar for continue watching */}
         {progressPercent != null && progressPercent > 0 && (
           <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/20">
             <div
-              className="h-full bg-red-600"
+              className="h-full bg-red"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
         )}
       </div>
-      <p className="mt-1 truncate text-sm text-foreground">{content.title}</p>
     </div>
   );
 }

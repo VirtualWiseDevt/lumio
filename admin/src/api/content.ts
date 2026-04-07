@@ -22,6 +22,8 @@ export interface Content {
   transcodingStatus: string | null;
   transcodingError: string | null;
   hlsKey: string | null;
+  totalSeasons: number | null;
+  seriesStatus: string | null;
   matchScore: number | null;
   isPublished: boolean;
   isFeatured: boolean;

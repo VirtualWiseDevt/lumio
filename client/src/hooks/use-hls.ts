@@ -15,7 +15,7 @@ export function useHls(
 
     let destroyed = false;
 
-    if (src.endsWith(".m3u8")) {
+    if (src.endsWith(".m3u8") || src.startsWith("/api/stream/")) {
       // Dynamically import hls.js to avoid SSR "self is not defined"
       import("hls.js").then(({ default: Hls }) => {
         if (destroyed) return;

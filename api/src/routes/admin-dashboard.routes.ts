@@ -29,7 +29,7 @@ adminDashboardRouter.get("/stats", async (req, res) => {
     return;
   }
 
-  const stats = await getDashboardStats(result.data.periodDays);
+  const stats = await getDashboardStats(result.data.periodDays ?? undefined);
   res.json(stats);
 });
 

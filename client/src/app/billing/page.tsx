@@ -67,9 +67,9 @@ export default function BillingPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-background pb-16 pt-24">
-      <div className="mx-auto max-w-5xl px-4 md:px-8">
-        <h1 className="mb-8 text-3xl font-bold text-white">
+    <main className="min-h-screen bg-background pb-16" style={{ paddingTop: 96 }}>
+      <div className="mx-auto max-w-5xl" style={{ padding: "0 56px" }}>
+        <h1 className="mb-8 font-serif text-3xl text-white">
           {isActive ? "Billing" : "Choose Your Plan"}
         </h1>
 
@@ -157,7 +157,7 @@ export default function BillingPage() {
             type="button"
             onClick={handleOpenPaymentModal}
             disabled={!selectedPlan}
-            className="rounded-lg bg-green-600 px-8 py-3 text-base font-medium text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded bg-gold px-8 py-3 text-base font-bold text-black transition-colors hover:bg-gold-bright disabled:cursor-not-allowed disabled:opacity-40"
           >
             {appliedCoupon || (referralStats && referralStats.currentBalance > 0)
               ? "Continue to Payment"

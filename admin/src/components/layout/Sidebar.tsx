@@ -5,6 +5,7 @@ import {
   Tv,
   BookOpen,
   Radio,
+  Tag,
   Settings,
   LogOut,
   Ticket,
@@ -30,6 +31,7 @@ const contentNavItems: NavItem[] = [
   { to: "/series", label: "Series", icon: Tv },
   { to: "/documentaries", label: "Documentaries", icon: BookOpen },
   { to: "/channels", label: "TV Channels", icon: Radio },
+  { to: "/categories", label: "Categories", icon: Tag },
 ];
 
 const operationsNavItems: NavItem[] = [

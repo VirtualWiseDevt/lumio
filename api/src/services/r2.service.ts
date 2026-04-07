@@ -9,7 +9,7 @@ import {
   HeadObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { r2Client, R2_BUCKET_NAME } from "../config/r2.js";
+import { r2Client, r2ClientExternal, R2_BUCKET_NAME } from "../config/r2.js";
 
 /**
  * Generate a presigned PUT URL for direct browser-to-R2 upload.
@@ -39,7 +39,9 @@ export async function generatePresignedDownloadUrl(
     Bucket: R2_BUCKET_NAME,
     Key: key,
   });
-  return getSignedUrl(r2Client, command, { expiresIn });
+  // Use external client so presigned URLs are signed with localhost hostname
+  // (browser-accessible) instead of Docker-internal minio hostname
+  return getSignedUrl(r2ClientExternal, command, { expiresIn });
 }
 
 /**

@@ -28,9 +28,9 @@ export function ContinueWatchingRow() {
   if (items.length === 0) return null;
 
   return (
-    <section className="group/row relative mb-8">
-      <div className="mb-2 flex items-center gap-4 pl-[4%]">
-        <h2 className="text-lg font-semibold text-foreground">
+    <section className="group/row relative mb-12">
+      <div className="mb-2 flex items-center gap-4" style={{ padding: "0 56px" }}>
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: "#e5e5e5" }}>
           Continue Watching
         </h2>
         <div className="flex gap-1">
@@ -51,26 +51,31 @@ export function ContinueWatchingRow() {
         </div>
       </div>
 
-      <div className="relative">
-        {/* Left arrow */}
+      {/* Wrapper — holds padding, arrows sit here */}
+      <div className="relative" style={{ padding: "0 56px" }}>
         {canScrollLeft && (
           <button
             onClick={scrollLeft}
             className={cn(
-              "absolute left-0 top-0 bottom-0 z-10 flex w-10 items-center justify-center",
-              "bg-black/50 text-white opacity-0 transition-opacity",
-              "group-hover/row:opacity-100 hover:bg-black/70"
+              "absolute top-0 bottom-0 z-10 flex items-center justify-center",
+              "text-white opacity-0 transition-opacity",
+              "group-hover/row:opacity-100"
             )}
+            style={{
+              left: 0,
+              width: 56,
+              background: "linear-gradient(to right, rgba(20,20,20,0.8), transparent)",
+            }}
             aria-label="Scroll left"
           >
-            <ChevronLeft className="h-6 w-6" />
+            <ChevronLeft className="h-8 w-8" />
           </button>
         )}
 
-        {/* Scroll container */}
+        {/* Scroll container — NO padding */}
         <div
           ref={scrollRef}
-          className="scrollbar-hide flex flex-nowrap gap-2 overflow-x-auto px-[4%]"
+          className="scrollbar-hide flex flex-nowrap gap-[5px] overflow-x-auto"
           style={{ scrollSnapType: "x mandatory" }}
         >
           {items.map((item) => (
@@ -84,51 +89,54 @@ export function ContinueWatchingRow() {
               className="content-card flex-shrink-0"
               style={{ scrollSnapAlign: "start" }}
             >
-              <div className="relative overflow-hidden rounded">
-                {/* Poster */}
+              <div className="relative overflow-hidden" style={{ aspectRatio: "16/9", borderRadius: 4, background: "#222" }}>
                 <img
-                  src={mediaUrl(item.content.posterPortrait)}
+                  src={mediaUrl(item.content.posterLandscape || item.content.posterPortrait)}
                   alt={item.content.title}
-                  className="aspect-[2/3] w-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover"
                   loading="lazy"
                 />
 
+                {/* Title overlay */}
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent px-3 pb-2.5 pt-8">
+                  <p className="truncate text-[13px] font-bold text-white">
+                    {item.content.title}
+                  </p>
+                  {item.episodeTitle && (
+                    <p className="truncate text-[11px] text-white/50">
+                      {item.episodeTitle}
+                    </p>
+                  )}
+                </div>
+
                 {/* Progress bar */}
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+                <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/20">
                   <div
-                    className="h-full bg-red-600"
+                    className="h-full bg-red"
                     style={{ width: `${item.progressPercent}%` }}
                   />
                 </div>
-              </div>
-
-              {/* Title */}
-              <div className="mt-1 px-0.5">
-                <p className="truncate text-sm text-white">
-                  {item.content.title}
-                </p>
-                {item.episodeTitle && (
-                  <p className="truncate text-xs text-white/50">
-                    {item.episodeTitle}
-                  </p>
-                )}
               </div>
             </Link>
           ))}
         </div>
 
-        {/* Right arrow */}
         {canScrollRight && (
           <button
             onClick={scrollRight}
             className={cn(
-              "absolute right-0 top-0 bottom-0 z-10 flex w-10 items-center justify-center",
-              "bg-black/50 text-white opacity-0 transition-opacity",
-              "group-hover/row:opacity-100 hover:bg-black/70"
+              "absolute top-0 bottom-0 z-10 flex items-center justify-center",
+              "text-white opacity-0 transition-opacity",
+              "group-hover/row:opacity-100"
             )}
+            style={{
+              right: 0,
+              width: 56,
+              background: "linear-gradient(to left, rgba(20,20,20,0.8), transparent)",
+            }}
             aria-label="Scroll right"
           >
-            <ChevronRight className="h-6 w-6" />
+            <ChevronRight className="h-8 w-8" />
           </button>
         )}
       </div>

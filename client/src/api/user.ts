@@ -33,8 +33,8 @@ export async function getUserSubscription(): Promise<UserSubscription> {
 }
 
 export async function getUserSessions(): Promise<DeviceSession[]> {
-  const { data } = await api.get<DeviceSession[]>("/sessions");
-  return data;
+  const { data } = await api.get<{ sessions: DeviceSession[] }>("/sessions");
+  return data.sessions;
 }
 
 export async function deleteSession(sessionId: string): Promise<void> {

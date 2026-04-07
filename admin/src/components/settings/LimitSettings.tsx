@@ -120,7 +120,7 @@ export function LimitSettings() {
           </div>
 
           <div className="pt-2">
-            <Button type="submit" disabled={saveMutation.isPending}>
+            <Button type="submit" disabled={saveMutation.isPending} className="bg-amber-600 text-white hover:bg-amber-700">
               {saveMutation.isPending && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}

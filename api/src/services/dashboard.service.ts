@@ -21,12 +21,14 @@ function calcChange(current: number, previous: number): number {
 }
 
 export async function getDashboardStats(
-  periodDays: number,
+  periodDays?: number,
 ): Promise<DashboardStats> {
   const now = new Date();
-  const currentStart = new Date(now.getTime() - periodDays * 86_400_000);
+  // If no period specified (All Time), use a very large window
+  const days = periodDays ?? 3650;
+  const currentStart = new Date(now.getTime() - days * 86_400_000);
   const previousStart = new Date(
-    currentStart.getTime() - periodDays * 86_400_000,
+    currentStart.getTime() - days * 86_400_000,
   );
 
   const [

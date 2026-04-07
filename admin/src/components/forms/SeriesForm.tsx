@@ -25,6 +25,7 @@ import type { ImagePaths } from "@/api/upload";
 
 const AGE_RATINGS = ["G", "PG", "PG-13", "R", "NC-17", "TV-MA", "TV-14", "TV-PG", "TV-Y"];
 const QUALITY_OPTIONS = ["SD", "HD", "FHD", "4K"];
+const SERIES_STATUS_OPTIONS = ["Ongoing", "Ended", "Cancelled"];
 
 const seriesSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -32,6 +33,8 @@ const seriesSchema = z.object({
   releaseYear: z.string().optional(),
   ageRating: z.string().optional(),
   quality: z.string().optional(),
+  seriesStatus: z.string().optional(),
+  totalSeasons: z.string().optional(),
   categories: z.array(z.string()),
   cast: z.string().optional(),
   director: z.string().optional(),
@@ -81,6 +84,8 @@ export function SeriesForm({ mode, defaultValues, onSuccess }: SeriesFormProps) 
       releaseYear: defaultValues?.releaseYear?.toString() ?? "",
       ageRating: defaultValues?.ageRating ?? "",
       quality: defaultValues?.quality ?? "",
+      seriesStatus: defaultValues?.seriesStatus ?? "",
+      totalSeasons: defaultValues?.totalSeasons?.toString() ?? "",
       categories: defaultValues?.categories ?? [],
       cast: defaultValues?.cast?.join(", ") ?? "",
       director: defaultValues?.director ?? "",
@@ -101,6 +106,8 @@ export function SeriesForm({ mode, defaultValues, onSuccess }: SeriesFormProps) 
         releaseYear: defaultValues.releaseYear?.toString() ?? "",
         ageRating: defaultValues.ageRating ?? "",
         quality: defaultValues.quality ?? "",
+        seriesStatus: defaultValues.seriesStatus ?? "",
+        totalSeasons: defaultValues.totalSeasons?.toString() ?? "",
         categories: defaultValues.categories ?? [],
         cast: defaultValues.cast?.join(", ") ?? "",
         director: defaultValues.director ?? "",
@@ -148,16 +155,18 @@ export function SeriesForm({ mode, defaultValues, onSuccess }: SeriesFormProps) 
     const payload: Partial<Content> = {
       type: "SERIES",
       title: values.title,
-      description: values.description || null,
-      releaseYear: values.releaseYear ? parseInt(values.releaseYear, 10) : null,
-      ageRating: values.ageRating || null,
-      quality: values.quality || null,
+      description: values.description || undefined,
+      releaseYear: values.releaseYear ? parseInt(values.releaseYear, 10) : undefined,
+      ageRating: values.ageRating || undefined,
+      quality: values.quality || undefined,
+      seriesStatus: values.seriesStatus || undefined,
+      totalSeasons: values.totalSeasons ? parseInt(values.totalSeasons, 10) : undefined,
       categories: values.categories,
       cast: castArray,
-      director: values.director || null,
-      trailerUrl: values.trailerUrl || null,
-      posterPortrait: posterPaths?.medium ?? null,
-      posterLandscape: backdropPaths?.medium ?? null,
+      director: values.director || undefined,
+      trailerUrl: values.trailerUrl || undefined,
+      posterPortrait: posterPaths?.medium ?? undefined,
+      posterLandscape: backdropPaths?.medium ?? undefined,
       isPublished: values.isPublished,
     };
 
@@ -253,6 +262,38 @@ export function SeriesForm({ mode, defaultValues, onSuccess }: SeriesFormProps) 
               ))}
             </SelectContent>
           </Select>
+        </div>
+      </div>
+
+      {/* Row: Status, Total Seasons */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label>Status</Label>
+          <Select
+            value={watch("seriesStatus") ?? ""}
+            onValueChange={(val) => setValue("seriesStatus", val)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select status" />
+            </SelectTrigger>
+            <SelectContent>
+              {SERIES_STATUS_OPTIONS.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="totalSeasons">Total Seasons</Label>
+          <Input
+            id="totalSeasons"
+            type="number"
+            min={1}
+            {...register("totalSeasons")}
+            placeholder="1"
+          />
         </div>
       </div>
 

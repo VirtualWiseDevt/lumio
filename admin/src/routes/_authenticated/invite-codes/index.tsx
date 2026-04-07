@@ -108,7 +108,7 @@ function InviteCodesPage() {
 
         <div className="rounded-md border border-border">
           {/* Header */}
-          <div className="grid grid-cols-[1fr_80px_80px_100px_100px_160px_100px] gap-4 border-b border-border bg-muted/50 px-4 py-3 text-sm font-medium text-muted-foreground">
+          <div className="grid grid-cols-[1fr_80px_80px_100px_100px_160px_100px] gap-4 border-b border-border bg-white/5 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             <span>Code</span>
             <span>Max Uses</span>
             <span>Used</span>
@@ -149,7 +149,7 @@ function InviteCodesPage() {
           {codes?.map((code: InviteCode) => (
             <div
               key={code.id}
-              className="grid grid-cols-[1fr_80px_80px_100px_100px_160px_100px] items-center gap-4 border-b border-border px-4 py-2 last:border-b-0"
+              className="grid grid-cols-[1fr_80px_80px_100px_100px_160px_100px] items-center gap-4 border-b border-border px-4 py-2 last:border-b-0 hover:bg-white/5 transition-colors"
             >
               <button
                 type="button"
@@ -171,7 +171,11 @@ function InviteCodesPage() {
 
               <div>
                 <Badge
-                  variant={code.isActive ? "default" : "secondary"}
+                  className={
+                    code.isActive
+                      ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                      : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
+                  }
                 >
                   {code.isActive ? "Active" : "Inactive"}
                 </Badge>

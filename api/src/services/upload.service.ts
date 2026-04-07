@@ -45,7 +45,7 @@ export async function processImage(
 
   // Generate each size variant
   const sizeEntries = Object.entries(sizes) as Array<
-    [string, { width: number; suffix: string }]
+    [string, { width: number; height?: number; suffix: string }]
   >;
 
   await Promise.all(
@@ -57,11 +57,11 @@ export async function processImage(
         preset.suffix,
         filename,
       );
+      const resizeOptions = preset.height
+        ? { width: preset.width, height: preset.height, fit: "cover" as const }
+        : { width: preset.width, fit: "inside" as const, withoutEnlargement: true };
       await sharp(buffer)
-        .resize(preset.width, null, {
-          fit: "inside",
-          withoutEnlargement: true,
-        })
+        .resize(resizeOptions)
         .webp({ quality: WEBP_QUALITY.resized })
         .toFile(outputPath);
       paths[key] = `${typeDir}/${preset.suffix}/${filename}`;

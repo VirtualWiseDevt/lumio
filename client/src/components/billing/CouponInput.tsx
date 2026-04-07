@@ -12,7 +12,6 @@ export function CouponInput({
   onCouponApplied,
   onCouponRemoved,
 }: CouponInputProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [code, setCode] = useState("");
   const [isValidating, setIsValidating] = useState(false);
   const [appliedCode, setAppliedCode] = useState<string | null>(null);
@@ -46,37 +45,29 @@ export function CouponInput({
     onCouponRemoved();
   };
 
-  if (!isExpanded && !appliedCode) {
-    return (
-      <button
-        type="button"
-        onClick={() => setIsExpanded(true)}
-        className="text-sm text-primary transition-colors hover:text-primary/80"
-      >
-        Have a promo code?
-      </button>
-    );
-  }
-
   if (appliedCode && appliedDiscount) {
     return (
-      <div className="flex items-center gap-2">
-        <p className="text-sm text-green-400">
-          {appliedDiscount}% discount applied!
-        </p>
-        <button
-          type="button"
-          onClick={handleRemove}
-          className="text-sm text-white/40 transition-colors hover:text-white/60"
-        >
-          Remove
-        </button>
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-white">Promo Code</label>
+        <div className="flex items-center gap-3">
+          <p className="text-sm text-green-400">
+            {appliedDiscount}% discount applied ({appliedCode})
+          </p>
+          <button
+            type="button"
+            onClick={handleRemove}
+            className="text-sm text-red-400 transition-colors hover:text-red-300"
+          >
+            Remove
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
+    <div className="max-w-sm space-y-2">
+      <label className="block text-sm font-medium text-white">Promo Code</label>
       <div className="flex gap-2">
         <input
           type="text"
@@ -85,14 +76,20 @@ export function CouponInput({
             setCode(e.target.value);
             setError(null);
           }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleApply();
+            }
+          }}
           placeholder="Enter promo code"
-          className="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          className="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white placeholder:text-white/30 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
         />
         <button
           type="button"
           onClick={handleApply}
           disabled={!code.trim() || isValidating}
-          className="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40"
+          className="rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-gold/90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {isValidating ? "..." : "Apply"}
         </button>

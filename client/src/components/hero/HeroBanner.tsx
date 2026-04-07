@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { Play, Info, Volume2, VolumeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -15,8 +16,12 @@ interface HeroBannerProps {
 }
 
 export function HeroBanner({ items }: HeroBannerProps) {
+  const router = useRouter();
   const [isMuted, setIsMuted] = useState(true);
   const { ref, isVisible } = useIntersection<HTMLDivElement>({ threshold: 0.3 });
+
+  const [showPreview, setShowPreview] = useState(false);
+  const previewRef = useRef<HTMLVideoElement>(null);
 
   const { currentIndex, setCurrentIndex, pause, resume } = useHeroBanner({
     itemCount: items.length,
@@ -28,11 +33,61 @@ export function HeroBanner({ items }: HeroBannerProps) {
   const currentItem = items[currentIndex];
   if (!currentItem) return null;
 
+  // Auto-play preview after 2 seconds if available
+  useEffect(() => {
+    setShowPreview(false);
+    if (!currentItem.previewUrl) return;
+    const timer = setTimeout(() => setShowPreview(true), 2000);
+    return () => clearTimeout(timer);
+  }, [currentItem]);
+
+  // Sync mute state with preview video
+  useEffect(() => {
+    if (previewRef.current) {
+      previewRef.current.muted = isMuted;
+    }
+  }, [isMuted, showPreview]);
+
+  // Pause preview when tab is not visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const video = previewRef.current;
+      if (!video) return;
+      if (document.hidden) {
+        video.pause();
+      } else if (showPreview) {
+        video.play().catch(() => {});
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [showPreview]);
+
+  // Pause preview when scrolled out of view
+  useEffect(() => {
+    const heroEl = ref.current;
+    const video = previewRef.current;
+    if (!heroEl || !video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          video.pause();
+        } else if (showPreview) {
+          video.play().catch(() => {});
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(heroEl);
+    return () => observer.disconnect();
+  }, [showPreview, ref]);
+
   return (
     <section
       ref={ref}
       className="relative w-full overflow-hidden"
-      style={{ height: "70vh", minHeight: 400 }}
+      style={{ height: "90vh", minHeight: 500 }}
       onMouseEnter={pause}
       onMouseLeave={resume}
     >
@@ -55,65 +110,128 @@ export function HeroBanner({ items }: HeroBannerProps) {
         </motion.div>
       </AnimatePresence>
 
-      {/* Gradient overlays */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent" />
+      {/* Preview video — z-[1] sits above poster slides */}
+      {showPreview && currentItem.previewUrl && (
+        <video
+          ref={previewRef}
+          src={`/api/stream/${currentItem.id}/preview`}
+          autoPlay
+          muted={isMuted}
+          loop
+          playsInline
+          className="absolute inset-0 z-[1] h-full w-full object-cover transition-opacity duration-1000"
+          onError={() => setShowPreview(false)}
+        />
+      )}
 
-      {/* Content info - bottom left */}
-      <div className="absolute bottom-16 left-6 z-10 max-w-xl md:left-12 lg:left-16">
-        <h1 className="mb-2 text-3xl font-bold text-white drop-shadow-lg md:text-4xl lg:text-5xl">
-          {currentItem.title}
-        </h1>
+      {/* Gradient overlays — z-[2] sits ON TOP of both poster and video */}
+      <div
+        className="pointer-events-none absolute inset-0 z-[2]"
+        style={{
+          background: "linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 25%, rgba(0,0,0,0.2) 50%, transparent 70%)",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[2]"
+        style={{
+          height: "50%",
+          background: "linear-gradient(transparent, rgba(0,0,0,0.7) 60%, #141414)",
+        }}
+      />
+      {/* Top vignette for subtle darkening */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 z-[2]"
+        style={{
+          height: "30%",
+          background: "linear-gradient(rgba(0,0,0,0.4), transparent)",
+        }}
+      />
 
-        {currentItem.description && (
-          <p className="mb-4 line-clamp-2 text-sm text-foreground/80 drop-shadow md:text-base">
-            {currentItem.description}
-          </p>
-        )}
-
-        <div className="flex items-center gap-3">
-          <button
-            className={cn(
-              "flex items-center gap-2 rounded px-5 py-2 text-sm font-semibold transition-colors",
-              "bg-white text-background hover:bg-white/80"
-            )}
+      {/* Content info - bottom left — z-[3] above gradients */}
+      <div className="absolute z-[3]" style={{ left: 56, bottom: "28%" }}>
+        <div className="max-w-2xl">
+          <h1
+            className="mb-3 font-serif text-white"
+            style={{
+              fontSize: 56,
+              fontWeight: 700,
+              lineHeight: 1,
+              textShadow: "0 2px 12px rgba(0,0,0,0.5)",
+            }}
           >
-            <Play className="h-5 w-5 fill-current" />
-            Play
-          </button>
-          <button
-            className={cn(
-              "flex items-center gap-2 rounded px-5 py-2 text-sm font-semibold transition-colors",
-              "bg-white/20 text-white hover:bg-white/30"
-            )}
-          >
-            <Info className="h-5 w-5" />
-            More Info
-          </button>
+            {currentItem.title}
+          </h1>
+
+          {currentItem.description && (
+            <p
+              className="mb-6 line-clamp-3 max-w-lg"
+              style={{ fontSize: 16, color: "#ddd", lineHeight: 1.5 }}
+            >
+              {currentItem.description}
+            </p>
+          )}
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.push(`/watch/${currentItem.id}`)}
+              className="flex items-center gap-2 bg-white text-black font-bold transition-colors hover:bg-white/80"
+              style={{ padding: "10px 28px", borderRadius: 4 }}
+            >
+              <Play className="h-5 w-5 fill-current" />
+              Play
+            </button>
+            <button
+              onClick={() => router.push(`/title/${currentItem.id}`)}
+              className="flex items-center gap-2 text-white font-semibold transition-colors hover:bg-white/20"
+              style={{
+                padding: "10px 28px",
+                borderRadius: 4,
+                background: "rgba(109,109,110,0.7)",
+              }}
+            >
+              <Info className="h-5 w-5" />
+              More Info
+            </button>
+          </div>
         </div>
       </div>
 
+      {/* Bottom right: mute circle then age pill — z-[3] above gradients */}
+      <div className="absolute z-[3] flex items-center gap-3" style={{ bottom: "32%", right: 56 }}>
+        <button
+          onClick={() => setIsMuted((m) => !m)}
+          className={cn(
+            "flex items-center justify-center rounded-full text-white transition-colors",
+            "hover:border-white/60 hover:bg-black/60"
+          )}
+          style={{
+            width: 42,
+            height: 42,
+            border: "1px solid rgba(255,255,255,0.5)",
+            background: "rgba(0,0,0,0.4)",
+          }}
+          aria-label={isMuted ? "Unmute" : "Mute"}
+        >
+          {isMuted ? <VolumeOff className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+        </button>
+        {currentItem.ageRating && (
+          <span
+            className="text-sm text-white/80"
+            style={{ borderLeft: "2px solid rgba(255,255,255,0.4)", paddingLeft: 8 }}
+          >
+            {currentItem.ageRating}
+          </span>
+        )}
+      </div>
+
       {/* Dot indicators - bottom center */}
-      <div className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2">
+      <div className="absolute bottom-8 left-1/2 z-[3] -translate-x-1/2">
         <HeroControls
           count={items.length}
           activeIndex={currentIndex}
           onSelect={setCurrentIndex}
         />
       </div>
-
-      {/* Mute/unmute button - bottom right */}
-      <button
-        onClick={() => setIsMuted((m) => !m)}
-        className={cn(
-          "absolute bottom-6 right-6 z-10 flex h-10 w-10 items-center justify-center",
-          "rounded-full border border-white/40 bg-black/40 text-white transition-colors",
-          "hover:border-white/60 hover:bg-black/60 md:right-12"
-        )}
-        aria-label={isMuted ? "Unmute" : "Mute"}
-      >
-        {isMuted ? <VolumeOff className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-      </button>
     </section>
   );
 }

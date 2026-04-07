@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
-import { Upload, FileVideo, CheckCircle2, AlertCircle } from "lucide-react";
+import { Upload, CheckCircle2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { getPresignedUploadUrl, confirmVideoUpload } from "@/api/video-upload";
+import { uploadVideo } from "@/api/video-upload";
 import { TranscodingBadge } from "./TranscodingBadge";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5GB
@@ -47,6 +47,7 @@ export function VideoUploader({
   const [state, setState] = useState<UploadState>(
     currentKey ? "uploaded" : "idle",
   );
+  const [progress, setProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -78,41 +79,17 @@ export function VideoUploader({
 
     setSelectedFile(file);
     setErrorMessage(null);
+    setProgress(0);
     setState("uploading");
 
     try {
-      // Step 1: Get presigned URL
-      const { uploadUrl, key } = await getPresignedUploadUrl({
-        contentId,
-        episodeId,
-        filename: file.name,
-        contentType: file.type,
-        fileSize: file.size,
-      });
-
-      // Step 2: Upload directly to R2
-      const putResponse = await fetch(uploadUrl, {
-        method: "PUT",
-        body: file,
-        headers: {
-          "Content-Type": file.type,
-        },
-      });
-
-      if (!putResponse.ok) {
-        throw new Error(`Upload failed: ${putResponse.statusText}`);
-      }
-
-      // Step 3: Confirm upload
-      const { key: confirmedKey } = await confirmVideoUpload({
-        contentId,
-        episodeId,
-        key,
+      const { key } = await uploadVideo(file, contentId, episodeId, (percent) => {
+        setProgress(percent);
       });
 
       setState("uploaded");
       toast.success("Video uploaded successfully");
-      onUploadComplete?.(confirmedKey);
+      onUploadComplete?.(key);
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Upload failed. Please try again.";
@@ -158,15 +135,23 @@ export function VideoUploader({
         )}
 
         {state === "uploading" && selectedFile && (
-          <div className="flex items-center gap-3 py-2">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">
-                {selectedFile.name}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Uploading... ({formatFileSize(selectedFile.size)})
-              </p>
+          <div className="flex flex-col gap-3 py-2">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">
+                  {selectedFile.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Uploading... {progress}% ({formatFileSize(selectedFile.size)})
+                </p>
+              </div>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+              <div
+                className="h-full rounded-full bg-primary transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              />
             </div>
           </div>
         )}

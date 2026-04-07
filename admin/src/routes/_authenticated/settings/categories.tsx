@@ -28,7 +28,7 @@ import axios from "axios";
 
 export const categoriesRoute = createRoute({
   getParentRoute: () => authenticatedRoute,
-  path: "/settings/categories",
+  path: "/categories",
   component: CategoriesPage,
 });
 

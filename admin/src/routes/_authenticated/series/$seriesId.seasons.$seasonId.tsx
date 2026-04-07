@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -27,19 +27,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   EpisodeForm,
   type EpisodeFormData,
 } from "@/components/forms/EpisodeForm";
+import { VideoUploader } from "@/components/content/VideoUploader";
+import { ImageUploader } from "@/components/shared/ImageUploader";
 import { TranscodingBadge } from "@/components/content/TranscodingBadge";
 import { getContent } from "@/api/content";
+import type { ImagePaths } from "@/api/upload";
 import {
   listSeasons,
   listEpisodes,
@@ -100,8 +95,6 @@ function SeasonDetailPage() {
         title: data.title,
         description: data.description ?? null,
         duration: data.duration ?? null,
-        videoUrl: data.videoUrl ?? null,
-        thumbnailUrl: data.thumbnailUrl ?? null,
       }),
     onSuccess: () => {
       toast.success("Episode added");
@@ -132,8 +125,6 @@ function SeasonDetailPage() {
         title: data.title,
         description: data.description ?? null,
         duration: data.duration ?? null,
-        videoUrl: data.videoUrl ?? null,
-        thumbnailUrl: data.thumbnailUrl ?? null,
       }),
     onSuccess: () => {
       toast.success("Episode updated");
@@ -144,6 +135,23 @@ function SeasonDetailPage() {
     },
     onError: () => {
       toast.error("Failed to update episode");
+    },
+  });
+
+  // Thumbnail update mutation
+  const thumbnailMutation = useMutation({
+    mutationFn: ({
+      episodeId,
+      thumbnail,
+    }: {
+      episodeId: string;
+      thumbnail: string | null;
+    }) =>
+      updateEpisode(seriesId, seasonId, episodeId, { thumbnail }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: ["episodes", seriesId, seasonId],
+      });
     },
   });
 
@@ -173,6 +181,13 @@ function SeasonDetailPage() {
   const handleUpdateEpisode = (data: EpisodeFormData) => {
     if (!editingEpisode) return;
     updateEpisodeMutation.mutate({ episodeId: editingEpisode.id, data });
+  };
+
+  const handleThumbnailChange = (episodeId: string, paths: ImagePaths | null) => {
+    thumbnailMutation.mutate({
+      episodeId,
+      thumbnail: paths?.medium ?? null,
+    });
   };
 
   const sortedEpisodes = episodes
@@ -253,80 +268,24 @@ function SeasonDetailPage() {
             </div>
           </div>
         ) : (
-          <div className="rounded-lg border border-border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-16">#</TableHead>
-                  <TableHead>Title</TableHead>
-                  <TableHead className="w-24">Duration</TableHead>
-                  <TableHead className="w-28">Video</TableHead>
-                  <TableHead className="w-20 text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedEpisodes.map((episode) => (
-                  <TableRow key={episode.id}>
-                    <TableCell className="font-medium">
-                      {episode.number}
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{episode.title}</p>
-                        {episode.description && (
-                          <p className="mt-0.5 line-clamp-1 text-sm text-muted-foreground">
-                            {episode.description}
-                          </p>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {episode.duration ? `${episode.duration} min` : "-"}
-                    </TableCell>
-                    <TableCell>
-                      {episode.sourceVideoKey || episode.transcodingStatus ? (
-                        <TranscodingBadge
-                          status={episode.transcodingStatus ?? "pending"}
-                          error={episode.transcodingError}
-                        />
-                      ) : episode.videoUrl ? (
-                        <Badge
-                          variant="secondary"
-                          className="gap-1 text-green-400"
-                        >
-                          <Video className="h-3 w-3" />
-                          Ready
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="gap-1">
-                          No video
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => setEditingEpisode(episode)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-destructive hover:text-destructive"
-                          onClick={() => setDeletingEpisode(episode)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <div className="space-y-4">
+            {sortedEpisodes.map((episode) => (
+              <EpisodeRow
+                key={episode.id}
+                episode={episode}
+                seriesId={seriesId}
+                onEdit={() => setEditingEpisode(episode)}
+                onDelete={() => setDeletingEpisode(episode)}
+                onThumbnailChange={(paths) =>
+                  handleThumbnailChange(episode.id, paths)
+                }
+                onVideoUploadComplete={() => {
+                  void queryClient.invalidateQueries({
+                    queryKey: ["episodes", seriesId, seasonId],
+                  });
+                }}
+              />
+            ))}
           </div>
         )}
       </div>
@@ -349,8 +308,6 @@ function SeasonDetailPage() {
       <EpisodeForm
         open={editingEpisode !== null}
         mode="edit"
-        contentId={seriesId}
-        episodeId={editingEpisode?.id}
         defaultValues={
           editingEpisode
             ? {
@@ -358,11 +315,6 @@ function SeasonDetailPage() {
                 title: editingEpisode.title,
                 description: editingEpisode.description,
                 duration: editingEpisode.duration,
-                videoUrl: editingEpisode.videoUrl,
-                thumbnailUrl: editingEpisode.thumbnailUrl,
-                sourceVideoKey: editingEpisode.sourceVideoKey,
-                transcodingStatus: editingEpisode.transcodingStatus,
-                transcodingError: editingEpisode.transcodingError,
               }
             : undefined
         }
@@ -402,5 +354,108 @@ function SeasonDetailPage() {
         </AlertDialogContent>
       </AlertDialog>
     </PageContainer>
+  );
+}
+
+interface EpisodeRowProps {
+  episode: Episode;
+  seriesId: string;
+  onEdit: () => void;
+  onDelete: () => void;
+  onThumbnailChange: (paths: ImagePaths | null) => void;
+  onVideoUploadComplete: () => void;
+}
+
+function EpisodeRow({
+  episode,
+  seriesId,
+  onEdit,
+  onDelete,
+  onThumbnailChange,
+  onVideoUploadComplete,
+}: EpisodeRowProps) {
+  // Local thumbnail state for immediate UI feedback after upload
+  const [thumbnailPaths, setThumbnailPaths] = useState<ImagePaths | null>(
+    episode.thumbnail
+      ? ({ medium: episode.thumbnail } as ImagePaths)
+      : null,
+  );
+
+  // Sync local state when server data changes (e.g. after query refetch)
+  useEffect(() => {
+    setThumbnailPaths(
+      episode.thumbnail
+        ? ({ medium: episode.thumbnail } as ImagePaths)
+        : null,
+    );
+  }, [episode.thumbnail]);
+
+  const handleThumbnailUpload = (paths: ImagePaths | null) => {
+    // Update local state immediately so the image renders
+    setThumbnailPaths(paths);
+    // Persist to server + invalidate query
+    onThumbnailChange(paths);
+  };
+
+  return (
+    <div className="rounded-lg border border-border p-4">
+      {/* Top row: metadata + actions */}
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-muted-foreground">
+              E{episode.number}
+            </span>
+            <h3 className="truncate font-medium">{episode.title}</h3>
+            {episode.duration && (
+              <span className="shrink-0 text-sm text-muted-foreground">
+                {episode.duration} min
+              </span>
+            )}
+          </div>
+          {episode.description && (
+            <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+              {episode.description}
+            </p>
+          )}
+        </div>
+        <div className="flex shrink-0 items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={onEdit}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-destructive hover:text-destructive"
+            onClick={onDelete}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Bottom row: video uploader + thumbnail uploader */}
+      <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <VideoUploader
+          contentId={seriesId}
+          episodeId={episode.id}
+          currentKey={episode.sourceVideoKey}
+          transcodingStatus={episode.transcodingStatus}
+          transcodingError={episode.transcodingError}
+          onUploadComplete={onVideoUploadComplete}
+        />
+        <ImageUploader
+          type="thumbnail"
+          value={thumbnailPaths}
+          onChange={handleThumbnailUpload}
+          label="Episode Thumbnail"
+        />
+      </div>
+    </div>
   );
 }

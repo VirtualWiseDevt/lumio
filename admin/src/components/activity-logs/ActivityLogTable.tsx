@@ -146,7 +146,7 @@ export function ActivityLogTable({
                 return (
                   <TableHead
                     key={header.id}
-                    className={cn(canSort && "cursor-pointer select-none")}
+                    className={cn("bg-white/5 text-xs font-semibold uppercase tracking-wider text-muted-foreground", canSort && "cursor-pointer select-none")}
                     onClick={
                       canSort
                         ? header.column.getToggleSortingHandler()

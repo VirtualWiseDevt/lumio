@@ -18,15 +18,15 @@ export function MoreLikeThis({ contentId }: MoreLikeThisProps) {
 
   return (
     <div className="px-8 py-6">
-      <h3 className="mb-4 text-xl font-semibold text-foreground">
+      <h3 className="mb-4 text-xl font-semibold text-white">
         More Like This
       </h3>
 
       {isLoading && (
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+        <div className="grid grid-cols-3 gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="animate-pulse">
-              <div className="aspect-[2/3] rounded-md bg-card-hover" />
+              <div className="rounded bg-card-hover" style={{ aspectRatio: "16/9" }} />
               <div className="mt-2 h-3 w-3/4 rounded bg-card-hover" />
             </div>
           ))}
@@ -34,13 +34,13 @@ export function MoreLikeThis({ contentId }: MoreLikeThisProps) {
       )}
 
       {!isLoading && (!titles || titles.length === 0) && (
-        <p className="text-sm text-muted">No similar titles found</p>
+        <p className="text-sm text-silver">No similar titles found</p>
       )}
 
       {!isLoading && titles && titles.length > 0 && (
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+        <div className="grid grid-cols-3 gap-3">
           {titles.map((title) => {
-            const posterSrc = mediaUrl(title.posterPortrait);
+            const posterSrc = mediaUrl(title.posterLandscape || title.posterPortrait);
             return (
               <Link
                 key={title.id}
@@ -49,9 +49,10 @@ export function MoreLikeThis({ contentId }: MoreLikeThisProps) {
               >
                 <div
                   className={cn(
-                    "relative aspect-[2/3] overflow-hidden rounded-md bg-card",
+                    "relative overflow-hidden bg-[#222]",
                     "transition-transform duration-200 group-hover:scale-105"
                   )}
+                  style={{ aspectRatio: "16/9", borderRadius: 4 }}
                 >
                   {posterSrc ? (
                     <Image
@@ -63,15 +64,16 @@ export function MoreLikeThis({ contentId }: MoreLikeThisProps) {
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center bg-gradient-to-b from-card-hover to-card p-2">
-                      <span className="text-center text-sm text-muted">
+                      <span className="text-center text-sm text-silver">
                         {title.title}
                       </span>
                     </div>
                   )}
+                  {/* Title overlay */}
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-2 pb-2 pt-6">
+                    <p className="truncate text-[13px] font-bold text-white">{title.title}</p>
+                  </div>
                 </div>
-                <p className="mt-1 truncate text-sm text-foreground">
-                  {title.title}
-                </p>
               </Link>
             );
           })}

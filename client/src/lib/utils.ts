@@ -13,6 +13,7 @@ export function formatDuration(minutes: number): string {
 }
 
 export function mediaUrl(path: string | null | undefined): string {
-  if (!path) return "";
-  return `/api/media/${path}`;
+  if (!path) return "/placeholder.svg";
+  if (path.startsWith("http")) return path;
+  return `http://localhost:5000/api/media/${path}`;
 }

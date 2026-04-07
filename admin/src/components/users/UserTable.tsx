@@ -98,11 +98,10 @@ export function UserTable({
           const active = row.original.isActive;
           return (
             <Badge
-              variant="outline"
               className={
                 active
-                  ? "border-green-600 text-green-500"
-                  : "border-red-600 text-red-500"
+                  ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                  : "bg-red-500/20 text-red-400 border border-red-500/30"
               }
             >
               {active ? "Active" : "Inactive"}
@@ -192,7 +191,7 @@ export function UserTable({
                 return (
                   <TableHead
                     key={header.id}
-                    className={cn(canSort && "cursor-pointer select-none")}
+                    className={cn("bg-white/5 text-xs font-semibold uppercase tracking-wider text-muted-foreground", canSort && "cursor-pointer select-none")}
                     onClick={
                       canSort
                         ? header.column.getToggleSortingHandler()

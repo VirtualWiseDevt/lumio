@@ -32,3 +32,14 @@ export async function uploadBackdrop(file: File): Promise<UploadResponse> {
   );
   return data;
 }
+
+export async function uploadThumbnail(file: File): Promise<UploadResponse> {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const { data } = await apiClient.post<UploadResponse>(
+    "/admin/upload/thumbnail",
+    formData,
+  );
+  return data;
+}

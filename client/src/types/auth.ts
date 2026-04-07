@@ -3,7 +3,7 @@ export interface RegisterInput {
   email: string;
   phone: string;
   password: string;
-  referralCode: string;
+  referralCode?: string;
 }
 
 export interface LoginInput {

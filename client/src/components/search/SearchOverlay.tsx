@@ -24,10 +24,8 @@ export function SearchOverlay() {
     enabled: debouncedQuery.length >= 1,
   });
 
-  // Auto-focus input when overlay opens
   useEffect(() => {
     if (isSearchOpen) {
-      // Small delay to allow animation
       const timer = setTimeout(() => inputRef.current?.focus(), 100);
       return () => clearTimeout(timer);
     }
@@ -52,37 +50,42 @@ export function SearchOverlay() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[60] bg-background/95 backdrop-blur-sm overflow-y-auto"
+          className="fixed inset-0 z-[60] overflow-y-auto"
+          style={{ background: "rgba(20,20,20,0.97)" }}
         >
           <div className="mx-auto max-w-3xl px-4 pt-8">
-            {/* Header with close button */}
             <div className="flex items-center justify-end mb-4">
               <button
                 onClick={handleClose}
-                className="p-2 text-muted hover:text-foreground transition-colors"
+                className="p-2 text-silver hover:text-white transition-colors"
                 aria-label="Close search"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
 
-            {/* Search input */}
-            <div className="relative border-b border-border pb-4">
-              <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 text-muted" />
+            <div className="relative border-b border-[#333] pb-4">
+              <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 text-silver" />
               <input
                 ref={inputRef}
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && query.trim()) {
+                    closeSearch();
+                    clear();
+                    router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+                  }
+                }}
                 placeholder="Search movies, series, channels..."
-                className="w-full bg-transparent pl-10 text-2xl text-foreground placeholder:text-muted/50 outline-none"
+                className="w-full bg-transparent pl-10 text-2xl text-white placeholder:text-silver/50 outline-none"
               />
             </div>
 
-            {/* Results area */}
             <div className="mt-6 pb-8">
               {debouncedQuery.length === 0 && (
-                <p className="text-center text-muted py-16">
+                <p className="text-center text-silver py-16">
                   Start typing to search
                 </p>
               )}

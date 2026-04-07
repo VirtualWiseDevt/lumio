@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { cn, mediaUrl } from "@/lib/utils";
+import { mediaUrl } from "@/lib/utils";
 import type { Content } from "@/types/content";
 
 interface ChannelCardProps {
@@ -16,12 +16,11 @@ export function ChannelCard({ channel }: ChannelCardProps) {
   return (
     <Link href={`/title/${channel.id}`}>
       <div
-        className={cn(
-          "rounded-lg bg-card p-4 transition-colors hover:bg-card-hover"
-        )}
+        className="bg-card transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_8px_25px_rgba(0,0,0,0.5)]"
+        style={{ borderRadius: 6 }}
       >
         {/* Channel image */}
-        <div className="relative aspect-video overflow-hidden rounded bg-card">
+        <div className="relative overflow-hidden bg-[#222]" style={{ aspectRatio: "16/9", borderRadius: "6px 6px 0 0" }}>
           {posterSrc ? (
             <Image
               src={posterSrc}
@@ -32,7 +31,7 @@ export function ChannelCard({ channel }: ChannelCardProps) {
             />
           ) : (
             <div className="flex h-full items-center justify-center bg-gradient-to-b from-card-hover to-card">
-              <span className="text-lg font-bold text-muted">
+              <span className="text-lg font-bold text-silver">
                 {channel.title
                   .split(" ")
                   .map((w) => w[0])
@@ -42,17 +41,23 @@ export function ChannelCard({ channel }: ChannelCardProps) {
               </span>
             </div>
           )}
+          {/* LIVE badge */}
+          <span className="absolute top-2 left-2 inline-flex items-center gap-1.5 rounded bg-red px-2 py-0.5 text-xs font-bold text-white">
+            <span className="h-2 w-2 rounded-full bg-white live-dot" />
+            LIVE
+          </span>
         </div>
 
         {/* Channel info */}
-        <div className="mt-2 flex items-center justify-between">
-          <p className="truncate text-sm font-medium text-foreground">
+        <div className="p-3">
+          <p className="text-[15px] font-bold text-white truncate">
             {channel.title}
           </p>
-          <span className="ml-2 inline-flex shrink-0 items-center gap-1 rounded bg-accent px-2 py-0.5 text-xs font-bold text-white">
-            <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
-            LIVE
-          </span>
+          {channel.categories.length > 0 && (
+            <p className="mt-0.5 text-xs text-gold">
+              {channel.categories[0]}
+            </p>
+          )}
         </div>
       </div>
     </Link>

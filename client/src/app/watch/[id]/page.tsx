@@ -121,6 +121,11 @@ export default function WatchPage({ params }: WatchPageProps) {
           src = detail.streamUrl ?? null;
         }
 
+        // Fall back to videoUrl from database
+        if (!src && detail.videoUrl) {
+          src = detail.videoUrl.startsWith('http') ? detail.videoUrl : `/api/media${detail.videoUrl}`;
+        }
+
         // Fallback: find first available episode videoUrl
         if (!src && detail.seasons) {
           for (const season of detail.seasons) {

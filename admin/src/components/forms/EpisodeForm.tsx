@@ -3,13 +3,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { VideoUploader } from "@/components/content/VideoUploader";
-import { TranscodingBadge } from "@/components/content/TranscodingBadge";
 import {
   Dialog,
   DialogContent,
@@ -23,8 +20,6 @@ const episodeSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   duration: z.string().optional(),
-  videoUrl: z.string().url("Invalid URL").or(z.literal("")).optional(),
-  thumbnailUrl: z.string().url("Invalid URL").or(z.literal("")).optional(),
 });
 
 type EpisodeFormValues = z.infer<typeof episodeSchema>;
@@ -34,25 +29,16 @@ export interface EpisodeFormData {
   title: string;
   description?: string;
   duration?: number;
-  videoUrl?: string;
-  thumbnailUrl?: string;
 }
 
 interface EpisodeFormProps {
   open: boolean;
   mode: "create" | "edit";
-  contentId?: string;
-  episodeId?: string;
   defaultValues?: {
     number?: number;
     title?: string;
     description?: string | null;
     duration?: number | null;
-    videoUrl?: string | null;
-    thumbnailUrl?: string | null;
-    sourceVideoKey?: string | null;
-    transcodingStatus?: string | null;
-    transcodingError?: string | null;
   };
   onSubmit: (data: EpisodeFormData) => void;
   onCancel: () => void;
@@ -62,14 +48,11 @@ interface EpisodeFormProps {
 export function EpisodeForm({
   open,
   mode,
-  contentId,
-  episodeId,
   defaultValues,
   onSubmit,
   onCancel,
   isPending,
 }: EpisodeFormProps) {
-  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
@@ -82,8 +65,6 @@ export function EpisodeForm({
       title: defaultValues?.title ?? "",
       description: defaultValues?.description ?? "",
       duration: defaultValues?.duration?.toString() ?? "",
-      videoUrl: defaultValues?.videoUrl ?? "",
-      thumbnailUrl: defaultValues?.thumbnailUrl ?? "",
     },
   });
 
@@ -95,8 +76,6 @@ export function EpisodeForm({
         title: defaultValues?.title ?? "",
         description: defaultValues?.description ?? "",
         duration: defaultValues?.duration?.toString() ?? "",
-        videoUrl: defaultValues?.videoUrl ?? "",
-        thumbnailUrl: defaultValues?.thumbnailUrl ?? "",
       });
     }
   }, [open, defaultValues, reset]);
@@ -107,8 +86,6 @@ export function EpisodeForm({
       title: values.title,
       description: values.description || undefined,
       duration: values.duration ? parseInt(values.duration, 10) : undefined,
-      videoUrl: values.videoUrl || undefined,
-      thumbnailUrl: values.thumbnailUrl || undefined,
     });
   };
 
@@ -116,14 +93,8 @@ export function EpisodeForm({
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle>
             {mode === "create" ? "Add Episode" : "Edit Episode"}
-            {mode === "edit" && defaultValues?.transcodingStatus && (
-              <TranscodingBadge
-                status={defaultValues.transcodingStatus}
-                error={defaultValues.transcodingError}
-              />
-            )}
           </DialogTitle>
         </DialogHeader>
 
@@ -190,52 +161,6 @@ export function EpisodeForm({
               rows={3}
             />
           </div>
-
-          {/* Video URL */}
-          <div className="space-y-2">
-            <Label htmlFor="ep-videoUrl">Video URL</Label>
-            <Input
-              id="ep-videoUrl"
-              {...register("videoUrl")}
-              placeholder="https://..."
-            />
-            {errors.videoUrl && (
-              <p className="text-sm text-destructive">
-                {errors.videoUrl.message}
-              </p>
-            )}
-          </div>
-
-          {/* Thumbnail URL */}
-          <div className="space-y-2">
-            <Label htmlFor="ep-thumbnailUrl">Thumbnail URL</Label>
-            <Input
-              id="ep-thumbnailUrl"
-              {...register("thumbnailUrl")}
-              placeholder="https://..."
-            />
-            {errors.thumbnailUrl && (
-              <p className="text-sm text-destructive">
-                {errors.thumbnailUrl.message}
-              </p>
-            )}
-          </div>
-
-          {/* Video Upload (edit mode only) */}
-          {mode === "edit" && contentId && episodeId && (
-            <VideoUploader
-              contentId={contentId}
-              episodeId={episodeId}
-              currentKey={defaultValues?.sourceVideoKey}
-              transcodingStatus={defaultValues?.transcodingStatus}
-              transcodingError={defaultValues?.transcodingError}
-              onUploadComplete={() => {
-                void queryClient.invalidateQueries({
-                  queryKey: ["episodes"],
-                });
-              }}
-            />
-          )}
 
           <DialogFooter>
             <Button

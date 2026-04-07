@@ -34,11 +34,11 @@ export default function InvitePage() {
   );
 
   return (
-    <main className="min-h-screen bg-background pb-16 pt-24">
+    <main className="min-h-screen bg-background pb-16" style={{ paddingTop: 96 }}>
       <div className="mx-auto max-w-2xl px-4">
         {/* Hero Section */}
         <div className="mb-10 text-center">
-          <h1 className="text-3xl font-bold text-white md:text-4xl">
+          <h1 className="font-serif text-3xl text-white md:text-4xl">
             Invite Friends, Earn Free Streaming
           </h1>
           <p className="mt-3 text-lg text-white/60">

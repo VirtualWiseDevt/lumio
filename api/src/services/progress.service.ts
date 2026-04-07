@@ -16,9 +16,10 @@ export async function saveProgress(
   const completed =
     data.duration > 0 && data.timestamp / data.duration >= 0.9;
 
-  // Prisma's compound unique type expects string for episodeId even though
-  // the schema field is optional. Null values work at runtime for the DB unique constraint.
-  const episodeId = (data.episodeId ?? null) as string;
+  // Use empty string for movies (no episode) so the composite unique key
+  // works — PostgreSQL treats NULL != NULL, so null episodeId would never
+  // match on findUnique/upsert and create duplicates.
+  const episodeId = data.episodeId || "";
 
   const progress = await prisma.watchProgress.upsert({
     where: {
@@ -36,7 +37,7 @@ export async function saveProgress(
     create: {
       userId,
       contentId: data.contentId,
-      episodeId: data.episodeId ?? null,
+      episodeId,
       timestamp: data.timestamp,
       duration: data.duration,
       completed,
@@ -60,7 +61,7 @@ export async function getProgress(
       userId_contentId_episodeId: {
         userId,
         contentId,
-        episodeId: (episodeId ?? null) as string,
+        episodeId: episodeId || "",
       },
     },
     select: {

@@ -1,17 +1,20 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { AnimatePresence } from "motion/react";
 import { getMyList } from "@/api/my-list";
 import { ContentCard } from "@/components/content/ContentCard";
-import type { MyListItem } from "@/types/player";
+import { HoverPopover } from "@/components/content/HoverPopover";
+import { useHoverPopover } from "@/hooks/use-hover-popover";
+import type { Content } from "@/types/content";
 
 function MyListSkeleton() {
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
       {Array.from({ length: 12 }).map((_, i) => (
         <div key={i}>
-          <div className="aspect-[2/3] animate-pulse rounded-md bg-card" />
-          <div className="mt-1 h-4 w-3/4 animate-pulse rounded bg-card" />
+          <div className="animate-pulse rounded bg-card" style={{ aspectRatio: "16/9" }} />
         </div>
       ))}
     </div>
@@ -19,26 +22,44 @@ function MyListSkeleton() {
 }
 
 export default function MyListPage() {
-  const { data: items, isLoading, isError } = useQuery<MyListItem[]>({
+  const router = useRouter();
+  const { data: items, isLoading, isError } = useQuery<Content[]>({
     queryKey: ["my-list"],
     queryFn: getMyList,
   });
 
+  const {
+    activeId,
+    cardRect,
+    onCardMouseEnter,
+    onCardMouseLeave,
+    onPopoverMouseEnter,
+    onPopoverMouseLeave,
+  } = useHoverPopover();
+
+  const activeContent = activeId
+    ? items?.find((item) => item.id === activeId) ?? null
+    : null;
+
+  function handleCardClick(content: Content) {
+    router.push(`/title/${content.id}`);
+  }
+
   return (
-    <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-      <h1 className="mb-8 text-3xl font-bold text-foreground">My List</h1>
+    <div className="min-h-screen pt-24 pb-16" style={{ padding: "96px 56px 64px" }}>
+      <h1 className="mb-8 font-serif text-3xl text-white">My List</h1>
 
       {isLoading && <MyListSkeleton />}
 
       {isError && (
-        <p className="text-center text-muted">
+        <p className="text-center text-silver">
           Something went wrong loading your list. Please try again.
         </p>
       )}
 
       {!isLoading && !isError && items && items.length === 0 && (
         <div className="flex flex-col items-center justify-center py-24">
-          <p className="text-center text-lg text-muted">
+          <p className="text-center text-lg text-silver">
             Your list is empty. Add movies and series to keep track of what you
             want to watch.
           </p>
@@ -46,10 +67,31 @@ export default function MyListPage() {
       )}
 
       {!isLoading && !isError && items && items.length > 0 && (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {items.map((item) => (
-            <ContentCard key={item.id} content={item.content} />
-          ))}
+        <div className="relative">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            {items.map((item) => (
+              <ContentCard
+                key={item.id}
+                content={item}
+                onMouseEnter={onCardMouseEnter}
+                onMouseLeave={onCardMouseLeave}
+                onClick={() => handleCardClick(item)}
+              />
+            ))}
+          </div>
+
+          <AnimatePresence>
+            {activeContent && cardRect && (
+              <HoverPopover
+                key={activeContent.id}
+                content={activeContent}
+                cardRect={cardRect}
+                onMouseEnter={onPopoverMouseEnter}
+                onMouseLeave={onPopoverMouseLeave}
+                onExpand={() => handleCardClick(activeContent)}
+              />
+            )}
+          </AnimatePresence>
         </div>
       )}
     </div>

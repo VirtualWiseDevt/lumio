@@ -14,16 +14,17 @@ interface BrowsePageProps {
 function BrowsePageSkeleton() {
   return (
     <div>
-      <div className="aspect-video w-full bg-card animate-pulse" />
-      <div className="px-4 md:px-12 mt-8 space-y-10">
+      <div className="w-full bg-card animate-pulse" style={{ height: "90vh" }} />
+      <div className="mt-8 space-y-10" style={{ padding: "0 56px" }}>
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="space-y-3">
             <div className="h-6 w-48 bg-card animate-pulse rounded" />
-            <div className="flex gap-2 overflow-hidden">
+            <div className="flex gap-[5px] overflow-hidden">
               {Array.from({ length: 6 }).map((_, j) => (
                 <div
                   key={j}
-                  className="flex-shrink-0 aspect-[2/3] w-[160px] bg-card animate-pulse rounded"
+                  className="flex-shrink-0 bg-card animate-pulse rounded"
+                  style={{ aspectRatio: "16/9", width: "calc((100vw - 112px - 25px) / 6)", minWidth: 200 }}
                 />
               ))}
             </div>
@@ -53,15 +54,15 @@ export function BrowsePage({ type }: BrowsePageProps) {
   if (isError) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh] gap-4">
-        <p className="text-foreground text-lg">
+        <p className="text-white text-lg">
           Something went wrong loading content.
         </p>
-        <p className="text-muted text-sm">
+        <p className="text-silver text-sm">
           {error instanceof Error ? error.message : "Unknown error"}
         </p>
         <button
           onClick={() => refetch()}
-          className="px-6 py-2 bg-accent text-white rounded hover:bg-accent/90 transition-colors"
+          className="px-6 py-2 bg-gold text-black rounded font-semibold hover:bg-gold/90 transition-colors"
         >
           Try Again
         </button>
@@ -72,7 +73,7 @@ export function BrowsePage({ type }: BrowsePageProps) {
   if (!data || data.featured.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
-        <p className="text-muted text-lg">No content available yet.</p>
+        <p className="text-silver text-lg">No content available yet.</p>
       </div>
     );
   }
@@ -80,7 +81,7 @@ export function BrowsePage({ type }: BrowsePageProps) {
   return (
     <div>
       <HeroBanner items={data.featured} />
-      <div className="px-4 md:px-12 -mt-16 relative z-10 space-y-2 pb-16">
+      <div className="relative z-10 space-y-2" style={{ marginTop: -120, paddingBottom: 60 }}>
         {data.rows.map((row) => (
           <ContentRow
             key={row.slug}

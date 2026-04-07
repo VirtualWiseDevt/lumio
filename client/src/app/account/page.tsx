@@ -8,9 +8,24 @@ import { PreferencesSection } from "@/components/account/PreferencesSection";
 
 export default function AccountPage() {
   return (
-    <main className="min-h-screen bg-background pb-16 pt-24">
+    <main className="min-h-screen bg-background pb-16" style={{ paddingTop: 96 }}>
       <div className="mx-auto max-w-2xl px-4">
-        <h1 className="mb-8 text-3xl font-bold text-white">
+        {/* Avatar */}
+        <div className="mb-6 flex flex-col items-center">
+          <div
+            className="flex items-center justify-center text-2xl font-bold text-black"
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #E8A020, #FFD700)",
+            }}
+          >
+            U
+          </div>
+        </div>
+
+        <h1 className="mb-8 text-center font-serif text-3xl text-white">
           Account Settings
         </h1>
 
@@ -23,11 +38,14 @@ export default function AccountPage() {
           {/* Invite Friends */}
           <Link
             href="/invite"
-            className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10"
+            className="flex items-center gap-3 rounded-lg border border-[#333] bg-card p-4 transition-colors hover:bg-card-hover"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-full"
+              style={{ background: "rgba(232,160,32,0.15)" }}
+            >
               <svg
-                className="h-5 w-5 text-primary"
+                className="h-5 w-5 text-gold"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -42,12 +60,12 @@ export default function AccountPage() {
             </div>
             <div>
               <p className="font-medium text-white">Invite Friends</p>
-              <p className="text-sm text-white/50">
+              <p className="text-sm text-silver">
                 Earn free streaming by referring friends
               </p>
             </div>
             <svg
-              className="ml-auto h-5 w-5 text-white/30"
+              className="ml-auto h-5 w-5 text-silver"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

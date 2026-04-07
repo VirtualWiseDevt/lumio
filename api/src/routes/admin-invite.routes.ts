@@ -9,6 +9,7 @@ import {
   listInviteCodes,
   toggleInviteCode,
 } from "../services/admin-invite.service.js";
+import { logActivity } from "../services/activity-log.service.js";
 
 export const adminInviteRouter = Router();
 
@@ -21,6 +22,14 @@ adminInviteRouter.use(requireAuth, requireAdmin);
 adminInviteRouter.post("/", async (req: Request, res: Response) => {
   const body = createInviteCodeSchema.parse(req.body);
   const code = await createInviteCode(body.maxUses, req.user!.id);
+  logActivity({
+    userId: req.user!.id,
+    action: "CREATE",
+    entityType: "INVITE_CODE",
+    entityId: code.id,
+    details: { code: code.code, maxUses: body.maxUses },
+    ipAddress: req.ip || undefined,
+  }).catch(() => {});
   res.status(201).json(code);
 });
 
@@ -41,5 +50,13 @@ adminInviteRouter.patch("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   const body = toggleInviteCodeSchema.parse(req.body);
   const code = await toggleInviteCode(id as string, body.isActive);
+  logActivity({
+    userId: req.user!.id,
+    action: "UPDATE",
+    entityType: "INVITE_CODE",
+    entityId: code.id,
+    details: { code: code.code, isActive: body.isActive },
+    ipAddress: req.ip || undefined,
+  }).catch(() => {});
   res.json(code);
 });
