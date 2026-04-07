@@ -1,16 +1,18 @@
-import type { NextConfig } from "next";
+﻿import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "http://localhost:5000/api/:path*",
-      },
-    ];
-  },
   images: {
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "api.lumiostudio.app",
+        pathname: "/api/media/**",
+      },
+      {
+        protocol: "https",
+        hostname: "media.lumiostudio.app",
+        pathname: "/**",
+      },
       {
         protocol: "http",
         hostname: "localhost",

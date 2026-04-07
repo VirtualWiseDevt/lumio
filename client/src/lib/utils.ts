@@ -1,4 +1,4 @@
-import { clsx, type ClassValue } from "clsx";
+﻿import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -15,5 +15,6 @@ export function formatDuration(minutes: number): string {
 export function mediaUrl(path: string | null | undefined): string {
   if (!path) return "/placeholder.svg";
   if (path.startsWith("http")) return path;
-  return `http://localhost:5000/api/media/${path}`;
+  const base = process.env.NEXT_PUBLIC_API_URL || "";
+  return `${base}/api/media/${path}`;
 }
