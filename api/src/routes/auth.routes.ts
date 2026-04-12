@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import type { ZodSchema } from "zod";
 import { z } from "zod";
 import {
@@ -23,6 +23,7 @@ import { createSession } from "../services/session.service.js";
 import { signToken } from "../services/token.service.js";
 import { prisma } from "../config/database.js";
 import * as argon2 from "argon2";
+import { setAuthCookie, clearAuthCookie } from "../utils/auth-cookie.js";
 
 export const authRouter = Router();
 
@@ -46,6 +47,7 @@ authRouter.post("/register", async (req, res) => {
       userAgent: req.headers["user-agent"] || "",
       ipAddress: req.ip || "unknown",
     });
+    setAuthCookie(res, result.token);
     res.status(201).json(result);
   } catch (error) {
     if (error instanceof AuthError) {
@@ -78,6 +80,7 @@ authRouter.post("/login", async (req, res) => {
       return;
     }
 
+    setAuthCookie(res, result.token);
     res.status(200).json({ user: result.user, token: result.token });
   } catch (error) {
     if (error instanceof AuthError) {
@@ -141,6 +144,7 @@ authRouter.post("/login/force", async (req, res) => {
 
     const token = await signToken({ sub: user.id, sid: session.id });
 
+    setAuthCookie(res, token);
     res.status(200).json({
       user: {
         id: user.id,
@@ -165,6 +169,7 @@ authRouter.post("/login/force", async (req, res) => {
 authRouter.post("/logout", requireAuth, async (req, res) => {
   try {
     await logout(req.sessionId!, req.user!.id);
+    clearAuthCookie(res);
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     if (error instanceof AuthError) {
@@ -231,3 +236,4 @@ authRouter.post("/reset-password", async (req, res) => {
     throw error;
   }
 });
+

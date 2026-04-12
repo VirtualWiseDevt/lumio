@@ -1,6 +1,7 @@
 ﻿import express from "express";
 import helmet from "helmet";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import { env } from "./config/env.js";
 import { registerRoutes } from "./routes/index.js";
@@ -28,6 +29,7 @@ export function buildApp() {
 
   // Body parsing
   app.use(express.json({ limit: "10mb" }));
+  app.use(cookieParser());
   app.use(express.urlencoded({ extended: false }));
 
   // Rate limiting
@@ -51,4 +53,5 @@ export function buildApp() {
 
   return app;
 }
+
 
