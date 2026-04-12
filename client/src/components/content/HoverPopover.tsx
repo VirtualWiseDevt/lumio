@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -102,7 +102,7 @@ export function HoverPopover({
           <>
             <video
               ref={popoverVideoRef}
-              src={`/api/stream/${content.id}/preview`}
+              src={mediaUrl(content.previewUrl)}
               autoPlay
               muted
               loop
@@ -201,3 +201,4 @@ export function HoverPopover({
     </motion.div>
   );
 }
+
