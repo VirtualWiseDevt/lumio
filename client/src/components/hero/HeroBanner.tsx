@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { Play, Info, Volume2, VolumeOff } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, mediaUrl } from "@/lib/utils";
 import { useHeroBanner } from "@/hooks/use-hero-banner";
 import { useIntersection } from "@/hooks/use-intersection";
 import { HeroSlide } from "./HeroSlide";
@@ -110,11 +110,11 @@ export function HeroBanner({ items }: HeroBannerProps) {
         </motion.div>
       </AnimatePresence>
 
-      {/* Preview video — z-[1] sits above poster slides */}
+      {/* Preview video â€” z-[1] sits above poster slides */}
       {showPreview && currentItem.previewUrl && (
         <video
           ref={previewRef}
-          src={`/api/stream/${currentItem.id}/preview`}
+          src={mediaUrl(currentItem.previewUrl)}
           autoPlay
           muted={isMuted}
           loop
@@ -124,7 +124,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
         />
       )}
 
-      {/* Gradient overlays — z-[2] sits ON TOP of both poster and video */}
+      {/* Gradient overlays â€” z-[2] sits ON TOP of both poster and video */}
       <div
         className="pointer-events-none absolute inset-0 z-[2]"
         style={{
@@ -147,7 +147,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
         }}
       />
 
-      {/* Content info - bottom left — z-[3] above gradients */}
+      {/* Content info - bottom left â€” z-[3] above gradients */}
       <div className="absolute z-[3]" style={{ left: 56, bottom: "28%" }}>
         <div className="max-w-2xl">
           <h1
@@ -196,7 +196,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
         </div>
       </div>
 
-      {/* Bottom right: mute circle then age pill — z-[3] above gradients */}
+      {/* Bottom right: mute circle then age pill â€” z-[3] above gradients */}
       <div className="absolute z-[3] flex items-center gap-3" style={{ bottom: "32%", right: 56 }}>
         <button
           onClick={() => setIsMuted((m) => !m)}
@@ -235,3 +235,6 @@ export function HeroBanner({ items }: HeroBannerProps) {
     </section>
   );
 }
+
+
+
