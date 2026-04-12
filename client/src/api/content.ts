@@ -1,4 +1,4 @@
-import { api } from "./client";
+﻿import { api } from "./client";
 import type {
   BrowsePageData,
   LiveTvData,
@@ -12,7 +12,8 @@ import type {
  * Returns the full URL to the stream endpoint which provides m3u8 playlists.
  */
 export function getStreamUrl(contentId: string, episodeId?: string): string {
-  const base = `/api/stream/${contentId}`;
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || "";
+  const base = `${apiBase}/api/stream/${contentId}`;
   return episodeId ? `${base}?episode=${episodeId}` : base;
 }
 

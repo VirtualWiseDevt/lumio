@@ -1,5 +1,4 @@
-"use client";
-
+﻿"use client";
 import { useEffect, useRef } from "react";
 import type { RefObject } from "react";
 
@@ -14,12 +13,13 @@ export function useHls(
     if (!video || !src) return;
 
     let destroyed = false;
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || "";
+    const isApiStream = src.includes("/api/stream/");
 
-    if (src.endsWith(".m3u8") || src.startsWith("/api/stream/")) {
+    if (src.endsWith(".m3u8") || isApiStream) {
       // Dynamically import hls.js to avoid SSR "self is not defined"
       import("hls.js").then(({ default: Hls }) => {
         if (destroyed) return;
-
         if (Hls.isSupported()) {
           const hls = new Hls({
             maxBufferLength: 30,
@@ -27,7 +27,11 @@ export function useHls(
             xhrSetup: (xhr, url) => {
               // Only add auth header for API requests (playlist fetches).
               // Presigned R2 segment URLs must NOT receive extra headers.
-              if (url.startsWith("/api/") || url.startsWith(window.location.origin + "/api/")) {
+              const isApiRequest =
+                url.startsWith("/api/") ||
+                (apiBase && url.startsWith(apiBase + "/api/")) ||
+                url.startsWith(window.location.origin + "/api/");
+              if (isApiRequest) {
                 const token = localStorage.getItem("token");
                 if (token) {
                   xhr.setRequestHeader("Authorization", `Bearer ${token}`);
@@ -35,18 +39,14 @@ export function useHls(
               }
             },
           });
-
           hlsRef.current = hls;
           hls.loadSource(src);
           hls.attachMedia(video);
-
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
             video.play().catch(() => {});
           });
-
           hls.on(Hls.Events.ERROR, (_event, data) => {
             if (!data.fatal) return;
-
             switch (data.type) {
               case Hls.ErrorTypes.NETWORK_ERROR:
                 hls.startLoad();
@@ -59,9 +59,7 @@ export function useHls(
                 break;
             }
           });
-        } else if (
-          video.canPlayType("application/vnd.apple.mpegurl")
-        ) {
+        } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
           // Safari native HLS support
           video.src = src;
           video.play().catch(() => {});
