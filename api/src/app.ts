@@ -1,4 +1,4 @@
-import express from "express";
+﻿import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
@@ -13,6 +13,7 @@ import { errorHandler } from "./middleware/error.middleware.js";
  */
 export function buildApp() {
   const app = express();
+  app.set("trust proxy", 1);
 
   // Security headers
   app.use(helmet());
@@ -50,3 +51,4 @@ export function buildApp() {
 
   return app;
 }
+
