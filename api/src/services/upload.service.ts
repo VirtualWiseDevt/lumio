@@ -53,7 +53,7 @@ export async function processImage(
   paths.original = origKey;
 
   // Process and upload each size variant in parallel
-  const sizeEntries = Object.entries(sizes) as Array
+  const sizeEntries = Object.entries(sizes) as Array<
     [string, { width: number; height?: number; suffix: string }]
   >;
   await Promise.all(
@@ -96,3 +96,4 @@ export async function deleteImageSet(
     ),
   );
 }
+
