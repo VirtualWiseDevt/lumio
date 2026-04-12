@@ -15,6 +15,6 @@ export function formatDuration(minutes: number): string {
 export function mediaUrl(path: string | null | undefined): string {
   if (!path) return "/placeholder.svg";
   if (path.startsWith("http")) return path;
-  const base = process.env.NEXT_PUBLIC_API_URL || "";
-  return `${base}/api/media/${path}`;
+  const mediaBase = process.env.NEXT_PUBLIC_MEDIA_URL || "https://media.lumiostudio.app";
+  return `${mediaBase}/${path}`;
 }
