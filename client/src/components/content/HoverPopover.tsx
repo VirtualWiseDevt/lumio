@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -9,6 +9,7 @@ import { cn, mediaUrl, formatDuration } from "@/lib/utils";
 import { MyListButton } from "@/components/my-list/MyListButton";
 import { SubscribeGate } from "@/components/billing/SubscribeGate";
 import { useSubscription } from "@/hooks/use-subscription";
+import { YouTubeEmbed } from "@/components/content/YouTubeEmbed";
 import type { Content } from "@/types/content";
 
 interface HoverPopoverProps {
@@ -22,183 +23,84 @@ interface HoverPopoverProps {
 function getPopoverPosition(cardRect: DOMRect) {
   const popoverWidth = 320;
   const viewportWidth = typeof window !== "undefined" ? window.innerWidth : 1400;
-
   let left = cardRect.left + cardRect.width / 2 - popoverWidth / 2;
-
-  if (left < 8) {
-    left = 8;
-  } else if (left + popoverWidth > viewportWidth - 8) {
-    left = viewportWidth - 8 - popoverWidth;
-  }
-
+  if (left < 8) left = 8;
+  else if (left + popoverWidth > viewportWidth - 8) left = viewportWidth - 8 - popoverWidth;
   const topSpace = cardRect.top;
-  const bottomSpace =
-    (typeof window !== "undefined" ? window.innerHeight : 800) - cardRect.bottom;
+  const bottomSpace = (typeof window !== "undefined" ? window.innerHeight : 800) - cardRect.bottom;
   const estimatedHeight = popoverWidth * 0.75 + 120;
-
   let top: number;
-  if (bottomSpace >= estimatedHeight || bottomSpace >= topSpace) {
-    top = cardRect.top - 20;
-  } else {
-    top = cardRect.bottom - estimatedHeight + 20;
-  }
-
+  if (bottomSpace >= estimatedHeight || bottomSpace >= topSpace) top = cardRect.top - 20;
+  else top = cardRect.bottom - estimatedHeight + 20;
   return { left, top, width: popoverWidth };
 }
 
-export function HoverPopover({
-  content,
-  cardRect,
-  onMouseEnter,
-  onMouseLeave,
-  onExpand,
-}: HoverPopoverProps) {
+export function HoverPopover({ content, cardRect, onMouseEnter, onMouseLeave, onExpand }: HoverPopoverProps) {
   const router = useRouter();
   const { isActive } = useSubscription();
   const [showSubscribeGate, setShowSubscribeGate] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const popoverVideoRef = useRef<HTMLVideoElement>(null);
-
   const { left, top, width } = getPopoverPosition(cardRect);
-  const backdropSrc = mediaUrl(content.posterLandscape);
+  const backdropSrc = mediaUrl(content.posterLandscape || content.posterPortrait);
+  const hasTrailer = !!content.trailerUrl;
+  const hasPreview = !!content.previewUrl;
 
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const video = popoverVideoRef.current;
-    if (video) {
-      video.muted = !video.muted;
-      setIsMuted(!isMuted);
+    if (popoverVideoRef.current) {
+      popoverVideoRef.current.muted = !popoverVideoRef.current.muted;
     }
+    setIsMuted(!isMuted);
   };
 
   const handlePlay = () => {
-    if (!isActive) {
-      setShowSubscribeGate(true);
-      return;
-    }
+    if (!isActive) { setShowSubscribeGate(true); return; }
     router.push(`/watch/${content.id}`);
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
-      className="fixed z-50"
-      style={{
-        left,
-        top,
-        width,
-        borderRadius: 6,
-        boxShadow: "0 14px 36px rgba(0,0,0,0.75), 0 6px 12px rgba(0,0,0,0.5)",
-      }}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      {/* Backdrop: preview video or poster image */}
+    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.2, ease: "easeOut" }} className="fixed z-50" style={{ left, top, width, borderRadius: 6, boxShadow: "0 14px 36px rgba(0,0,0,0.75), 0 6px 12px rgba(0,0,0,0.5)" }} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <div className="relative aspect-video w-full overflow-hidden bg-card" style={{ borderRadius: "6px 6px 0 0" }}>
-        {content.previewUrl ? (
+        {hasTrailer ? (
+          <YouTubeEmbed url={content.trailerUrl!} autoPlay muted={isMuted} loop className="absolute inset-0 h-full w-full scale-[1.2] object-cover" />
+        ) : hasPreview ? (
           <>
-            <video
-              ref={popoverVideoRef}
-              src={mediaUrl(content.previewUrl)}
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-            <button
-              onClick={toggleMute}
-              className="absolute bottom-2 right-2 z-10 rounded-full border border-white/40 bg-black/60 p-1.5 text-white hover:bg-black/80 transition-colors"
-              aria-label={isMuted ? "Unmute" : "Mute"}
-            >
+            <video ref={popoverVideoRef} src={mediaUrl(content.previewUrl)} autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-cover" />
+            <button onClick={toggleMute} className="absolute bottom-2 right-2 z-10 rounded-full border border-white/40 bg-black/60 p-1.5 text-white hover:bg-black/80 transition-colors" aria-label={isMuted ? "Unmute" : "Mute"}>
               {isMuted ? <VolumeOff className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
             </button>
           </>
         ) : backdropSrc ? (
-          <Image
-            src={backdropSrc}
-            alt={content.title}
-            fill
-            className="object-cover"
-            sizes="320px"
-          />
+          <Image src={backdropSrc} alt={content.title} fill className="object-cover" sizes="320px" />
         ) : (
           <div className="flex h-full items-center justify-center bg-gradient-to-b from-card-hover to-card">
-            <span className="text-lg font-semibold text-foreground">
-              {content.title}
-            </span>
+            <span className="text-lg font-semibold text-foreground">{content.title}</span>
           </div>
         )}
-        {/* Gradient + title overlay */}
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-card via-card/50 to-transparent px-3 pb-3 pt-10">
           <p className="text-sm font-bold text-white">{content.title}</p>
         </div>
       </div>
 
-      {/* Info section */}
       <div className="bg-card p-3" style={{ borderRadius: "0 0 6px 6px" }}>
-        {/* Action buttons */}
         <div className="mb-2.5 flex items-center gap-2">
-          <button
-            onClick={handlePlay}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black hover:bg-white/80 transition-colors"
-            aria-label="Play"
-          >
-            <Play className="h-4 w-4 fill-current" />
-          </button>
+          <button onClick={handlePlay} className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black hover:bg-white/80 transition-colors" aria-label="Play"><Play className="h-4 w-4 fill-current" /></button>
           <MyListButton contentId={content.id} size="sm" />
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-[#555] text-white hover:border-white transition-colors"
-            aria-label="Like"
-          >
-            <ThumbsUp className="h-4 w-4" />
-          </button>
+          <button className="flex h-8 w-8 items-center justify-center rounded-full border border-[#555] text-white hover:border-white transition-colors" aria-label="Like"><ThumbsUp className="h-4 w-4" /></button>
           <div className="flex-1" />
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-[#555] text-white hover:border-white transition-colors"
-            aria-label="More Info"
-            onClick={onExpand}
-          >
-            <ChevronDown className="h-4 w-4" />
-          </button>
+          <button className="flex h-8 w-8 items-center justify-center rounded-full border border-[#555] text-white hover:border-white transition-colors" aria-label="More Info" onClick={onExpand}><ChevronDown className="h-4 w-4" /></button>
         </div>
-
-        {/* Metadata row */}
         <div className="mb-1.5 flex items-center gap-2 text-xs">
           <span className="font-semibold text-green">98% Match</span>
-          {content.ageRating && (
-            <span className="flex h-5 items-center justify-center rounded-sm border border-[#555] px-1.5 text-[11px] text-silver">
-              {content.ageRating}
-            </span>
-          )}
-          {content.quality && (
-            <span className="flex h-5 items-center justify-center rounded-sm border border-[#555] px-1.5 text-[11px] text-silver">
-              {content.quality}
-            </span>
-          )}
-          {content.duration !== null && content.duration > 0 && (
-            <span className="text-silver">{formatDuration(content.duration)}</span>
-          )}
-          {content.releaseYear && (
-            <span className="text-silver">{content.releaseYear}</span>
-          )}
+          {content.ageRating && (<span className="flex h-5 items-center justify-center rounded-sm border border-[#555] px-1.5 text-[11px] text-silver">{content.ageRating}</span>)}
+          {content.quality && (<span className="flex h-5 items-center justify-center rounded-sm border border-[#555] px-1.5 text-[11px] text-silver">{content.quality}</span>)}
+          {content.duration !== null && content.duration > 0 && (<span className="text-silver">{formatDuration(content.duration)}</span>)}
+          {content.releaseYear && (<span className="text-silver">{content.releaseYear}</span>)}
         </div>
-
-        {/* Categories with dot separator */}
-        {content.categories.length > 0 && (
-          <p className="text-xs text-silver">
-            {content.categories.slice(0, 3).join(" \u2022 ")}
-          </p>
-        )}
+        {content.categories.length > 0 && (<p className="text-xs text-silver">{content.categories.slice(0, 3).join(" \u2022 ")}</p>)}
       </div>
-      <SubscribeGate
-        isOpen={showSubscribeGate}
-        onClose={() => setShowSubscribeGate(false)}
-      />
+      <SubscribeGate isOpen={showSubscribeGate} onClose={() => setShowSubscribeGate(false)} />
     </motion.div>
   );
 }
-
