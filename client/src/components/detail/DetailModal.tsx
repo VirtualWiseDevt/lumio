@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -118,8 +118,10 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
             {/* Title and buttons */}
             <div className="absolute bottom-0 left-0 right-0 p-8">
               <h1 className="mb-4 font-serif text-3xl text-white md:text-4xl" style={{ fontWeight: 700 }}>
-                {content.title}
-              </h1>
+                {content.title}</h1>
+              {content.tagline && (
+                <p className="mb-3 text-base italic text-silver">{content.tagline}</p>
+              )}
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => {
@@ -269,3 +271,4 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
     </>
   );
 }
+

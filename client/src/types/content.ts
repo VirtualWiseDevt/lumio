@@ -1,4 +1,4 @@
-export type ContentType = "MOVIE" | "SERIES" | "DOCUMENTARY" | "CHANNEL";
+﻿export type ContentType = "MOVIE" | "SERIES" | "DOCUMENTARY" | "CHANNEL";
 
 export interface Content {
   id: string;
@@ -17,6 +17,7 @@ export interface Content {
   trailerUrl: string | null;
   streamUrl: string | null;
   previewUrl: string | null;
+  tagline: string | null;
   isFeatured: boolean;
   createdAt: string;
   updatedAt: string;
@@ -76,3 +77,4 @@ export interface SearchResults {
   documentaries: Content[];
   channels: Content[];
 }
+
