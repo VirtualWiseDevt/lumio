@@ -33,6 +33,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
   const hasTrailer = !!currentItem.trailerUrl;
   const hasPreview = !!currentItem.previewUrl;
 
+  // Auto-play trailer after 2 seconds
   useEffect(() => {
     setShowTrailer(false);
     if (!hasTrailer && !hasPreview) return;
@@ -40,9 +41,20 @@ export function HeroBanner({ items }: HeroBannerProps) {
     return () => clearTimeout(timer);
   }, [currentItem, hasTrailer, hasPreview]);
 
+  // Sync mute for non-YouTube preview
   useEffect(() => {
     if (previewRef.current) previewRef.current.muted = isMuted;
   }, [isMuted, showTrailer]);
+
+  // Pause non-YouTube preview when scrolled out of view
+  useEffect(() => {
+    const video = previewRef.current;
+    if (!video) return;
+    if (!isVisible) video.pause();
+    else if (showTrailer) video.play().catch(() => {});
+  }, [isVisible, showTrailer]);
+
+  const isPlaying = showTrailer && isVisible;
 
   return (
     <section ref={ref} className="relative w-full overflow-hidden" style={{ height: "90vh", minHeight: 500 }} onMouseEnter={pause} onMouseLeave={resume}>
@@ -54,7 +66,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
 
       {showTrailer && hasTrailer && (
         <div className="absolute inset-0 z-[1] overflow-hidden">
-          <YouTubeEmbed url={currentItem.trailerUrl!} autoPlay muted={isMuted} loop className="absolute inset-0 h-full w-full scale-[1.2] object-cover" />
+          <YouTubeEmbed url={currentItem.trailerUrl!} autoPlay muted={isMuted} loop playing={isPlaying} className="absolute inset-[-15%] h-[130%] w-[130%] object-cover" />
         </div>
       )}
       {showTrailer && !hasTrailer && hasPreview && (

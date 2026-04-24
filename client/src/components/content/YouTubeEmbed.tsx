@@ -1,4 +1,6 @@
-﻿"use client";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 
 interface YouTubeEmbedProps {
   url: string;
@@ -6,6 +8,7 @@ interface YouTubeEmbedProps {
   muted?: boolean;
   loop?: boolean;
   className?: string;
+  playing?: boolean;
 }
 
 function extractYouTubeId(url: string): string | null {
@@ -27,8 +30,32 @@ export function YouTubeEmbed({
   muted = true,
   loop = true,
   className = "",
+  playing = true,
 }: YouTubeEmbedProps) {
   const videoId = extractYouTubeId(url);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [key, setKey] = useState(0);
+
+  // Control mute via postMessage to YouTube API
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe?.contentWindow) return;
+    const msg = muted
+      ? '{"event":"command","func":"mute","args":""}'
+      : '{"event":"command","func":"unMute","args":""}';
+    iframe.contentWindow.postMessage(msg, "*");
+  }, [muted]);
+
+  // Control play/pause via postMessage
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe?.contentWindow) return;
+    const msg = playing
+      ? '{"event":"command","func":"playVideo","args":""}'
+      : '{"event":"command","func":"pauseVideo","args":""}';
+    iframe.contentWindow.postMessage(msg, "*");
+  }, [playing]);
+
   if (!videoId) return null;
 
   const params = new URLSearchParams({
@@ -44,10 +71,14 @@ export function YouTubeEmbed({
     disablekb: "1",
     fs: "0",
     playsinline: "1",
+    enablejsapi: "1",
+    origin: typeof window !== "undefined" ? window.location.origin : "",
   });
 
   return (
     <iframe
+      key={key}
+      ref={iframeRef}
       src={`https://www.youtube.com/embed/${videoId}?${params.toString()}`}
       className={className}
       allow="autoplay; encrypted-media"
