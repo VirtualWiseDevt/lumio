@@ -40,6 +40,12 @@ export function HoverPopover({ content, cardRect, onMouseEnter, onMouseLeave, on
   const { isActive } = useSubscription();
   const [showSubscribeGate, setShowSubscribeGate] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+
+  // Signal hero to stop when popover is active
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("popover-active", { detail: true }));
+    return () => { window.dispatchEvent(new CustomEvent("popover-active", { detail: false })); };
+  }, []);
   const [tabVisible, setTabVisible] = useState(true);
   const popoverVideoRef = useRef<HTMLVideoElement>(null);
   const { left, top, width } = getPopoverPosition(cardRect);
@@ -103,3 +109,4 @@ export function HoverPopover({ content, cardRect, onMouseEnter, onMouseLeave, on
     </motion.div>
   );
 }
+

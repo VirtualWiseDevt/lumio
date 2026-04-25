@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence } from "motion/react";
@@ -45,7 +45,7 @@ export function ContentRow({ title, items, onCardClick }: ContentRowProps) {
         </span>
       </div>
 
-      {/* Wrapper — holds padding, arrows sit here */}
+      {/* Wrapper â€” holds padding, arrows sit here */}
       <div className="relative" style={{ padding: "0 56px" }}>
         {/* Left arrow */}
         {canScrollLeft && (
@@ -67,7 +67,7 @@ export function ContentRow({ title, items, onCardClick }: ContentRowProps) {
           </button>
         )}
 
-        {/* Scroll container — NO padding */}
+        {/* Scroll container â€” NO padding */}
         <div
           ref={scrollRef}
           className="scrollbar-hide flex flex-nowrap gap-[5px] overflow-x-auto"
@@ -111,7 +111,7 @@ export function ContentRow({ title, items, onCardClick }: ContentRowProps) {
       </div>
 
       {/* Hover popover */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {activeContent && cardRect && (
           <HoverPopover
             key={activeContent.id}
@@ -126,3 +126,4 @@ export function ContentRow({ title, items, onCardClick }: ContentRowProps) {
     </section>
   );
 }
+

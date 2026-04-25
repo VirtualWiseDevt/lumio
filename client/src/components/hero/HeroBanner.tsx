@@ -61,7 +61,15 @@ export function HeroBanner({ items }: HeroBannerProps) {
   const pathname = usePathname();
   const modalOpen = pathname.includes("/title/") || pathname.includes("/watch/");
 
-  const isPlaying = showTrailer && isVisible && tabVisible && !modalOpen;
+  // Pause hero when a hover popover is active
+  const [popoverActive, setPopoverActive] = useState(false);
+  useEffect(() => {
+    const handler = (e: Event) => setPopoverActive((e as CustomEvent).detail);
+    window.addEventListener("popover-active", handler);
+    return () => window.removeEventListener("popover-active", handler);
+  }, []);
+
+  const isPlaying = showTrailer && isVisible && tabVisible && !modalOpen && !popoverActive;
   const effectiveMuted = isMuted || !tabVisible;
 
   return (
@@ -96,6 +104,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
     </section>
   );
 }
+
 
 
 
