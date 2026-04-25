@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -31,6 +31,20 @@ export function HeroBanner({ items }: HeroBannerProps) {
   useEffect(() => { setShowTrailer(false); if (!hasTrailer && !hasPreview) return; const t = setTimeout(() => setShowTrailer(true), 2000); return () => clearTimeout(t); }, [currentItem, hasTrailer, hasPreview]);
   useEffect(() => { if (previewRef.current) previewRef.current.muted = isMuted; }, [isMuted, showTrailer]);
   useEffect(() => { const v = previewRef.current; if (!v) return; if (!isVisible) v.pause(); else if (showTrailer) v.play().catch(() => {}); }, [isVisible, showTrailer]);
+
+  // Listen for YouTube video ended to advance to next slide
+  useEffect(() => {
+    const handler = (e: MessageEvent) => {
+      try {
+        const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
+        if (data.info && data.info.playerState === 0) {
+          setCurrentIndex((i: number) => (i + 1) % items.length);
+        }
+      } catch {}
+    };
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, [items.length, setCurrentIndex]);
 
   // Auto-unmute after first user interaction
   useEffect(() => {

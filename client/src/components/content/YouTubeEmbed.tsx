@@ -13,6 +13,7 @@ interface YouTubeEmbedProps {
   style?: React.CSSProperties;
   showControls?: boolean;
   onToggleMute?: () => void;
+  onEnded?: () => void;
 }
 
 function extractYouTubeId(url: string): string | null {
@@ -38,6 +39,7 @@ export function YouTubeEmbed({
   style,
   showControls = false,
   onToggleMute,
+  onEnded,
 }: YouTubeEmbedProps) {
   const videoId = extractYouTubeId(url);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -122,3 +124,4 @@ export function YouTubeEmbed({
     </div>
   );
 }
+
