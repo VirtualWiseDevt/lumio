@@ -25,8 +25,9 @@ export function HeroBanner({ items }: HeroBannerProps) {
   const popoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [tabVisible, setTabVisible] = useState(true);
 
-  if (items.length === 0) return null;
-  const currentItem = items[currentIndex];
+  const playableItems = items.filter(i => i.trailerUrl || i.previewUrl);
+  if (playableItems.length === 0) return null;
+  const currentItem = playableItems[currentIndex];
   if (!currentItem) return null;
   const hasTrailer = !!currentItem.trailerUrl;
   const hasPreview = !!currentItem.previewUrl;
@@ -52,7 +53,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
   // Advance to next movie when trailer ends
   const handleTrailerEnded = useCallback(() => {
     if (isVisible && !popoverActive) {
-      setCurrentIndex((i) => (i + 1) % items.length);
+      setCurrentIndex((i) => (i + 1) % playableItems.length);
     }
   }, [isVisible, popoverActive, items.length]);
 
@@ -103,8 +104,9 @@ export function HeroBanner({ items }: HeroBannerProps) {
         </button>
         {currentItem.ageRating && (<span className="text-sm text-white/80" style={{ borderLeft: "2px solid rgba(255,255,255,0.4)", paddingLeft: 8 }}>{currentItem.ageRating}</span>)}
       </div>
-      <div className="absolute bottom-8 left-1/2 z-[3] -translate-x-1/2"><HeroControls count={items.length} activeIndex={currentIndex} onSelect={setCurrentIndex} /></div>
+      <div className="absolute bottom-8 left-1/2 z-[3] -translate-x-1/2"><HeroControls count={playableItems.length} activeIndex={currentIndex} onSelect={setCurrentIndex} /></div>
     </section>
   );
 }
+
 

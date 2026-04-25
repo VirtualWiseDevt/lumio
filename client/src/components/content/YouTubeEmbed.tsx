@@ -29,36 +29,6 @@ function extractYouTubeId(url: string): string | null {
   return null;
 }
 
-declare global {
-  interface Window {
-    YT: any;
-    onYouTubeIframeAPIReady: (() => void) | undefined;
-  }
-}
-
-let apiLoaded = false;
-let apiReady = false;
-const readyCallbacks: (() => void)[] = [];
-
-function loadYouTubeAPI(): Promise<void> {
-  return new Promise((resolve) => {
-    if (apiReady) { resolve(); return; }
-    readyCallbacks.push(resolve);
-    if (apiLoaded) return;
-    apiLoaded = true;
-    const prev = window.onYouTubeIframeAPIReady;
-    window.onYouTubeIframeAPIReady = () => {
-      apiReady = true;
-      prev?.();
-      readyCallbacks.forEach(cb => cb());
-      readyCallbacks.length = 0;
-    };
-    const script = document.createElement("script");
-    script.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(script);
-  });
-}
-
 export function YouTubeEmbed({
   url,
   autoPlay = true,
@@ -72,86 +42,47 @@ export function YouTubeEmbed({
   onEnded,
 }: YouTubeEmbedProps) {
   const videoId = extractYouTubeId(url);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const playerDivRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<any>(null);
+  const [isReady, setIsReady] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isReady, setIsReady] = useState(false);
   const onEndedRef = useRef(onEnded);
   onEndedRef.current = onEnded;
 
-  // Create YouTube player
+  const postMsg = useCallback((func: string) => {
+    const iframe = iframeRef.current;
+    if (!iframe?.contentWindow || !isReady) return;
+    iframe.contentWindow.postMessage(JSON.stringify({ event: "command", func, args: "" }), "*");
+  }, [isReady]);
+
   useEffect(() => {
-    if (!videoId || !playerDivRef.current) return;
-    let destroyed = false;
-
-    loadYouTubeAPI().then(() => {
-      if (destroyed || !playerDivRef.current) return;
-      const div = document.createElement("div");
-      playerDivRef.current.innerHTML = "";
-      playerDivRef.current.appendChild(div);
-
-      playerRef.current = new window.YT.Player(div, {
-        videoId,
-        playerVars: {
-          autoplay: autoPlay ? 1 : 0,
-          mute: 1,
-          loop: loop ? 1 : 0,
-          playlist: loop ? videoId : undefined,
-          controls: 0,
-          showinfo: 0,
-          rel: 0,
-          modestbranding: 1,
-          iv_load_policy: 3,
-          disablekb: 1,
-          fs: 0,
-          playsinline: 1,
-        },
-        events: {
-          onReady: () => {
-            if (destroyed) return;
-            setIsReady(true);
-            if (!muted) {
-              try { playerRef.current?.unMute(); } catch {}
-            }
-          },
-          onStateChange: (event: any) => {
-            if (event.data === 0) {
-              onEndedRef.current?.();
-            }
-          },
-        },
-      });
-    });
-
-    return () => {
-      destroyed = true;
-      try { playerRef.current?.destroy(); } catch {}
-      playerRef.current = null;
-      setIsReady(false);
-    };
+    const timer = setTimeout(() => setIsReady(true), 1500);
+    return () => clearTimeout(timer);
   }, [videoId]);
 
-  // Mute/unmute
-  useEffect(() => {
-    if (!isReady || !playerRef.current) return;
-    try {
-      if (muted) playerRef.current.mute();
-      else playerRef.current.unMute();
-    } catch {}
-  }, [muted, isReady]);
+  useEffect(() => { if (isReady) postMsg(muted ? "mute" : "unMute"); }, [muted, isReady, postMsg]);
 
-  // Play/pause
   useEffect(() => {
-    if (!isReady || !playerRef.current) return;
-    try {
-      if (!playing || isPaused) playerRef.current.pauseVideo();
-      else playerRef.current.playVideo();
-    } catch {}
-  }, [playing, isPaused, isReady]);
+    if (!isReady) return;
+    if (!playing || isPaused) postMsg("pauseVideo");
+    else postMsg("playVideo");
+  }, [playing, isPaused, isReady, postMsg]);
 
-  // Fullscreen
+  // Listen for YouTube state changes via postMessage
+  useEffect(() => {
+    const handler = (e: MessageEvent) => {
+      try {
+        const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
+        if (data.info && data.info.playerState === 0) {
+          onEndedRef.current?.();
+        }
+      } catch {}
+    };
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, []);
+
   useEffect(() => {
     const handler = () => setIsFullscreen(!!document.fullscreenElement);
     document.addEventListener("fullscreenchange", handler);
@@ -166,19 +97,25 @@ export function YouTubeEmbed({
     else el.requestFullscreen().catch(() => {});
   }, []);
 
+  const embedSrc = useMemo(() => {
+    if (!videoId) return "";
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    return `https://www.youtube.com/embed/${videoId}?autoplay=${autoPlay ? 1 : 0}&mute=1&loop=${loop ? 1 : 0}&playlist=${loop ? videoId : ""}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&playsinline=1&enablejsapi=1&origin=${origin}`;
+  }, [videoId, autoPlay, loop]);
+
   if (!videoId) return null;
 
   if (!showControls) {
     return (
       <div className="relative h-full w-full" style={style}>
-        <div ref={playerDivRef} className={className} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", ...(style || {}) }} />
+        <iframe ref={iframeRef} src={embedSrc} className={className} allow="autoplay; encrypted-media" style={{ border: "none", pointerEvents: "none", position: "absolute", inset: 0, width: "100%", height: "100%", ...(style || {}) }} tabIndex={-1} />
       </div>
     );
   }
 
   return (
     <div ref={containerRef} className="group/yt relative h-full w-full bg-black">
-      <div ref={playerDivRef} className={className} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }} />
+      <iframe ref={iframeRef} src={embedSrc} className={className} allow="autoplay; encrypted-media; fullscreen" allowFullScreen style={{ border: "none", pointerEvents: "none", position: "absolute", inset: 0, width: "100%", height: "100%" }} tabIndex={-1} />
       <div className="absolute inset-0 z-10 cursor-pointer" style={{ right: 48 }} onClick={togglePause} />
       {isPaused && (
         <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
