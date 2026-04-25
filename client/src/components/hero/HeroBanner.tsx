@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -84,7 +84,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
           <HeroSlide content={currentItem} isActive={true} isMuted={effectiveMuted} isHeroVisible={isVisible} />
         </motion.div>
       </AnimatePresence>
-      {showTrailer && hasTrailer && isPlaying && (<div className="absolute inset-0 z-[1] overflow-hidden"><YouTubeEmbed url={currentItem.trailerUrl!} autoPlay muted={effectiveMuted} loop={false} playing={isPlaying} onEnded={handleTrailerEnded} style={{ position: "absolute", top: "-30%", left: "-30%", width: "160%", height: "160%" }} /></div>)}
+      {showTrailer && hasTrailer && (<div className="absolute inset-0 z-[1] overflow-hidden"><YouTubeEmbed url={currentItem.trailerUrl!} autoPlay muted={effectiveMuted} loop={false} playing={isPlaying} onEnded={handleTrailerEnded} style={{ position: "absolute", top: "-30%", left: "-30%", width: "160%", height: "160%" }} /></div>)}
       {showTrailer && !hasTrailer && hasPreview && (<video ref={previewRef} src={mediaUrl(currentItem.previewUrl)} autoPlay muted={effectiveMuted} playsInline className="absolute inset-0 z-[1] h-full w-full object-cover" onEnded={handleTrailerEnded} onError={() => setShowTrailer(false)} />)}
       <div className="pointer-events-none absolute inset-0 z-[2]" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 25%, rgba(0,0,0,0.2) 50%, transparent 70%)" }} />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2]" style={{ height: "50%", background: "linear-gradient(transparent, rgba(0,0,0,0.7) 60%, #141414)" }} />
