@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { Play, Info, Volume2, VolumeOff } from "lucide-react";
@@ -49,19 +49,12 @@ export function HeroBanner({ items }: HeroBannerProps) {
   // Pause non-YouTube when not visible
   useEffect(() => { const v = previewRef.current; if (!v) return; if (!isVisible) v.pause(); else if (showTrailer) v.play().catch(() => {}); }, [isVisible, showTrailer]);
 
-  // Advance when YouTube ends, only if visible
-  useEffect(() => {
-    const handler = (e: MessageEvent) => {
-      try {
-        const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
-        if (data.info && data.info.playerState === 0 && isVisible && !popoverActive) {
-          setCurrentIndex((i) => (i + 1) % items.length);
-        }
-      } catch {}
-    };
-    window.addEventListener("message", handler);
-    return () => window.removeEventListener("message", handler);
-  }, [items.length, isVisible, popoverActive]);
+  // Advance to next movie when trailer ends
+  const handleTrailerEnded = useCallback(() => {
+    if (isVisible && !popoverActive) {
+      setCurrentIndex((i) => (i + 1) % items.length);
+    }
+  }, [isVisible, popoverActive, items.length]);
 
   // Tab visibility
   useEffect(() => { const h = () => setTabVisible(!document.hidden); document.addEventListener("visibilitychange", h); return () => document.removeEventListener("visibilitychange", h); }, []);
@@ -89,7 +82,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
           <HeroSlide content={currentItem} isActive={true} isMuted={effectiveMuted} isHeroVisible={isVisible} />
         </motion.div>
       </AnimatePresence>
-      {showTrailer && hasTrailer && isPlaying && (<div className="absolute inset-0 z-[1] overflow-hidden"><YouTubeEmbed url={currentItem.trailerUrl!} autoPlay muted={effectiveMuted} loop={false} playing={isPlaying} style={{ position: "absolute", top: "-30%", left: "-30%", width: "160%", height: "160%" }} /></div>)}
+      {showTrailer && hasTrailer && isPlaying && (<div className="absolute inset-0 z-[1] overflow-hidden"><YouTubeEmbed url={currentItem.trailerUrl!} autoPlay muted={effectiveMuted} loop={false} playing={isPlaying} onEnded={handleTrailerEnded} style={{ position: "absolute", top: "-30%", left: "-30%", width: "160%", height: "160%" }} /></div>)}
       {showTrailer && !hasTrailer && hasPreview && (<video ref={previewRef} src={mediaUrl(currentItem.previewUrl)} autoPlay muted={effectiveMuted} loop playsInline className="absolute inset-0 z-[1] h-full w-full object-cover" onError={() => setShowTrailer(false)} />)}
       <div className="pointer-events-none absolute inset-0 z-[2]" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 25%, rgba(0,0,0,0.2) 50%, transparent 70%)" }} />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2]" style={{ height: "50%", background: "linear-gradient(transparent, rgba(0,0,0,0.7) 60%, #141414)" }} />
@@ -114,3 +107,4 @@ export function HeroBanner({ items }: HeroBannerProps) {
     </section>
   );
 }
+
