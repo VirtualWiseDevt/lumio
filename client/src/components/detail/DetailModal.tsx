@@ -71,7 +71,7 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
       {!isFullPage && (
         <button
           onClick={handleClose}
-          className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-[#181818] text-white transition-colors hover:bg-[#333]"
+          className="absolute right-3 top-3 z-50 flex h-9 w-9 items-center justify-center rounded-full bg-[#181818] text-white transition-colors hover:bg-[#333]"
           aria-label="Close"
         >
           <X className="h-5 w-5" />
@@ -278,6 +278,7 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
     </>
   );
 }
+
 
 
 
