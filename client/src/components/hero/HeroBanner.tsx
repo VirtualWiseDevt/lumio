@@ -43,13 +43,8 @@ export function HeroBanner({ items }: HeroBannerProps) {
   const modalOpen = pathname.includes("/title/") || pathname.includes("/watch/");
   const shouldPlay = isVisible && tabVisible && !modalOpen && !popoverActive;
 
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.muted = effectiveMuted;
-    if (shouldPlay) v.play().catch(() => {});
-    else v.pause();
-  }, [shouldPlay, effectiveMuted, showTrailer]);
+  // Mute sync only
+  useEffect(() => { const v = videoRef.current; if (v) v.muted = effectiveMuted; }, [effectiveMuted]);
 
   const handleVideoEnded = useCallback(() => {
     setShowTrailer(false);
@@ -83,7 +78,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
         </motion.div>
       </AnimatePresence>
       {videoSrc && (
-        <video ref={videoRef} src={mediaUrl(videoSrc)} autoPlay muted={effectiveMuted} playsInline className="absolute inset-0 z-[1] h-full w-full object-cover" onEnded={handleVideoEnded} onError={() => setShowTrailer(false)} />
+        <video ref={videoRef} src={mediaUrl(videoSrc)} autoPlay muted playsInline className="absolute inset-0 z-[1] h-full w-full object-cover" onEnded={handleVideoEnded} onError={() => setShowTrailer(false)} />
       )}
       <div className="pointer-events-none absolute inset-0 z-[2]" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 25%, rgba(0,0,0,0.2) 50%, transparent 70%)" }} />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2]" style={{ height: "50%", background: "linear-gradient(transparent, rgba(0,0,0,0.7) 60%, #141414)" }} />
@@ -108,6 +103,8 @@ export function HeroBanner({ items }: HeroBannerProps) {
     </section>
   );
 }
+
+
 
 
 
