@@ -32,7 +32,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
 
   useEffect(() => {
     setShowTrailer(false);
-    if (!videoSrc || !isVisible) return;
+    if (!videoSrc) return;
     const t = setTimeout(() => setShowTrailer(true), 800);
     return () => clearTimeout(t);
   }, [currentIndex, videoSrc, isVisible]);
@@ -108,3 +108,4 @@ export function HeroBanner({ items }: HeroBannerProps) {
     </section>
   );
 }
+
