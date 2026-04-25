@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { Play, Info, Volume2, VolumeOff } from "lucide-react";
@@ -8,7 +8,6 @@ import { cn, mediaUrl } from "@/lib/utils";
 import { useIntersection } from "@/hooks/use-intersection";
 import { HeroSlide } from "./HeroSlide";
 import { HeroControls } from "./HeroControls";
-import { YouTubeEmbed } from "@/components/content/YouTubeEmbed";
 import type { Content } from "@/types/content";
 
 interface HeroBannerProps { items: Content[]; }
@@ -19,48 +18,61 @@ export function HeroBanner({ items }: HeroBannerProps) {
   const [isMuted, setIsMuted] = useState(false);
   const { ref, isVisible } = useIntersection<HTMLDivElement>({ threshold: 0.3 });
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [showTrailer, setShowTrailer] = useState(false);
-  const previewRef = useRef<HTMLVideoElement>(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [tabVisible, setTabVisible] = useState(true);
   const [popoverActive, setPopoverActive] = useState(false);
   const popoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [tabVisible, setTabVisible] = useState(true);
 
-  const playableItems = items.filter(i => i.trailerUrl || i.previewUrl);
-  if (playableItems.length === 0) return null;
-  const currentItem = playableItems[currentIndex];
+  if (items.length === 0) return null;
+  const currentItem = items[currentIndex];
   if (!currentItem) return null;
-  const hasTrailer = !!currentItem.trailerUrl;
   const hasPreview = !!currentItem.previewUrl;
 
-  // Show trailer after 2s, only when visible
+  // Show preview after 2s when visible
   useEffect(() => {
-    setShowTrailer(false);
-    if (!hasTrailer && !hasPreview) return;
-    if (!isVisible) return;
-    const t = setTimeout(() => setShowTrailer(true), 800);
+    setShowPreview(false);
+    if (!hasPreview || !isVisible) return;
+    const t = setTimeout(() => setShowPreview(true), 2000);
     return () => clearTimeout(t);
-  }, [currentIndex, hasTrailer, hasPreview, isVisible]);
+  }, [currentIndex, hasPreview, isVisible]);
 
-  // Kill trailer when scrolled away
-  useEffect(() => { if (!isVisible) setShowTrailer(false); }, [isVisible]);
+  // Kill preview when scrolled away
+  useEffect(() => { if (!isVisible) setShowPreview(false); }, [isVisible]);
 
-  // Mute for non-YouTube
-  useEffect(() => { if (previewRef.current) previewRef.current.muted = isMuted || popoverActive; }, [isMuted, showTrailer, popoverActive]);
+  // Mute/play control
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = isMuted || popoverActive || !tabVisible || !isVisible;
+  }, [isMuted, popoverActive, tabVisible, isVisible, showPreview]);
 
-  // Pause non-YouTube when not visible
-  useEffect(() => { const v = previewRef.current; if (!v) return; if (!isVisible) v.pause(); else if (showTrailer) v.play().catch(() => {}); }, [isVisible, showTrailer]);
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (!isVisible || popoverActive || !tabVisible) v.pause();
+    else if (showPreview) v.play().catch(() => {});
+  }, [isVisible, showPreview, popoverActive, tabVisible]);
 
-  // Advance to next movie when trailer ends
-  const handleTrailerEnded = useCallback(() => {
-    if (isVisible && !popoverActive) {
-      setCurrentIndex((i) => (i + 1) % playableItems.length);
-    }
-  }, [isVisible, popoverActive, items.length]);
+  // Advance on video end
+  const handleVideoEnded = () => {
+    setShowPreview(false);
+    setCurrentIndex((i) => (i + 1) % items.length);
+  };
+
+  // Auto-advance for slides without preview (show 8s then move on)
+  useEffect(() => {
+    if (hasPreview || !isVisible) return;
+    const t = setTimeout(() => {
+      setCurrentIndex((i) => (i + 1) % items.length);
+    }, 8000);
+    return () => clearTimeout(t);
+  }, [currentIndex, hasPreview, isVisible, items.length]);
 
   // Tab visibility
   useEffect(() => { const h = () => setTabVisible(!document.hidden); document.addEventListener("visibilitychange", h); return () => document.removeEventListener("visibilitychange", h); }, []);
 
-  // Popover detection with debounce
+  // Popover detection
   useEffect(() => {
     const handler = (e: Event) => {
       const active = (e as CustomEvent).detail;
@@ -73,18 +85,17 @@ export function HeroBanner({ items }: HeroBannerProps) {
   }, []);
 
   const modalOpen = pathname.includes("/title/") || pathname.includes("/watch/");
-  const isPlaying = showTrailer && isVisible && tabVisible && !modalOpen && !popoverActive;
-  const effectiveMuted = isMuted || !tabVisible || !isVisible || popoverActive;
 
   return (
     <section ref={ref} className="relative w-full overflow-hidden" style={{ height: "100vh", minHeight: 600 }}>
       <AnimatePresence mode="popLayout">
         <motion.div key={currentIndex} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.2, ease: "easeInOut" }}>
-          <HeroSlide content={currentItem} isActive={true} isMuted={effectiveMuted} isHeroVisible={isVisible} />
+          <HeroSlide content={currentItem} isActive={true} isMuted={isMuted} isHeroVisible={isVisible} />
         </motion.div>
       </AnimatePresence>
-      {showTrailer && hasTrailer && isPlaying && (<div className="absolute inset-0 z-[1] overflow-hidden"><YouTubeEmbed url={currentItem.trailerUrl!} autoPlay muted={effectiveMuted} loop={false} playing={isPlaying} onEnded={handleTrailerEnded} style={{ position: "absolute", top: "-30%", left: "-30%", width: "160%", height: "160%" }} /></div>)}
-      {showTrailer && !hasTrailer && hasPreview && (<video ref={previewRef} src={mediaUrl(currentItem.previewUrl)} autoPlay muted={effectiveMuted} loop playsInline className="absolute inset-0 z-[1] h-full w-full object-cover" onError={() => setShowTrailer(false)} />)}
+      {showPreview && hasPreview && !modalOpen && !popoverActive && (
+        <video ref={videoRef} src={mediaUrl(currentItem.previewUrl)} autoPlay muted={isMuted || popoverActive || !tabVisible} playsInline className="absolute inset-0 z-[1] h-full w-full object-cover" onEnded={handleVideoEnded} onError={() => setShowPreview(false)} />
+      )}
       <div className="pointer-events-none absolute inset-0 z-[2]" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 25%, rgba(0,0,0,0.2) 50%, transparent 70%)" }} />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2]" style={{ height: "50%", background: "linear-gradient(transparent, rgba(0,0,0,0.7) 60%, #141414)" }} />
       <div className="pointer-events-none absolute inset-x-0 top-0 z-[2]" style={{ height: "30%", background: "linear-gradient(rgba(0,0,0,0.4), transparent)" }} />
@@ -100,13 +111,11 @@ export function HeroBanner({ items }: HeroBannerProps) {
       </div>
       <div className="absolute z-[3] flex items-center gap-3" style={{ bottom: "26%", right: 56 }}>
         <button onClick={() => setIsMuted((m) => !m)} className={cn("flex items-center justify-center rounded-full text-white transition-colors", "hover:border-white/60 hover:bg-black/60")} style={{ width: 42, height: 42, border: "1px solid rgba(255,255,255,0.5)", background: "rgba(0,0,0,0.4)" }} aria-label={isMuted ? "Unmute" : "Mute"}>
-          {effectiveMuted ? <VolumeOff className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          {(isMuted || popoverActive || !tabVisible) ? <VolumeOff className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
         </button>
         {currentItem.ageRating && (<span className="text-sm text-white/80" style={{ borderLeft: "2px solid rgba(255,255,255,0.4)", paddingLeft: 8 }}>{currentItem.ageRating}</span>)}
       </div>
-      <div className="absolute bottom-8 left-1/2 z-[3] -translate-x-1/2"><HeroControls count={playableItems.length} activeIndex={currentIndex} onSelect={setCurrentIndex} /></div>
+      <div className="absolute bottom-8 left-1/2 z-[3] -translate-x-1/2"><HeroControls count={items.length} activeIndex={currentIndex} onSelect={setCurrentIndex} /></div>
     </section>
   );
 }
-
-

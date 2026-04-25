@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useCallback, useMemo, useState } from "react";
 import { Play, Pause, Volume2, VolumeOff, Maximize, Minimize } from "lucide-react";
@@ -14,6 +14,7 @@ interface YouTubeEmbedProps {
   showControls?: boolean;
   onToggleMute?: () => void;
   onEnded?: () => void;
+  onError?: () => void;
 }
 
 function extractYouTubeId(url: string): string | null {
@@ -40,6 +41,7 @@ export function YouTubeEmbed({
   showControls = false,
   onToggleMute,
   onEnded,
+  onError,
 }: YouTubeEmbedProps) {
   const videoId = extractYouTubeId(url);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -48,7 +50,9 @@ export function YouTubeEmbed({
   const [isPaused, setIsPaused] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const onEndedRef = useRef(onEnded);
+  const onErrorRef = useRef(onError);
   onEndedRef.current = onEnded;
+  onErrorRef.current = onError;
 
   const postMsg = useCallback((func: string) => {
     const iframe = iframeRef.current;
@@ -75,6 +79,9 @@ export function YouTubeEmbed({
       try {
         const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
         if (data.info && data.info.playerState === 0) {
+          onEndedRef.current?.();
+        }
+        if (data.event === "onError" || (data.info && data.info.playerState === -1)) {
           onEndedRef.current?.();
         }
       } catch {}
