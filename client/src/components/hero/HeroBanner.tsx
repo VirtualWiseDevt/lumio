@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -8,7 +8,6 @@ import { cn, mediaUrl } from "@/lib/utils";
 import { useIntersection } from "@/hooks/use-intersection";
 import { HeroSlide } from "./HeroSlide";
 import { HeroControls } from "./HeroControls";
-import { YouTubeEmbed } from "@/components/content/YouTubeEmbed";
 import type { Content } from "@/types/content";
 
 interface HeroBannerProps { items: Content[]; }
@@ -20,7 +19,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
   const { ref, isVisible } = useIntersection<HTMLDivElement>({ threshold: 0.3 });
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showTrailer, setShowTrailer] = useState(false);
-  const previewRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [tabVisible, setTabVisible] = useState(true);
   const [popoverActive, setPopoverActive] = useState(false);
   const popoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -29,36 +28,39 @@ export function HeroBanner({ items }: HeroBannerProps) {
   if (playableItems.length === 0) return null;
   const currentItem = playableItems[currentIndex % playableItems.length];
   if (!currentItem) return null;
-  const hasTrailer = !!currentItem.trailerUrl;
-  const hasPreview = !!currentItem.previewUrl;
+  const videoSrc = currentItem.trailerUrl || currentItem.previewUrl;
 
   useEffect(() => {
     setShowTrailer(false);
-    if (!hasTrailer && !hasPreview) return;
-    if (!isVisible) return;
+    if (!videoSrc || !isVisible) return;
     const t = setTimeout(() => setShowTrailer(true), 800);
     return () => clearTimeout(t);
-  }, [currentIndex, hasTrailer, hasPreview, isVisible]);
+  }, [currentIndex, videoSrc, isVisible]);
 
   useEffect(() => { if (!isVisible) setShowTrailer(false); }, [isVisible]);
 
-  useEffect(() => { if (previewRef.current) previewRef.current.muted = isMuted || popoverActive || !tabVisible; }, [isMuted, popoverActive, tabVisible, showTrailer]);
-
-  useEffect(() => { const v = previewRef.current; if (!v) return; if (!isVisible || popoverActive || !tabVisible) v.pause(); else if (showTrailer) v.play().catch(() => {}); }, [isVisible, showTrailer, popoverActive, tabVisible]);
-
-  const handleTrailerEnded = useCallback(() => {
-    if (isVisible && !popoverActive) {
-      setShowTrailer(false);
-      setCurrentIndex((i) => (i + 1) % playableItems.length);
-    }
-  }, [isVisible, popoverActive, playableItems.length]);
+  const effectiveMuted = isMuted || !tabVisible || !isVisible || popoverActive;
+  const modalOpen = pathname.includes("/title/") || pathname.includes("/watch/");
+  const shouldPlay = showTrailer && isVisible && tabVisible && !modalOpen && !popoverActive;
 
   useEffect(() => {
-    if (!hasTrailer && !hasPreview && isVisible) {
-      const t = setTimeout(() => setCurrentIndex((i) => (i + 1) % playableItems.length), 8000);
-      return () => clearTimeout(t);
-    }
-  }, [currentIndex, hasTrailer, hasPreview, isVisible, playableItems.length]);
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = effectiveMuted;
+    if (shouldPlay) v.play().catch(() => {});
+    else v.pause();
+  }, [shouldPlay, effectiveMuted, showTrailer]);
+
+  const handleVideoEnded = useCallback(() => {
+    setShowTrailer(false);
+    setCurrentIndex((i) => (i + 1) % playableItems.length);
+  }, [playableItems.length]);
+
+  useEffect(() => {
+    if (videoSrc || !isVisible) return;
+    const t = setTimeout(() => setCurrentIndex((i) => (i + 1) % playableItems.length), 8000);
+    return () => clearTimeout(t);
+  }, [currentIndex, videoSrc, isVisible, playableItems.length]);
 
   useEffect(() => { const h = () => setTabVisible(!document.hidden); document.addEventListener("visibilitychange", h); return () => document.removeEventListener("visibilitychange", h); }, []);
 
@@ -73,10 +75,6 @@ export function HeroBanner({ items }: HeroBannerProps) {
     return () => { window.removeEventListener("popover-active", handler); if (popoverTimerRef.current) clearTimeout(popoverTimerRef.current); };
   }, []);
 
-  const modalOpen = pathname.includes("/title/") || pathname.includes("/watch/");
-  const isPlaying = showTrailer && isVisible && tabVisible && !modalOpen && !popoverActive;
-  const effectiveMuted = isMuted || !tabVisible || !isVisible || popoverActive;
-
   return (
     <section ref={ref} className="relative w-full overflow-hidden" style={{ height: "100vh", minHeight: 600 }}>
       <AnimatePresence mode="popLayout">
@@ -84,8 +82,9 @@ export function HeroBanner({ items }: HeroBannerProps) {
           <HeroSlide content={currentItem} isActive={true} isMuted={effectiveMuted} isHeroVisible={isVisible} />
         </motion.div>
       </AnimatePresence>
-      {showTrailer && hasTrailer && (<div className="absolute inset-0 z-[1] overflow-hidden"><YouTubeEmbed url={currentItem.trailerUrl!} autoPlay muted={effectiveMuted} loop={false} playing={isPlaying} onEnded={handleTrailerEnded} style={{ position: "absolute", top: "-30%", left: "-30%", width: "160%", height: "160%" }} /></div>)}
-      {showTrailer && !hasTrailer && hasPreview && (<video ref={previewRef} src={mediaUrl(currentItem.previewUrl)} autoPlay muted={effectiveMuted} playsInline className="absolute inset-0 z-[1] h-full w-full object-cover" onEnded={handleTrailerEnded} onError={() => setShowTrailer(false)} />)}
+      {showTrailer && videoSrc && (
+        <video ref={videoRef} src={mediaUrl(videoSrc)} autoPlay muted={effectiveMuted} playsInline className="absolute inset-0 z-[1] h-full w-full object-cover" onEnded={handleVideoEnded} onError={() => setShowTrailer(false)} />
+      )}
       <div className="pointer-events-none absolute inset-0 z-[2]" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 25%, rgba(0,0,0,0.2) 50%, transparent 70%)" }} />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2]" style={{ height: "50%", background: "linear-gradient(transparent, rgba(0,0,0,0.7) 60%, #141414)" }} />
       <div className="pointer-events-none absolute inset-x-0 top-0 z-[2]" style={{ height: "30%", background: "linear-gradient(rgba(0,0,0,0.4), transparent)" }} />

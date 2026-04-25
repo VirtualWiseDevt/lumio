@@ -9,7 +9,6 @@ import { cn, mediaUrl, formatDuration } from "@/lib/utils";
 import { MyListButton } from "@/components/my-list/MyListButton";
 import { SubscribeGate } from "@/components/billing/SubscribeGate";
 import { useSubscription } from "@/hooks/use-subscription";
-import { YouTubeEmbed } from "@/components/content/YouTubeEmbed";
 import type { Content } from "@/types/content";
 
 interface HoverPopoverProps {
@@ -43,8 +42,7 @@ export function HoverPopover({ content, cardRect, onMouseEnter, onMouseLeave, on
   const videoRef = useRef<HTMLVideoElement>(null);
   const { left, top, width } = getPopoverPosition(cardRect);
   const posterSrc = mediaUrl(content.posterPortrait || content.posterLandscape);
-  const hasTrailer = !!content.trailerUrl;
-  const hasPreview = !!content.previewUrl;
+  const videoSrc = content.trailerUrl || content.previewUrl;
 
   useEffect(() => {
     window.dispatchEvent(new CustomEvent("popover-active", { detail: true }));
@@ -58,6 +56,11 @@ export function HoverPopover({ content, cardRect, onMouseEnter, onMouseLeave, on
     return () => document.removeEventListener("visibilitychange", handler);
   }, []);
 
+  useEffect(() => {
+    const v = videoRef.current;
+    if (v) v.muted = isMuted || !tabVisible;
+  }, [isMuted, tabVisible]);
+
   const handlePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!isActive) { setShowSubscribeGate(true); return; }
@@ -70,13 +73,8 @@ export function HoverPopover({ content, cardRect, onMouseEnter, onMouseLeave, on
     <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.2, ease: "easeOut" }} className="fixed z-50 cursor-pointer" style={{ left, top, width, borderRadius: 6, boxShadow: "0 14px 36px rgba(0,0,0,0.75), 0 6px 12px rgba(0,0,0,0.5)" }} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={goToDetail}>
       <div className="relative aspect-video w-full overflow-hidden bg-card" style={{ borderRadius: "6px 6px 0 0" }}>
         {posterSrc && (<Image src={posterSrc} alt={content.title} fill className="object-cover" sizes="320px" />)}
-        {hasTrailer && (
-          <div className="absolute inset-0 z-[1]">
-            <YouTubeEmbed url={content.trailerUrl!} autoPlay muted={isMuted || !tabVisible} loop playing={tabVisible} className="absolute inset-0 w-full h-full" />
-          </div>
-        )}
-        {!hasTrailer && hasPreview && (
-          <video ref={videoRef} src={mediaUrl(content.previewUrl)} autoPlay muted={isMuted || !tabVisible} loop playsInline className="absolute inset-0 z-[1] h-full w-full object-cover" />
+        {videoSrc && (
+          <video ref={videoRef} src={mediaUrl(videoSrc)} autoPlay muted={isMuted || !tabVisible} loop playsInline className="absolute inset-0 z-[1] h-full w-full object-cover" />
         )}
         <button onClick={(e) => { e.stopPropagation(); setIsMuted(!isMuted); }} className="absolute bottom-2 right-2 z-10 rounded-full border border-white/40 bg-black/60 p-1.5 text-white hover:bg-black/80 transition-colors" aria-label={isMuted ? "Unmute" : "Mute"}>
           {isMuted ? <VolumeOff className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}

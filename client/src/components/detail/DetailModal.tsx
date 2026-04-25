@@ -10,11 +10,8 @@ import { cn, formatDuration, mediaUrl } from "@/lib/utils";
 import { fetchTitleDetail } from "@/api/content";
 import { MyListButton } from "@/components/my-list/MyListButton";
 import { SubscribeGate } from "@/components/billing/SubscribeGate";
-import { YouTubeEmbed } from "@/components/content/YouTubeEmbed";
 
-function DetailTrailer({ url }: { url: string }) {
   const [muted, setMuted] = useState(true);
-  return <YouTubeEmbed url={url} autoPlay muted={muted} loop={false} showControls onToggleMute={() => setMuted(m => !m)} className="absolute inset-0 w-full h-full z-[1]" />;
 }
 import { useSubscription } from "@/hooks/use-subscription";
 
@@ -108,7 +105,6 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
       {content && (
         <>
           {/* Header / Backdrop */}
-          <div className="relative aspect-video w-full overflow-hidden" style={{ borderRadius: "8px 8px 0 0" }}>{content.trailerUrl && (<DetailTrailer url={content.trailerUrl} />)}
             {content.posterLandscape ? (
               <Image
                 src={mediaUrl(content.posterLandscape)}
@@ -279,6 +275,7 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
     </>
   );
 }
+
 
 
 
