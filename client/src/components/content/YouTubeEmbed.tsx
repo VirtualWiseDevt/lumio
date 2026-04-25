@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useCallback, useMemo, useState } from "react";
 import { Play, Pause, Volume2, VolumeOff, Maximize } from "lucide-react";
@@ -86,7 +86,7 @@ export function YouTubeEmbed({
   if (!videoId) return null;
 
   return (
-    <div className={showControls ? "group/yt relative h-full w-full" : "relative"} style={!showControls ? style : undefined}>
+    <div className={showControls ? "group/yt relative h-full w-full" : "relative h-full w-full"} style={!showControls ? style : undefined}>
       <iframe
         ref={iframeRef}
         src={embedSrc}
