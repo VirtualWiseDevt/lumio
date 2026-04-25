@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { Play, Info, Volume2, VolumeOff } from "lucide-react";
 import { cn, mediaUrl } from "@/lib/utils";
@@ -57,15 +57,9 @@ export function HeroBanner({ items }: HeroBannerProps) {
   const [tabVisible, setTabVisible] = useState(true);
   useEffect(() => { const h = () => setTabVisible(!document.hidden); document.addEventListener("visibilitychange", h); return () => document.removeEventListener("visibilitychange", h); }, []);
 
-  // Stop playing when modal is open (URL contains /title/)
-  const [modalOpen, setModalOpen] = useState(false);
-  useEffect(() => {
-    const check = () => setModalOpen(window.location.pathname.includes("/title/"));
-    check();
-    const observer = new MutationObserver(check);
-    observer.observe(document.body, { childList: true, subtree: true });
-    return () => observer.disconnect();
-  }, []);
+  // Stop playing when modal/detail page is open
+  const pathname = usePathname();
+  const modalOpen = pathname.includes("/title/") || pathname.includes("/watch/");
 
   const isPlaying = showTrailer && isVisible && tabVisible && !modalOpen;
   const effectiveMuted = isMuted || !tabVisible;
@@ -102,5 +96,6 @@ export function HeroBanner({ items }: HeroBannerProps) {
     </section>
   );
 }
+
 
 

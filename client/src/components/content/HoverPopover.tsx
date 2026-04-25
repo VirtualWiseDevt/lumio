@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -62,7 +62,7 @@ export function HoverPopover({ content, cardRect, onMouseEnter, onMouseLeave, on
   const goToDetail = () => router.push(`/title/${content.id}`);
 
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.2, ease: "easeOut" }} className="fixed z-50 cursor-pointer" style={{ left, top, width, borderRadius: 6, boxShadow: "0 14px 36px rgba(0,0,0,0.75), 0 6px 12px rgba(0,0,0,0.5)" }} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={goToDetail}>
+    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} onAnimationComplete={(def: string) => { if (def === "exit") { const iframes = document.querySelectorAll("iframe[src*=youtube]"); iframes.forEach(f => f.remove()); } }} transition={{ duration: 0.2, ease: "easeOut" }} className="fixed z-50 cursor-pointer" style={{ left, top, width, borderRadius: 6, boxShadow: "0 14px 36px rgba(0,0,0,0.75), 0 6px 12px rgba(0,0,0,0.5)" }} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={goToDetail}>
       <div className="relative aspect-video w-full overflow-hidden bg-card" style={{ borderRadius: "6px 6px 0 0" }}>
         {posterSrc && (
           <Image src={posterSrc} alt={content.title} fill className="object-cover" sizes="320px" />
