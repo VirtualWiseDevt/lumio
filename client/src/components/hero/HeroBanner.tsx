@@ -79,6 +79,12 @@ export function HeroBanner({ items }: HeroBannerProps) {
   }, []);
 
   const isPlaying = showTrailer && isVisible && tabVisible && !modalOpen && !popoverActive;
+
+  // Pause auto-rotation when trailer is actively playing
+  useEffect(() => {
+    if (showTrailer && (hasTrailer || hasPreview)) pause();
+    else resume();
+  }, [showTrailer, hasTrailer, hasPreview]);
   const effectiveMuted = isMuted || !tabVisible;
 
   return (
@@ -113,6 +119,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
     </section>
   );
 }
+
 
 
 
