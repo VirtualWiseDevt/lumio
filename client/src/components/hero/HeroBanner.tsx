@@ -41,7 +41,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
 
   const effectiveMuted = isMuted || !tabVisible || !isVisible || popoverActive;
   const modalOpen = pathname.includes("/title/") || pathname.includes("/watch/");
-  const shouldPlay = showTrailer && isVisible && tabVisible && !modalOpen && !popoverActive;
+  const shouldPlay = isVisible && tabVisible && !modalOpen && !popoverActive;
 
   useEffect(() => {
     const v = videoRef.current;
@@ -108,5 +108,6 @@ export function HeroBanner({ items }: HeroBannerProps) {
     </section>
   );
 }
+
 
 
