@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -101,3 +101,5 @@ export function HeroBanner({ items }: HeroBannerProps) {
     </section>
   );
 }
+// v2
+
