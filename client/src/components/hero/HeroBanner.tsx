@@ -77,7 +77,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
           <HeroSlide content={currentItem} isActive={true} isMuted={effectiveMuted} isHeroVisible={isVisible} />
         </motion.div>
       </AnimatePresence>
-      {showTrailer && hasTrailer && (<div className="absolute inset-0 z-[1] overflow-hidden"><YouTubeEmbed url={currentItem.trailerUrl!} autoPlay muted={effectiveMuted} loop playing={isPlaying} style={{ position: "absolute", top: "-20%", left: "-20%", width: "140%", height: "140%" }} /></div>)}
+      {showTrailer && hasTrailer && (<div className="absolute inset-0 z-[1] overflow-hidden"><YouTubeEmbed url={currentItem.trailerUrl!} autoPlay muted={effectiveMuted} loop={false} playing={isPlaying} style={{ position: "absolute", top: "-20%", left: "-20%", width: "140%", height: "140%" }} /></div>)}
       {showTrailer && !hasTrailer && hasPreview && (<video ref={previewRef} src={mediaUrl(currentItem.previewUrl)} autoPlay muted={effectiveMuted} loop playsInline className="absolute inset-0 z-[1] h-full w-full object-cover" onError={() => setShowTrailer(false)} />)}
       <div className="pointer-events-none absolute inset-0 z-[2]" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 25%, rgba(0,0,0,0.2) 50%, transparent 70%)" }} />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2]" style={{ height: "50%", background: "linear-gradient(transparent, rgba(0,0,0,0.7) 60%, #141414)" }} />
@@ -102,4 +102,5 @@ export function HeroBanner({ items }: HeroBannerProps) {
     </section>
   );
 }
+
 
