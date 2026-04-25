@@ -61,12 +61,21 @@ export function HeroBanner({ items }: HeroBannerProps) {
   const pathname = usePathname();
   const modalOpen = pathname.includes("/title/") || pathname.includes("/watch/");
 
-  // Pause hero when a hover popover is active
+  // Pause hero when a hover popover is active (debounced to prevent flicker between cards)
   const [popoverActive, setPopoverActive] = useState(false);
+  const popoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    const handler = (e: Event) => setPopoverActive((e as CustomEvent).detail);
+    const handler = (e: Event) => {
+      const active = (e as CustomEvent).detail;
+      if (popoverTimerRef.current) clearTimeout(popoverTimerRef.current);
+      if (active) {
+        setPopoverActive(true);
+      } else {
+        popoverTimerRef.current = setTimeout(() => setPopoverActive(false), 500);
+      }
+    };
     window.addEventListener("popover-active", handler);
-    return () => window.removeEventListener("popover-active", handler);
+    return () => { window.removeEventListener("popover-active", handler); if (popoverTimerRef.current) clearTimeout(popoverTimerRef.current); };
   }, []);
 
   const isPlaying = showTrailer && isVisible && tabVisible && !modalOpen && !popoverActive;
@@ -104,6 +113,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
     </section>
   );
 }
+
 
 
 
