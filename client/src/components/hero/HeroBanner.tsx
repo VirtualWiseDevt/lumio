@@ -32,17 +32,29 @@ export function HeroBanner({ items }: HeroBannerProps) {
   useEffect(() => { if (previewRef.current) previewRef.current.muted = isMuted; }, [isMuted, showTrailer]);
   useEffect(() => { const v = previewRef.current; if (!v) return; if (!isVisible) v.pause(); else if (showTrailer) v.play().catch(() => {}); }, [isVisible, showTrailer]);
 
-  const isPlaying = showTrailer && isVisible;
+  // Auto-unmute after first user interaction
+  useEffect(() => {
+    const handler = () => { setIsMuted(false); document.removeEventListener("click", handler); };
+    document.addEventListener("click", handler);
+    return () => document.removeEventListener("click", handler);
+  }, []);
+
+  // Mute when tab hidden
+  const [tabVisible, setTabVisible] = useState(true);
+  useEffect(() => { const h = () => setTabVisible(!document.hidden); document.addEventListener("visibilitychange", h); return () => document.removeEventListener("visibilitychange", h); }, []);
+
+  const isPlaying = showTrailer && isVisible && tabVisible;
+  const effectiveMuted = isMuted || !tabVisible;
 
   return (
     <section ref={ref} className="relative w-full overflow-hidden" style={{ height: "100vh", minHeight: 600 }} onMouseEnter={pause} onMouseLeave={resume}>
       <AnimatePresence mode="popLayout">
         <motion.div key={currentIndex} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.6, ease: "easeInOut" }}>
-          <HeroSlide content={currentItem} isActive={true} isMuted={isMuted} isHeroVisible={isVisible} />
+          <HeroSlide content={currentItem} isActive={true} isMuted={effectiveMuted} isHeroVisible={isVisible} />
         </motion.div>
       </AnimatePresence>
-      {showTrailer && hasTrailer && (<div className="absolute inset-0 z-[1] overflow-hidden"><YouTubeEmbed url={currentItem.trailerUrl!} autoPlay muted={isMuted} loop playing={isPlaying} style={{ position: "absolute", top: "-20%", left: "-20%", width: "140%", height: "140%" }} /></div>)}
-      {showTrailer && !hasTrailer && hasPreview && (<video ref={previewRef} src={mediaUrl(currentItem.previewUrl)} autoPlay muted={isMuted} loop playsInline className="absolute inset-0 z-[1] h-full w-full object-cover" onError={() => setShowTrailer(false)} />)}
+      {showTrailer && hasTrailer && (<div className="absolute inset-0 z-[1] overflow-hidden"><YouTubeEmbed url={currentItem.trailerUrl!} autoPlay muted={effectiveMuted} loop playing={isPlaying} style={{ position: "absolute", top: "-20%", left: "-20%", width: "140%", height: "140%" }} /></div>)}
+      {showTrailer && !hasTrailer && hasPreview && (<video ref={previewRef} src={mediaUrl(currentItem.previewUrl)} autoPlay muted={effectiveMuted} loop playsInline className="absolute inset-0 z-[1] h-full w-full object-cover" onError={() => setShowTrailer(false)} />)}
       <div className="pointer-events-none absolute inset-0 z-[2]" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 25%, rgba(0,0,0,0.2) 50%, transparent 70%)" }} />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2]" style={{ height: "50%", background: "linear-gradient(transparent, rgba(0,0,0,0.7) 60%, #141414)" }} />
       <div className="pointer-events-none absolute inset-x-0 top-0 z-[2]" style={{ height: "30%", background: "linear-gradient(rgba(0,0,0,0.4), transparent)" }} />
@@ -58,7 +70,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
       </div>
       <div className="absolute z-[3] flex items-center gap-3" style={{ bottom: "26%", right: 56 }}>
         <button onClick={() => setIsMuted((m) => !m)} className={cn("flex items-center justify-center rounded-full text-white transition-colors", "hover:border-white/60 hover:bg-black/60")} style={{ width: 42, height: 42, border: "1px solid rgba(255,255,255,0.5)", background: "rgba(0,0,0,0.4)" }} aria-label={isMuted ? "Unmute" : "Mute"}>
-          {isMuted ? <VolumeOff className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          {effectiveMuted ? <VolumeOff className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
         </button>
         {currentItem.ageRating && (<span className="text-sm text-white/80" style={{ borderLeft: "2px solid rgba(255,255,255,0.4)", paddingLeft: 8 }}>{currentItem.ageRating}</span>)}
       </div>
