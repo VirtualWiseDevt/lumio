@@ -39,7 +39,7 @@ export function HoverPopover({ content, cardRect, onMouseEnter, onMouseLeave, on
   const router = useRouter();
   const { isActive } = useSubscription();
   const [showSubscribeGate, setShowSubscribeGate] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
 
   // Signal hero to stop when popover is active
   useEffect(() => {
@@ -109,4 +109,5 @@ export function HoverPopover({ content, cardRect, onMouseEnter, onMouseLeave, on
     </motion.div>
   );
 }
+
 
