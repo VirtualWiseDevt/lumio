@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -15,7 +15,7 @@ interface HeroBannerProps { items: Content[]; }
 export function HeroBanner({ items }: HeroBannerProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const { ref, isVisible } = useIntersection<HTMLDivElement>({ threshold: 0.3 });
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showTrailer, setShowTrailer] = useState(false);
