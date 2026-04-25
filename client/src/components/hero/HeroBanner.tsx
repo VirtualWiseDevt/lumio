@@ -21,6 +21,9 @@ export function HeroBanner({ items }: HeroBannerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showTrailer, setShowTrailer] = useState(false);
   const previewRef = useRef<HTMLVideoElement>(null);
+  const [popoverActive, setPopoverActive] = useState(false);
+  const popoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [tabVisible, setTabVisible] = useState(true);
 
   if (items.length === 0) return null;
   const currentItem = items[currentIndex];
@@ -28,7 +31,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
   const hasTrailer = !!currentItem.trailerUrl;
   const hasPreview = !!currentItem.previewUrl;
 
-  // Show trailer after 2s delay, ONLY when hero is visible
+  // Show trailer after 2s, only when visible
   useEffect(() => {
     setShowTrailer(false);
     if (!hasTrailer && !hasPreview) return;
@@ -37,49 +40,34 @@ export function HeroBanner({ items }: HeroBannerProps) {
     return () => clearTimeout(t);
   }, [currentIndex, hasTrailer, hasPreview, isVisible]);
 
-  // Kill trailer immediately when scrolled away
-  useEffect(() => {
-    if (!isVisible) setShowTrailer(false);
-  }, [isVisible]);
+  // Kill trailer when scrolled away
+  useEffect(() => { if (!isVisible) setShowTrailer(false); }, [isVisible]);
 
-  // Mute state for non-YouTube preview
-  useEffect(() => {
-    if (previewRef.current) previewRef.current.muted = isMuted;
-  }, [isMuted, showTrailer]);
+  // Mute for non-YouTube
+  useEffect(() => { if (previewRef.current) previewRef.current.muted = isMuted || popoverActive; }, [isMuted, showTrailer, popoverActive]);
 
-  // Pause non-YouTube video when not visible
-  useEffect(() => {
-    const v = previewRef.current;
-    if (!v) return;
-    if (!isVisible) v.pause();
-    else if (showTrailer) v.play().catch(() => {});
-  }, [isVisible, showTrailer]);
+  // Pause non-YouTube when not visible
+  useEffect(() => { const v = previewRef.current; if (!v) return; if (!isVisible) v.pause(); else if (showTrailer) v.play().catch(() => {}); }, [isVisible, showTrailer]);
 
-  // Advance to next movie ONLY when YouTube trailer ends AND hero is visible
+  // Advance when YouTube ends, only if visible
   useEffect(() => {
     const handler = (e: MessageEvent) => {
       try {
         const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
-        if (data.info && data.info.playerState === 0 && isVisible) {
-          setCurrentIndex((i) => (i + 1) % items.length);
+        if (data.info && data.info.playerState === 0 && isVisible && !popoverActive) {
+          setShowTrailer(false);
+          setTimeout(() => setCurrentIndex((i) => (i + 1) % items.length), 500);
         }
       } catch {}
     };
     window.addEventListener("message", handler);
     return () => window.removeEventListener("message", handler);
-  }, [items.length, isVisible]);
+  }, [items.length, isVisible, popoverActive]);
 
   // Tab visibility
-  const [tabVisible, setTabVisible] = useState(true);
-  useEffect(() => {
-    const h = () => setTabVisible(!document.hidden);
-    document.addEventListener("visibilitychange", h);
-    return () => document.removeEventListener("visibilitychange", h);
-  }, []);
+  useEffect(() => { const h = () => setTabVisible(!document.hidden); document.addEventListener("visibilitychange", h); return () => document.removeEventListener("visibilitychange", h); }, []);
 
-  // Popover active detection
-  const [popoverActive, setPopoverActive] = useState(false);
-  const popoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Popover detection with debounce
   useEffect(() => {
     const handler = (e: Event) => {
       const active = (e as CustomEvent).detail;
@@ -93,7 +81,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
 
   const modalOpen = pathname.includes("/title/") || pathname.includes("/watch/");
   const isPlaying = showTrailer && isVisible && tabVisible && !modalOpen && !popoverActive;
-  const effectiveMuted = isMuted || !tabVisible;
+  const effectiveMuted = isMuted || !tabVisible || !isVisible || popoverActive;
 
   return (
     <section ref={ref} className="relative w-full overflow-hidden" style={{ height: "100vh", minHeight: 600 }}>
@@ -102,7 +90,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
           <HeroSlide content={currentItem} isActive={true} isMuted={effectiveMuted} isHeroVisible={isVisible} />
         </motion.div>
       </AnimatePresence>
-      {showTrailer && hasTrailer && isPlaying && (<div className="absolute inset-0 z-[1] overflow-hidden"><YouTubeEmbed url={currentItem.trailerUrl!} autoPlay muted={effectiveMuted} loop={false} playing={isPlaying} style={{ position: "absolute", top: "-20%", left: "-20%", width: "140%", height: "140%" }} /></div>)}
+      {showTrailer && hasTrailer && isPlaying && (<div className="absolute inset-0 z-[1] overflow-hidden"><YouTubeEmbed url={currentItem.trailerUrl!} autoPlay muted={effectiveMuted} loop={false} playing={isPlaying} style={{ position: "absolute", top: "-30%", left: "-30%", width: "160%", height: "160%" }} /></div>)}
       {showTrailer && !hasTrailer && hasPreview && (<video ref={previewRef} src={mediaUrl(currentItem.previewUrl)} autoPlay muted={effectiveMuted} loop playsInline className="absolute inset-0 z-[1] h-full w-full object-cover" onError={() => setShowTrailer(false)} />)}
       <div className="pointer-events-none absolute inset-0 z-[2]" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 25%, rgba(0,0,0,0.2) 50%, transparent 70%)" }} />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2]" style={{ height: "50%", background: "linear-gradient(transparent, rgba(0,0,0,0.7) 60%, #141414)" }} />
