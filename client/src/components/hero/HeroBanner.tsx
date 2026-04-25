@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -36,7 +36,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
     setShowTrailer(false);
     if (!hasTrailer && !hasPreview) return;
     if (!isVisible) return;
-    const t = setTimeout(() => setShowTrailer(true), 2000);
+    const t = setTimeout(() => setShowTrailer(true), 800);
     return () => clearTimeout(t);
   }, [currentIndex, hasTrailer, hasPreview, isVisible]);
 
@@ -55,8 +55,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
       try {
         const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
         if (data.info && data.info.playerState === 0 && isVisible && !popoverActive) {
-          setShowTrailer(false);
-          setTimeout(() => setCurrentIndex((i) => (i + 1) % items.length), 500);
+          setCurrentIndex((i) => (i + 1) % items.length);
         }
       } catch {}
     };
@@ -86,7 +85,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
   return (
     <section ref={ref} className="relative w-full overflow-hidden" style={{ height: "100vh", minHeight: 600 }}>
       <AnimatePresence mode="popLayout">
-        <motion.div key={currentIndex} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.6, ease: "easeInOut" }}>
+        <motion.div key={currentIndex} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.2, ease: "easeInOut" }}>
           <HeroSlide content={currentItem} isActive={true} isMuted={effectiveMuted} isHeroVisible={isVisible} />
         </motion.div>
       </AnimatePresence>
