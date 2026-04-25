@@ -82,7 +82,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
           <HeroSlide content={currentItem} isActive={true} isMuted={effectiveMuted} isHeroVisible={isVisible} />
         </motion.div>
       </AnimatePresence>
-      {showTrailer && videoSrc && (
+      {videoSrc && (
         <video ref={videoRef} src={mediaUrl(videoSrc)} autoPlay muted={effectiveMuted} playsInline className="absolute inset-0 z-[1] h-full w-full object-cover" onEnded={handleVideoEnded} onError={() => setShowTrailer(false)} />
       )}
       <div className="pointer-events-none absolute inset-0 z-[2]" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 25%, rgba(0,0,0,0.2) 50%, transparent 70%)" }} />
@@ -108,4 +108,5 @@ export function HeroBanner({ items }: HeroBannerProps) {
     </section>
   );
 }
+
 
