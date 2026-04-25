@@ -28,7 +28,8 @@ export function HeroBanner({ items }: HeroBannerProps) {
   const hasTrailer = !!currentItem.trailerUrl;
   const hasPreview = !!currentItem.previewUrl;
 
-  useEffect(() => { setShowTrailer(false); if (!hasTrailer && !hasPreview) return; const t = setTimeout(() => setShowTrailer(true), 2000); return () => clearTimeout(t); }, [currentItem, hasTrailer, hasPreview]);
+  useEffect(() => { setShowTrailer(false); if (!hasTrailer && !hasPreview) return; if (!isVisible) return; const t = setTimeout(() => setShowTrailer(true), 2000); return () => clearTimeout(t); }, [currentItem, hasTrailer, hasPreview, isVisible]);
+  useEffect(() => { if (!isVisible) setShowTrailer(false); }, [isVisible]);
   useEffect(() => { if (previewRef.current) previewRef.current.muted = isMuted; }, [isMuted, showTrailer]);
   useEffect(() => { const v = previewRef.current; if (!v) return; if (!isVisible) v.pause(); else if (showTrailer) v.play().catch(() => {}); }, [isVisible, showTrailer]);
 
@@ -37,7 +38,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
     const handler = (e: MessageEvent) => {
       try {
         const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
-        if (data.info && data.info.playerState === 0) {
+        if (data.info && data.info.playerState === 0 && !document.hidden) {
           setCurrentIndex((i: number) => (i + 1) % items.length);
         }
       } catch {}
@@ -119,6 +120,8 @@ export function HeroBanner({ items }: HeroBannerProps) {
     </section>
   );
 }
+
+
 
 
 
