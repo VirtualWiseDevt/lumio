@@ -16,7 +16,7 @@ interface HeroBannerProps { items: Content[]; }
 
 export function HeroBanner({ items }: HeroBannerProps) {
   const router = useRouter();
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const { ref, isVisible } = useIntersection<HTMLDivElement>({ threshold: 0.3 });
   const [showTrailer, setShowTrailer] = useState(false);
   const previewRef = useRef<HTMLVideoElement>(null);
@@ -104,6 +104,7 @@ export function HeroBanner({ items }: HeroBannerProps) {
     </section>
   );
 }
+
 
 
 

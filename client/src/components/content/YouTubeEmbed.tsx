@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useCallback, useMemo, useState } from "react";
 import { Play, Pause, Volume2, VolumeOff, Maximize, Minimize } from "lucide-react";
@@ -56,7 +56,7 @@ export function YouTubeEmbed({
   }, [isReady]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsReady(true), 2500);
+    const timer = setTimeout(() => setIsReady(true), 1000);
     return () => clearTimeout(timer);
   }, []);
 
