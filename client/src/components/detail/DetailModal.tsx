@@ -12,6 +12,12 @@ import { MyListButton } from "@/components/my-list/MyListButton";
 import { SubscribeGate } from "@/components/billing/SubscribeGate";
 import { useSubscription } from "@/hooks/use-subscription";
 import { YouTubeEmbed } from "@/components/content/YouTubeEmbed";
+
+function TrailerPlayer({ url }: { url: string }) {
+  const [muted, setMuted] = useState(true);
+  return <YouTubeEmbed url={url} autoPlay muted={muted} loop={false} showControls onToggleMute={() => setMuted(!muted)} className="absolute inset-0 w-full h-full" />;
+}
+
 import { EpisodeList } from "./EpisodeList";
 import { MoreLikeThis } from "./MoreLikeThis";
 
@@ -101,7 +107,7 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
       {content && (
         <>
           {/* Header / Backdrop */}
-          <div className="relative aspect-video w-full overflow-hidden" style={{ borderRadius: "8px 8px 0 0" }}>{content.trailerUrl ? (<YouTubeEmbed url={content.trailerUrl} autoPlay muted={false} loop={false} className="absolute inset-0 w-full h-full" />) : null}
+          <div className="relative aspect-video w-full overflow-hidden" style={{ borderRadius: "8px 8px 0 0" }}>{content.trailerUrl ? (<TrailerPlayer url={content.trailerUrl} />) : null}
             {!content.trailerUrl && content.posterLandscape ? (
               <Image
                 src={mediaUrl(content.posterLandscape)}
@@ -272,5 +278,8 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
     </>
   );
 }
+
+
+
 
 
