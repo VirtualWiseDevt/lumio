@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useCallback, useMemo } from "react";
 
 interface YouTubeEmbedProps {
   url: string;
@@ -9,6 +9,7 @@ interface YouTubeEmbedProps {
   loop?: boolean;
   className?: string;
   playing?: boolean;
+  style?: React.CSSProperties;
 }
 
 function extractYouTubeId(url: string): string | null {
@@ -31,59 +32,66 @@ export function YouTubeEmbed({
   loop = true,
   className = "",
   playing = true,
+  style,
 }: YouTubeEmbedProps) {
   const videoId = extractYouTubeId(url);
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [key, setKey] = useState(0);
+  const readyRef = useRef(false);
 
-  // Control mute via postMessage to YouTube API
-  useEffect(() => {
+  const postMsg = useCallback((func: string) => {
     const iframe = iframeRef.current;
-    if (!iframe?.contentWindow) return;
-    const msg = muted
-      ? '{"event":"command","func":"mute","args":""}'
-      : '{"event":"command","func":"unMute","args":""}';
-    iframe.contentWindow.postMessage(msg, "*");
-  }, [muted]);
+    if (!iframe?.contentWindow || !readyRef.current) return;
+    iframe.contentWindow.postMessage(
+      JSON.stringify({ event: "command", func, args: "" }),
+      "*"
+    );
+  }, []);
 
-  // Control play/pause via postMessage
   useEffect(() => {
-    const iframe = iframeRef.current;
-    if (!iframe?.contentWindow) return;
-    const msg = playing
-      ? '{"event":"command","func":"playVideo","args":""}'
-      : '{"event":"command","func":"pauseVideo","args":""}';
-    iframe.contentWindow.postMessage(msg, "*");
-  }, [playing]);
+    const timer = setTimeout(() => { readyRef.current = true; }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    postMsg(muted ? "mute" : "unMute");
+  }, [muted, postMsg]);
+
+  useEffect(() => {
+    postMsg(playing ? "playVideo" : "pauseVideo");
+  }, [playing, postMsg]);
+
+  const embedSrc = useMemo(() => {
+    if (!videoId) return "";
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const params = new URLSearchParams({
+      autoplay: autoPlay ? "1" : "0",
+      mute: "1",
+      loop: loop ? "1" : "0",
+      playlist: videoId,
+      controls: "0",
+      showinfo: "0",
+      rel: "0",
+      modestbranding: "1",
+      iv_load_policy: "3",
+      disablekb: "1",
+      fs: "0",
+      playsinline: "1",
+      enablejsapi: "1",
+      origin,
+    });
+    return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
+  }, [videoId, autoPlay, loop]);
 
   if (!videoId) return null;
 
-  const params = new URLSearchParams({
-    autoplay: autoPlay ? "1" : "0",
-    mute: muted ? "1" : "0",
-    loop: loop ? "1" : "0",
-    playlist: videoId,
-    controls: "0",
-    showinfo: "0",
-    rel: "0",
-    modestbranding: "1",
-    iv_load_policy: "3",
-    disablekb: "1",
-    fs: "0",
-    playsinline: "1",
-    enablejsapi: "1",
-    origin: typeof window !== "undefined" ? window.location.origin : "",
-  });
-
   return (
     <iframe
-      key={key}
       ref={iframeRef}
-      src={`https://www.youtube.com/embed/${videoId}?${params.toString()}`}
+      src={embedSrc}
       className={className}
       allow="autoplay; encrypted-media"
       allowFullScreen={false}
-      style={{ border: "none", pointerEvents: "none" }}
+      style={{ border: "none", pointerEvents: "none", ...style }}
       tabIndex={-1}
     />
   );
