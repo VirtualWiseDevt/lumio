@@ -9,6 +9,7 @@ const browseContentSelect = {
   id: true,
   type: true,
   title: true,
+  tagline: true,
   description: true,
   releaseYear: true,
   duration: true,
