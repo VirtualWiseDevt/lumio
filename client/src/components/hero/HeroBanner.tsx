@@ -38,9 +38,9 @@ export function HeroBanner({ items }: HeroBannerProps) {
   // Filter to playable items, then shuffle once per mount.
   // useMemo with a stable dep ensures it doesn't reshuffle on every render.
   const playable = useMemo(
-    () => shuffle(items.filter((i) => i.trailerUrl || i.previewUrl)),
+    () => shuffle((items ?? []).filter((i) => i.trailerUrl || i.previewUrl)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [items.length]
+    [items?.length ?? 0]
   );
 
   const safeIndex = playable.length > 0 ? currentIndex % playable.length : 0;

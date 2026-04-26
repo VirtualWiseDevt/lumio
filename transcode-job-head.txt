@@ -1,0 +1,230 @@
+﻿import { Queue, Worker, type Job } from "bullmq";
+import { mkdir, readdir, readFile, rm } from "node:fs/promises";
+import { spawn } from "node:child_process";
+import path from "node:path";
+
+import { redis } from "../config/redis.js";
+import { prisma } from "../config/database.js";
+import { uploadToR2, streamR2ToFile } from "../services/r2.service.js";
+import {
+  probeSource,
+  transcodeToHls,
+  generateMasterPlaylist,
+} from "../services/transcode.service.js";
+import {
+  QUALITY_PRESETS,
+  type TranscodeJobData,
+  type QualityPreset,
+} from "../types/transcode.types.js";
+
+// ---------------------------------------------------------------------------
+// Queue
+// ---------------------------------------------------------------------------
+
+export const transcodeQueue = new Queue<TranscodeJobData>("transcode", {
+  connection: redis as never,
+});
+
+// ---------------------------------------------------------------------------
+// Enqueue
+// ---------------------------------------------------------------------------
+
+export async function enqueueTranscode(data: TranscodeJobData): Promise<void> {
+  await transcodeQueue.add("transcode", data, {
+    attempts: 2,
+    backoff: { type: "fixed", delay: 30_000 },
+  });
+
+  // Mirror status to DB
+  if (data.episodeId) {
+    await prisma.episode.update({
+      where: { id: data.episodeId },
+      data: { transcodingStatus: "pending" },
+    });
+  } else {
+    await prisma.content.update({
+      where: { id: data.contentId },
+      data: { transcodingStatus: "pending" },
+    });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DB status helpers
+// ---------------------------------------------------------------------------
+
+async function setStatus(
+  data: TranscodeJobData,
+  status: string,
+  extra?: { transcodingError?: string; hlsKey?: string }
+): Promise<void> {
+  const update = { transcodingStatus: status, ...extra };
+
+  if (data.episodeId) {
+    await prisma.episode.update({ where: { id: data.episodeId }, data: update });
+  } else {
+    await prisma.content.update({ where: { id: data.contentId }, data: update });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Job processor
+// ---------------------------------------------------------------------------
+
+const SEGMENT_DURATION = 4; // seconds
+
+async function processTranscodeJob(
+  job: Job<TranscodeJobData>
+): Promise<void> {
+  const { contentId, episodeId, sourceKey } = job.data;
+  const tempDir = `/tmp/transcode-${job.id}`;
+
+  try {
+    // 1. Mark processing
+    await setStatus(job.data, "processing");
+
+    // 2. Create temp directory
+    await mkdir(tempDir, { recursive: true });
+
+    // 3. Download source from R2
+    const ext = path.extname(sourceKey) || ".mp4";
+    const sourcePath = path.join(tempDir, `source${ext}`);
+    await streamR2ToFile(sourceKey, sourcePath);
+
+    // 4. Probe source
+    const probe = await probeSource(sourcePath);
+    console.log(
+      `[TRANSCODE] Job ${job.id}: source ${probe.width}x${probe.height} @ ${probe.fps}fps, ${probe.duration}s`
+    );
+
+    // 5. Filter presets - no upscaling
+    const applicablePresets = QUALITY_PRESETS.filter(
+      (p) => p.height <= probe.height
+    );
+
+    if (applicablePresets.length === 0) {
+      throw new Error(
+        `Source height ${probe.height}px is below minimum preset (360p). Cannot transcode.`
+      );
+    }
+
+    // 6. Build output prefix for R2 keys
+    const outputPrefix = episodeId
+      ? `videos/${contentId}/episodes/${episodeId}/hls`
+      : `videos/${contentId}/hls`;
+
+    // 7. Transcode each quality level sequentially
+    const transcodedQualities: Array<{
+      preset: QualityPreset;
+      playlistPath: string;
+    }> = [];
+
+    for (const preset of applicablePresets) {
+      console.log(`[TRANSCODE] Job ${job.id}: encoding ${preset.name}...`);
+      await transcodeToHls(sourcePath, tempDir, preset, SEGMENT_DURATION, probe.fps);
+
+      // Upload .ts segments and .m3u8 playlist
+      const presetDir = path.join(tempDir, preset.name);
+      const files = await readdir(presetDir);
+
+      for (const file of files) {
+        const filePath = path.join(presetDir, file);
+        const buffer = await readFile(filePath);
+        const r2Key = `${outputPrefix}/${preset.name}/${file}`;
+
+        if (file.endsWith(".ts")) {
+          await uploadToR2(
+            r2Key,
+            buffer,
+            "video/mp2t",
+            "public, max-age=31536000, immutable"
+          );
+        } else if (file.endsWith(".m3u8")) {
+          await uploadToR2(
+            r2Key,
+            buffer,
+            "application/vnd.apple.mpegurl",
+            "public, max-age=60"
+          );
+        }
+      }
+
+      transcodedQualities.push({
+        preset,
+        playlistPath: `${preset.name}/playlist.m3u8`,
+      });
+    }
+
+    // 8. Generate and upload master playlist
+    const masterContent = generateMasterPlaylist(transcodedQualities);
+    const masterBuffer = Buffer.from(masterContent, "utf-8");
+    await uploadToR2(
+      `${outputPrefix}/master.m3u8`,
+      masterBuffer,
+      "application/vnd.apple.mpegurl",
+      "public, max-age=60"
+    );
+
+    // 9. Extract 15-second preview clip (non-episode content only)
+    let previewUrl: string | null = null;
+    if (!episodeId) {
+      try {
+        const startTime = Math.max(0, Math.floor(probe.duration * 0.1));
+        const previewPath = path.join(tempDir, "preview.mp4");
+        const previewKey = `videos/${contentId}/preview.mp4`;
+
+        await spawnAsync("ffmpeg", [
+          "-ss", String(startTime),
+          "-i", sourcePath,
+          "-t", "15",
+          "-vf", "scale=1280:720",
+          "-c:v", "libx264",
+          "-preset", "fast",
+          "-crf", "28",
+          "-c:a", "aac",
+          "-b:a", "96k",
+          "-movflags", "+faststart",
+          "-y",
+          previewPath,
+        ]);
+
+        const previewBuffer = await readFile(previewPath);
+        await uploadToR2(previewKey, previewBuffer, "video/mp4", "public, max-age=86400");
+        previewUrl = previewKey;
+        console.log(`[TRANSCODE] Job ${job.id}: preview extracted at ${startTime}s`);
+      } catch (err) {
+        console.error(`[TRANSCODE] Job ${job.id}: preview extraction failed (non-fatal):`, err);
+      }
+    }
+
+    // 10. Update DB: completed
+    const hlsKey = `${outputPrefix}/`;
+    await setStatus(job.data, "completed", { hlsKey });
+
+    // Update previewUrl if extracted
+    if (previewUrl) {
+      await prisma.content.update({
+        where: { id: contentId },
+        data: { previewUrl },
+      }).catch(() => {});
+    }
+
+    console.log(
+      `[TRANSCODE] Job ${job.id}: completed - ${transcodedQualities.length} quality levels`
+    );
+  } catch (error) {
+    // Update DB: failed
+    const message = error instanceof Error ? error.message : String(error);
+    await setStatus(job.data, "failed", { transcodingError: message }).catch(
+      () => {} // Don't mask original error
+    );
+    throw error; // Re-throw for BullMQ retry
+  } finally {
+    // CRITICAL: Always clean up temp files
+    await rm(tempDir, { recursive: true, force: true }).catch(() => {});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Worker
+// ---------------------------------------------------------------------------
