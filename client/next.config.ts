@@ -1,4 +1,4 @@
-﻿import type { NextConfig } from "next";
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
         hostname: "localhost",
         port: "5000",
         pathname: "/api/media/**",
+      },
+      {
+        protocol: "https",
+        hostname: "image.tmdb.org",
+        pathname: "/**",
       },
     ],
   },
