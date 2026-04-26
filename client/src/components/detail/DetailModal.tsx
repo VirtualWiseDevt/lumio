@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -212,7 +212,7 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
 
             {/* Custom video controls (top-right of video area) */}
             {videoSrc && (
-              <div className="absolute right-4 top-4 z-[110] flex items-center gap-2">
+              <div className="absolute right-4 bottom-4 z-[110] flex items-center gap-2">
                 <button
                   onClick={togglePause}
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-black/50 text-white transition-colors hover:border-white hover:bg-black/70"
