@@ -33,7 +33,7 @@ export function MoreLikeThis({ contentId }: MoreLikeThisProps) {
       )}
       {!isLoading && titles && titles.length > 0 && (
         <div className="grid grid-cols-4 gap-3 sm:grid-cols-5 md:grid-cols-6">
-          {titles.map((title) => {
+          {titles.filter(Boolean).map((title) => {
             const posterSrc = mediaUrl(title.posterPortrait || title.posterLandscape);
             return (
               <Link key={title.id} href={`/title/${title.id}`} className="group">

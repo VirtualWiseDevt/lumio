@@ -23,6 +23,7 @@ function ResultCard({
   content: Content;
   onClick: () => void;
 }) {
+  if (!content) return null;
   const posterSrc = mediaUrl(content.posterPortrait);
 
   return (

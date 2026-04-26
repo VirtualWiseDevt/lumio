@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import Image from "next/image";
 import { cn, mediaUrl } from "@/lib/utils";
 import type { Content } from "@/types/content";
@@ -18,6 +18,7 @@ export function ContentCard({
   onMouseLeave,
   onClick,
 }: ContentCardProps) {
+  if (!content) return null;
   const posterSrc = mediaUrl(content.posterPortrait || content.posterLandscape);
 
   return (

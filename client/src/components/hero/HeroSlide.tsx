@@ -12,6 +12,7 @@ interface HeroSlideProps {
 }
 
 export function HeroSlide({ content, isActive }: HeroSlideProps) {
+  if (!content) return null;
   const posterSrc = content.posterLandscape
     ? mediaUrl(content.posterLandscape)
     : content.posterPortrait

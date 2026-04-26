@@ -40,6 +40,7 @@ export function HoverPopover({ content, cardRect, onMouseEnter, onMouseLeave, on
   const [showSubscribeGate, setShowSubscribeGate] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  if (!content) return null;
   const { left, top, width } = getPopoverPosition(cardRect);
   const posterSrc = mediaUrl(content.posterPortrait || content.posterLandscape);
   const videoSrc = content.trailerUrl || content.previewUrl;
