@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -10,11 +10,7 @@ import { cn, formatDuration, mediaUrl } from "@/lib/utils";
 import { fetchTitleDetail } from "@/api/content";
 import { MyListButton } from "@/components/my-list/MyListButton";
 import { SubscribeGate } from "@/components/billing/SubscribeGate";
-
-  const [muted, setMuted] = useState(true);
-}
 import { useSubscription } from "@/hooks/use-subscription";
-
 
 import { EpisodeList } from "./EpisodeList";
 import { MoreLikeThis } from "./MoreLikeThis";
@@ -65,7 +61,6 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
       style={{ borderRadius: 8 }}
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Close button */}
       {!isFullPage && (
         <button
           onClick={handleClose}
@@ -76,7 +71,6 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
         </button>
       )}
 
-      {/* Loading state */}
       {isLoading && (
         <div className="animate-pulse">
           <div className="aspect-video w-full bg-card-hover" />
@@ -88,7 +82,6 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
         </div>
       )}
 
-      {/* Error state */}
       {isError && (
         <div className="flex flex-col items-center justify-center gap-4 p-16">
           <p className="text-silver">Failed to load title details</p>
@@ -101,11 +94,20 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
         </div>
       )}
 
-      {/* Content */}
       {content && (
         <>
-          {/* Header / Backdrop */}
-            {content.posterLandscape ? (
+          <div className="relative aspect-video w-full overflow-hidden">
+            {content.trailerUrl ? (
+              <video
+                src={mediaUrl(content.trailerUrl)}
+                poster={content.posterLandscape ? mediaUrl(content.posterLandscape) : undefined}
+                autoPlay
+                muted
+                playsInline
+                controls
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : content.posterLandscape ? (
               <Image
                 src={mediaUrl(content.posterLandscape)}
                 alt={content.title}
@@ -117,12 +119,12 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
             ) : (
               <div className="h-full w-full bg-gradient-to-b from-card-hover to-card" />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#181818] via-[#181818]/40 to-transparent" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#181818] via-[#181818]/40 to-transparent" />
 
-            {/* Title and buttons */}
             <div className="absolute bottom-0 left-0 right-0 p-8">
               <h1 className="mb-4 font-serif text-3xl text-white md:text-4xl" style={{ fontWeight: 700 }}>
-                {content.title}</h1>
+                {content.title}
+              </h1>
               {content.tagline && (
                 <p className="mb-3 text-base italic text-silver">{content.tagline}</p>
               )}
@@ -154,9 +156,7 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
             </div>
           </div>
 
-          {/* Two-column layout */}
           <div className="flex gap-8 px-8 py-6">
-            {/* Main content */}
             <div className="flex-1 min-w-0">
               <div className="mb-4 flex flex-wrap items-center gap-3 text-sm">
                 <span className="font-semibold text-green">98% Match</span>
@@ -187,7 +187,6 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
               )}
             </div>
 
-            {/* Side metadata */}
             <div className="hidden md:block w-[200px] shrink-0 space-y-2 text-[13px]">
               {content.cast.length > 0 && (
                 <p>
@@ -214,14 +213,12 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
             </div>
           </div>
 
-          {/* Episodes (series only) */}
           {content.type === "SERIES" &&
             content.seasons &&
             content.seasons.length > 0 && (
               <EpisodeList seasons={content.seasons} />
             )}
 
-          {/* More Like This */}
           <MoreLikeThis contentId={id} />
         </>
       )}
@@ -275,16 +272,3 @@ export function DetailModal({ id, isFullPage = false }: DetailModalProps) {
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
