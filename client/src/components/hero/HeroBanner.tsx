@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { Play, Info, Volume2, VolumeOff } from "lucide-react";
@@ -12,6 +12,15 @@ import type { Content } from "@/types/content";
 
 interface HeroBannerProps {
   items: Content[];
+}
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 export function HeroBanner({ items }: HeroBannerProps) {
@@ -26,7 +35,14 @@ export function HeroBanner({ items }: HeroBannerProps) {
   const [tabVisible, setTabVisible] = useState(true);
   const [popoverActive, setPopoverActive] = useState(false);
 
-  const playable = items.filter((i) => i.trailerUrl || i.previewUrl);
+  // Filter to playable items, then shuffle once per mount.
+  // useMemo with a stable dep ensures it doesn't reshuffle on every render.
+  const playable = useMemo(
+    () => shuffle(items.filter((i) => i.trailerUrl || i.previewUrl)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [items.length]
+  );
+
   const safeIndex = playable.length > 0 ? currentIndex % playable.length : 0;
   const current = playable[safeIndex];
   const src = current?.trailerUrl || current?.previewUrl || null;
