@@ -235,7 +235,7 @@ export function startTranscodeWorker(): Worker<TranscodeJobData> {
     processTranscodeJob,
     {
       connection: redis as never,
-      concurrency: 1,
+      concurrency: 2,
     }
   );
 
